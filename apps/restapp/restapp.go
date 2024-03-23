@@ -8,7 +8,6 @@ import (
 )
 
 type Config struct {
-	config.Configurations
 }
 
 type RestApp struct {
