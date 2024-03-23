@@ -1,3 +1,4 @@
 Name: openauth-local
 Build: dev
-LogLevel: debug
+LogLevel: info # debug/info/warn/error/panic/fatal
+App: RESTAPP # RESTAPP/MIGRATION

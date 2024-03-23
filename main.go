@@ -40,6 +40,9 @@ func main() {
 	if err != nil {
 		logger.Panic(ctx, "failed to read config:file: %s, Err: %v", configfile, err.Error())
 	}
+
+	logger.Config{AppName: conf.Name, Build: conf.Build, Level: logger.LogLevel(conf.LogLevel)}.InitiateLogger()
+
 	var app Application
 	switch conf.App {
 	case "", RESTAPP:
