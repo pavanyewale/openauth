@@ -1,5 +1,6 @@
 setup: 
 	go mod tidy
+	go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 run:
 	go run main.go -env=local
 clean:
