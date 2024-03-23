@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"openauth/apps/migration"
@@ -40,8 +41,9 @@ func main() {
 	if err != nil {
 		logger.Panic(ctx, "failed to read config:file: %s, Err: %v", configfile, err.Error())
 	}
-
 	logger.Config{AppName: conf.Name, Build: conf.Build, Level: logger.LogLevel(conf.LogLevel)}.InitiateLogger()
+	bytes, _ := json.MarshalIndent(conf, "", "   ")
+	logger.Debug(ctx, "main config: %s", bytes)
 
 	var app Application
 	switch conf.App {

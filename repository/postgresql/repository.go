@@ -7,14 +7,7 @@ import (
 )
 
 type PGSQLRepo struct {
-	conn *sql.Conn
-}
-
-type Config struct {
-	Host     string
-	Username string
-	Password string
-	DBName   string
+	conn *sql.DB
 }
 
 func NewPGQLRepository(ctx context.Context, conf *Config) *PGSQLRepo {

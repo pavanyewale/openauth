@@ -1,4 +1,13 @@
 Name: openauth-local
 Build: dev
-LogLevel: info # debug/info/warn/error/panic/fatal
+LogLevel: debug # debug/info/warn/error/panic/fatal
 App: RESTAPP # RESTAPP/MIGRATION
+Repository:
+  Name: PGSQL
+  PGSQL:
+    Host: localhost   
+    Port: 5432   
+    Username:    
+    Password:   
+    Database: openauth    
+    SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default

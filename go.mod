@@ -3,6 +3,7 @@ module openauth
 go 1.21.1
 
 require (
+	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.18.2
 	go.uber.org/zap v1.21.0
 )

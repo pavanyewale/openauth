@@ -2,6 +2,7 @@ package migration
 
 import (
 	"context"
+	"encoding/json"
 	"openauth/config"
 	"openauth/utils/logger"
 )
@@ -19,6 +20,8 @@ func NewMigrationApp(ctx context.Context, configfile string) *MigrationScript {
 	if err := config.ReadConfig(configfile, &conf); err != nil {
 		logger.Panic(ctx, "failed to read config for MigrationScript, file: %s, Err: %s", configfile, err.Error())
 	}
+	bytes, _ := json.MarshalIndent(conf, "", "   ")
+	logger.Debug(ctx, "MigrationScript config: %s", bytes)
 	return &MigrationScript{conf: &conf}
 }
 

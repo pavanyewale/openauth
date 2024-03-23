@@ -2,6 +2,7 @@ package restapp
 
 import (
 	"context"
+	"encoding/json"
 	"openauth/config"
 	"openauth/utils/logger"
 )
@@ -19,6 +20,8 @@ func NewRestApp(ctx context.Context, configfile string) *RestApp {
 	if err := config.ReadConfig(configfile, &conf); err != nil {
 		logger.Panic(ctx, "failed to read config for RestApp, file: %s, Err: %s", configfile, err.Error())
 	}
+	bytes, _ := json.MarshalIndent(conf, "", "   ")
+	logger.Debug(ctx, "RestApp config: %s", bytes)
 	return &RestApp{conf: &conf}
 }
 
