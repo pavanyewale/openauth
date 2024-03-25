@@ -1,4 +1,158 @@
 definitions:
+  dao.Group:
+    properties:
+      createdByUser:
+        type: integer
+      createdOn:
+        type: integer
+      deleted:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedOn:
+        type: integer
+    type: object
+  dto.AddRemovePermissionsToGroupRequest:
+    properties:
+      groupId:
+        type: integer
+      permIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  dto.AddRemovePermissionsToUserRequest:
+    properties:
+      permIds:
+        items:
+          type: integer
+        type: array
+      userId:
+        type: integer
+    type: object
+  dto.AddRemoveUsersToGroupRequest:
+    properties:
+      groupId:
+        type: integer
+      userIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  dto.AuthenticationResponse:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      permissions:
+        items:
+          type: string
+        type: array
+      userId:
+        type: integer
+      username:
+        type: string
+    type: object
+  dto.CreateGroupRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.CreatePermissionRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.DeleteGroupRequest:
+    properties:
+      groupId:
+        type: integer
+    type: object
+  dto.DeletePermissionRequest:
+    properties:
+      permId:
+        type: integer
+    type: object
+  dto.GroupDetails:
+    properties:
+      createdByUser:
+        type: integer
+      createdOn:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedOn:
+        type: integer
+    type: object
+  dto.GroupDetailsShort:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      deviceDetails:
+        type: string
+      otp:
+        type: string
+      password:
+        type: string
+      permissions:
+        type: boolean
+      username:
+        type: string
+    type: object
+  dto.LoginResponse:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+      userId:
+        type: integer
+    type: object
+  dto.PermissionDetails:
+    properties:
+      createdByUser:
+        type: integer
+      createdOn:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedOn:
+        type: integer
+    type: object
+  dto.PermissionDetailsShort:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dto.RefreshTokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
   handlers.Response:
     properties:
       error:
@@ -9,6 +163,119 @@ definitions:
 info:
   contact: {}
 paths:
+  /openauth/authenticate:
+    get:
+      consumes:
+      - application/json
+      description: validates the auth token and returns the user details
+      operationId: authenticate
+      parameters:
+      - description: User permissions to be added in token
+        in: query
+        name: permissions
+        type: boolean
+      - description: Authentication Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AuthenticationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: validates the auth token and returns user details
+      tags:
+      - Authentication
+  /openauth/authenticate/refresh:
+    put:
+      consumes:
+      - application/json
+      description: Refreshes the authentication token.
+      operationId: refreshAuthToken
+      parameters:
+      - description: Authentication Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Refresh authentication token
+      tags:
+      - Authentication
+  /openauth/login:
+    post:
+      consumes:
+      - application/json
+      description: Log in a user with username, password, OTP, and device details
+        (username can be mobile,email or username).
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "402":
+          description: Payment Required
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: User Login
+      tags:
+      - Login
+  /openauth/logout:
+    put:
+      consumes:
+      - application/json
+      description: marks the session as logged out.
+      operationId: logout
+      parameters:
+      - description: Authentication Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: marks the session as logged out
+      tags:
+      - Login
   /openauth/ping:
     get:
       description: Pings the server and returns "Everything is working fine."
@@ -27,4 +294,568 @@ paths:
       summary: Ping the server
       tags:
       - Ping
+  /userservice/group:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a group by providing the group ID
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Group details
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeleteGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Delete a group
+      tags:
+      - Groups
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all groups with optional limit and offset parameters
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Limit (default 50)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GroupDetails'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Get all groups
+      tags:
+      - Groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new group with the specified details
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Group details
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dao.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Create a new group
+      tags:
+      - Groups
+  /userservice/group/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a group by providing the group ID
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dao.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Get group details
+      tags:
+      - Groups
+  /userservice/group/user:
+    delete:
+      consumes:
+      - application/json
+      description: Remove users from a group by providing the groupID and userIDs
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Remove users from group details
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemoveUsersToGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Remove users from a group
+      tags:
+      - Groups
+    get:
+      consumes:
+      - application/json
+      description: Get groups associated with a user by providing the user ID
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GroupDetailsShort'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Get groups by user ID
+      tags:
+      - Groups
+    post:
+      consumes:
+      - application/json
+      description: Add users to a group by providing the group ID and user IDs
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Add users to group details
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemoveUsersToGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Add users to a group
+      tags:
+      - Groups
+  /userservice/permissions:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a permission by its ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permission details
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DeletePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Permission deleted successfully
+      summary: Delete a permission
+      tags:
+      - Permissions
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all permissions
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Limit the number of results (default 10)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PermissionDetailsShort'
+            type: array
+      summary: Get all permissions
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Create a new permission with the provided details
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permission details
+        in: body
+        name: permission
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PermissionDetails'
+      summary: Create a new permission
+      tags:
+      - Permissions
+  /userservice/permissions/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get details of a permission by its ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permission ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PermissionDetails'
+      summary: Get details of a permission
+      tags:
+      - Permissions
+  /userservice/permissions/groups:
+    delete:
+      consumes:
+      - application/json
+      description: Remove permissions from a group by group ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permissions details
+        in: body
+        name: permissions
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemovePermissionsToGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Permissions removed from group successfully
+      summary: Remove permissions from a group
+      tags:
+      - Permissions
+    get:
+      consumes:
+      - application/json
+      description: Get permissions of a group by group ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Group ID
+        in: query
+        name: groupId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PermissionDetailsShort'
+            type: array
+      summary: Get permissions of a group
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Add permissions to a group by group ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permissions details
+        in: body
+        name: permissions
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemovePermissionsToGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Permissions added to group successfully
+      summary: Add permissions to a group
+      tags:
+      - Permissions
+  /userservice/permissions/users:
+    delete:
+      consumes:
+      - application/json
+      description: Remove permissions from a user by user ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permissions details
+        in: body
+        name: permissions
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemovePermissionsToUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Permissions removed from user successfully
+      summary: Remove permissions from a user
+      tags:
+      - Permissions
+    get:
+      consumes:
+      - application/json
+      description: Get permissions of a user by user ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PermissionDetailsShort'
+            type: array
+      summary: Get permissions of a user
+      tags:
+      - Permissions
+    post:
+      consumes:
+      - application/json
+      description: Add permissions to a user by user ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      - description: Permissions details
+        in: body
+        name: permissions
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRemovePermissionsToUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Permissions added to user successfully
+      summary: Add permissions to a user
+      tags:
+      - Permissions
 swagger: "2.0"
