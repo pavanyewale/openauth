@@ -56,6 +56,12 @@ func Info(ctx context.Context, format string, a ...any) {
 	zapLogger.Info(msg, fields.fields...)
 }
 
+func Infof(ctx context.Context, format string, fields *Fields) {
+	fields.fields = append(fields.fields, appNameField)
+	_, msg, fields := executeMiddleLayers(ctx, format, fields)
+	zapLogger.Info(msg, fields.fields...)
+}
+
 func Infow(ctx context.Context, message string, fs *Fields) {
 	fs.fields = append(fs.fields, appNameField)
 	_, msg, fields := executeMiddleLayers(ctx, message, fs)

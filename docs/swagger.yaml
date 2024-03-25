@@ -1,0 +1,30 @@
+definitions:
+  handlers.Response:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /openauth/ping:
+    get:
+      description: Pings the server and returns "Everything is working fine."
+      operationId: ping-endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Everything is working fine.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Ping the server
+      tags:
+      - Ping
+swagger: "2.0"

@@ -6,13 +6,13 @@ import (
 	"openauth/utils/logger"
 )
 
-type PGSQLRepo struct {
+type Repository struct {
 	conn *sql.DB
 }
 
-func NewPGQLRepository(ctx context.Context, conf *Config) *PGSQLRepo {
+func NewRepository(ctx context.Context, conf *Config) *Repository {
 	if conf == nil {
 		logger.Panic(ctx, "no config provided for PGSQL")
 	}
-	return &PGSQLRepo{conn: NewConnection(ctx, conf)}
+	return &Repository{conn: NewConnection(ctx, conf)}
 }

@@ -2,12 +2,17 @@ Name: openauth-local
 Build: dev
 LogLevel: debug # debug/info/warn/error/panic/fatal
 App: RESTAPP # RESTAPP/MIGRATION
+CTRL:
+  Name: HTTP
+  HTTP:
+    Port: 8000
+    GinMode: debug
 Repository:
   Name: PGSQL
   PGSQL:
     Host: localhost   
     Port: 5432   
-    Username:    
-    Password:   
+    Username: postgres
+    Password: 1234
     Database: openauth    
     SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default

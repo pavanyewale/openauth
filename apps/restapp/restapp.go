@@ -4,14 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"openauth/config"
+	"openauth/controller"
+	"openauth/repository"
+	"openauth/service"
 	"openauth/utils/logger"
 )
 
 type Config struct {
+	CTRL          controller.Config
+	Service       service.Config
+	Repository    repository.Config
+	JWTSecretekey string
 }
 
 type RestApp struct {
-	conf *Config
+	conf       *Config
+	controller controller.Controller
 }
 
 func NewRestApp(ctx context.Context, configfile string) *RestApp {
@@ -25,10 +33,14 @@ func NewRestApp(ctx context.Context, configfile string) *RestApp {
 }
 
 func (app *RestApp) Start(ctx context.Context) {
-	logger.Info(ctx, "RestApp started...")
+	logger.Info(ctx, "starting RestApp...")
+	repo := repository.NewRepository(ctx, &app.conf.Repository)
+	service := service.NewServiceFactory(ctx, &app.conf.Service, repo)
+	app.controller = controller.NewController(ctx, &app.conf.CTRL, service, app.conf.JWTSecretekey)
+	app.controller.Listen(ctx)
 }
 
 func (app *RestApp) Shutdown(ctx context.Context) {
+	app.controller.Shutdown(ctx)
 	logger.Info(ctx, "RestApp shutdown successful!")
-
 }

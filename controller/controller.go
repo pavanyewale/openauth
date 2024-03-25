@@ -4,6 +4,7 @@ import (
 	"context"
 	"openauth/controller/grpc"
 	"openauth/controller/http"
+	"openauth/service"
 	"openauth/utils/logger"
 )
 
@@ -13,7 +14,8 @@ const (
 )
 
 type Controller interface {
-	Listen()
+	Listen(ctx context.Context)
+	Shutdown(ctx context.Context)
 }
 
 type Config struct {
@@ -22,12 +24,12 @@ type Config struct {
 	GRPC grpc.Config
 }
 
-func NewController(ctx context.Context, conf *Config) Controller {
+func NewController(ctx context.Context, conf *Config, serviceFactory *service.ServiceFactory, jwtSecreteKey string) Controller {
 	switch conf.Name {
 	case HTTP:
-		return http.NewHTTPController(ctx, &conf.HTTP)
+		return http.NewHTTPController(ctx, &conf.HTTP, serviceFactory, jwtSecreteKey)
 	case GRPC:
-		return grpc.NewGRPCController(ctx, &conf.GRPC)
+		return grpc.NewGRPCController(ctx, &conf.GRPC, serviceFactory)
 	default:
 		logger.Panic(ctx, "invalid controller name : current:  %s, Expected : %s|%s", conf.Name, HTTP, GRPC)
 	}

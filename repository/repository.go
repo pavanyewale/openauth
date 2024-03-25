@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"openauth/repository/postgresql"
+	"openauth/service"
 	"openauth/utils/logger"
 )
 
@@ -16,12 +17,13 @@ type Config struct {
 }
 
 type Repository interface {
+	service.Repository
 }
 
 func NewRepository(ctx context.Context, conf *Config) Repository {
 	switch conf.Name {
 	case PGSQL:
-		return postgresql.NewPGQLRepository(ctx, conf.PGSQL)
+		return postgresql.NewRepository(ctx, conf.PGSQL)
 	default:
 		logger.Panic(ctx, "invalid repository name : Current: %s, Expected: %s", conf.Name, PGSQL)
 	}

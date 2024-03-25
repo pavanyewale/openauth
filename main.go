@@ -64,7 +64,7 @@ func gracefulShutdown(ctx context.Context, application Application) {
 
 	// Wait for termination signal
 	<-sigCh
-	logger.Info(ctx, "\nShutting down... please wait ....")
+	logger.Info(ctx, "Shutting down... please wait ....")
 
 	application.Shutdown(ctx)
 }
