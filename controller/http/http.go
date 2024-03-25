@@ -48,7 +48,7 @@ func (ctrl *HTTPController) Listen(ctx context.Context) {
 	router.Use(utils.JWTMiddleware(ctrl.jwtSecreteKey))
 
 	//registering handlers
-	handlers.NewPingHandler(ctrl.serviceFactory.PingService).Register(router)
+	handlers.NewPingHandler(ctrl.serviceFactory.GetPingService()).Register(router)
 	handlers.NewSwaggerHandler().Register(router)
 	//listening on port
 	logger.Info(ctx, "🌏 swagger 🌎 -> http://localhost:%d/openauth/swagger/index.html", ctrl.conf.Port)

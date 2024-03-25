@@ -3,12 +3,12 @@ Build: dev
 LogLevel: debug # debug/info/warn/error/panic/fatal
 App: MIGRATION # RESTAPP/MIGRATION
 CTRL:
-  Name: HTTP
+  Name: HTTP    # HTTP/GRPC
   HTTP:
     Port: 8000
-    GinMode: debug
+    GinMode: debug # debug/release
 Repository:
-  Name: PGSQL
+  Name: PGSQL # PGSQL
   PGSQL:
     Host: localhost   
     Port: 5432   
@@ -18,4 +18,4 @@ Repository:
     SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default
 Migration:
   FilesPath: ./resources/sql/
-  Action: UP  # UP | DOWN  
+  Action: UP  # UP/DOWN  

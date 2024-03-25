@@ -18,7 +18,7 @@ make setup
 ```
 Then using following cmd create a new migration file 
 ```
-migrate create -dir sql/migrations -ext sql create_userservice_tables
+migrate create -dir sql/migrations -ext sql create_openauth_tables
 ``` 
 For applying migrations use following command
 ```
