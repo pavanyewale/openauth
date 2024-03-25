@@ -38,13 +38,13 @@ func NewGroupHandler(groupService GroupService) *GroupHandler {
 }
 
 func (lh *GroupHandler) Register(router gin.IRouter) {
-	router.POST("/userservice/group", lh.CreateGroup)
-	router.DELETE("/userservice/group", lh.DeleteGroup)
-	router.GET("/userservice/group/:id", lh.GetGroupDetails)
-	router.GET("/userservice/group", lh.GetAllGroups)
-	router.POST("/userservice/group/user", lh.AddUsersToGroup)
-	router.GET("/userservice/group/user", lh.GetGroupsByUserId)
-	router.DELETE("/userservice/group/user", lh.RemoveUserFromGroups)
+	router.POST("/openauth/group", lh.CreateGroup)
+	router.DELETE("/openauth/group", lh.DeleteGroup)
+	router.GET("/openauth/group/:id", lh.GetGroupDetails)
+	router.GET("/openauth/group", lh.GetAllGroups)
+	router.POST("/openauth/group/user", lh.AddUsersToGroup)
+	router.GET("/openauth/group/user", lh.GetGroupsByUserId)
+	router.DELETE("/openauth/group/user", lh.RemoveUserFromGroups)
 }
 
 // @Summary Create a new group
@@ -59,7 +59,7 @@ func (lh *GroupHandler) Register(router gin.IRouter) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group [post]
+// @Router /openauth/group [post]
 func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
@@ -109,7 +109,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group [delete]
+// @Router /openauth/group [delete]
 func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -157,7 +157,7 @@ func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 // @Failure 403 {object} Response
 // @Failure 404 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group/{id} [get]
+// @Router /openauth/group/{id} [get]
 func (lh *GroupHandler) GetGroupDetails(ctx *gin.Context) {
 	_, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -198,7 +198,7 @@ func (lh *GroupHandler) GetGroupDetails(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group/user [post]
+// @Router /openauth/group/user [post]
 func (lh *GroupHandler) AddUsersToGroup(ctx *gin.Context) {
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -246,7 +246,7 @@ func (lh *GroupHandler) AddUsersToGroup(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group/user [delete]
+// @Router /openauth/group/user [delete]
 func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -294,7 +294,7 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group/user [get]
+// @Router /openauth/group/user [get]
 func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
 	_, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -334,7 +334,7 @@ func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /userservice/group [get]
+// @Router /openauth/group [get]
 func (lh *GroupHandler) GetAllGroups(ctx *gin.Context) {
 	_, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {

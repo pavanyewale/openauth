@@ -219,82 +219,7 @@ paths:
       summary: Refresh authentication token
       tags:
       - Authentication
-  /openauth/login:
-    post:
-      consumes:
-      - application/json
-      description: Log in a user with username, password, OTP, and device details
-        (username can be mobile,email or username).
-      parameters:
-      - description: Login Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.LoginResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.Response'
-        "402":
-          description: Payment Required
-          schema:
-            $ref: '#/definitions/handlers.Response'
-      summary: User Login
-      tags:
-      - Login
-  /openauth/logout:
-    put:
-      consumes:
-      - application/json
-      description: marks the session as logged out.
-      operationId: logout
-      parameters:
-      - description: Authentication Token
-        in: header
-        name: AuthToken
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RefreshTokenResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.Response'
-      summary: marks the session as logged out
-      tags:
-      - Login
-  /openauth/ping:
-    get:
-      description: Pings the server and returns "Everything is working fine."
-      operationId: ping-endpoint
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Everything is working fine.
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.Response'
-      summary: Ping the server
-      tags:
-      - Ping
-  /userservice/group:
+  /openauth/group:
     delete:
       consumes:
       - application/json
@@ -425,7 +350,7 @@ paths:
       summary: Create a new group
       tags:
       - Groups
-  /userservice/group/{id}:
+  /openauth/group/{id}:
     get:
       consumes:
       - application/json
@@ -471,7 +396,7 @@ paths:
       summary: Get group details
       tags:
       - Groups
-  /userservice/group/user:
+  /openauth/group/user:
     delete:
       consumes:
       - application/json
@@ -599,7 +524,64 @@ paths:
       summary: Add users to a group
       tags:
       - Groups
-  /userservice/permissions:
+  /openauth/login:
+    post:
+      consumes:
+      - application/json
+      description: Log in a user with username, password, OTP, and device details
+        (username can be mobile,email or username).
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "402":
+          description: Payment Required
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: User Login
+      tags:
+      - Login
+  /openauth/logout:
+    put:
+      consumes:
+      - application/json
+      description: marks the session as logged out.
+      operationId: logout
+      parameters:
+      - description: Authentication Token
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: marks the session as logged out
+      tags:
+      - Login
+  /openauth/permissions:
     delete:
       consumes:
       - application/json
@@ -680,7 +662,7 @@ paths:
       summary: Create a new permission
       tags:
       - Permissions
-  /userservice/permissions/{id}:
+  /openauth/permissions/{id}:
     get:
       consumes:
       - application/json
@@ -706,7 +688,7 @@ paths:
       summary: Get details of a permission
       tags:
       - Permissions
-  /userservice/permissions/groups:
+  /openauth/permissions/groups:
     delete:
       consumes:
       - application/json
@@ -782,7 +764,7 @@ paths:
       summary: Add permissions to a group
       tags:
       - Permissions
-  /userservice/permissions/users:
+  /openauth/permissions/users:
     delete:
       consumes:
       - application/json
@@ -858,4 +840,22 @@ paths:
       summary: Add permissions to a user
       tags:
       - Permissions
+  /openauth/ping:
+    get:
+      description: Pings the server and returns "Everything is working fine."
+      operationId: ping-endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Everything is working fine.
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Ping the server
+      tags:
+      - Ping
 swagger: "2.0"

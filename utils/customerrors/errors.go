@@ -1,11 +1,15 @@
 package customerrors
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 const (
 	// error codes
 	BAD_REQUEST_ERROR_CODE   = 400
-	DB_RECORD_NOT_FOUND_CODE = 40
+	DATABASE_ERROR_CODE      = 40
+	DB_RECORD_NOT_FOUND_CODE = 41
 )
 
 type Error struct {
@@ -18,11 +22,11 @@ func (e *Error) Error() string {
 }
 
 var (
-	ERROR_UNAUTHORISED              = &Error{Message: "unauthorised", Code: 401}
-	ERROR_DATABASE                  = &Error{Message: "database operation failed", Code: 502}
-	ERROR_PERMISSION_DENIED         = &Error{Message: "permission denied", Code: 403}
-	ERROR_DATABASE_UNIQUE_KEY       = &Error{Message: "unique key failed", Code: 412}
-	ERROR_DATABASE_RECORD_NOT_FOUND = &Error{Message: "record not found", Code: DB_RECORD_NOT_FOUND_CODE}
+	ERROR_UNAUTHORISED              = &Error{Message: "unauthorised", Code: http.StatusUnauthorized}
+	ERROR_DATABASE                  = &Error{Message: "database operation failed", Code: http.StatusFailedDependency}
+	ERROR_PERMISSION_DENIED         = &Error{Message: "permission denied", Code: http.StatusForbidden}
+	ERROR_DATABASE_UNIQUE_KEY       = &Error{Message: "unique key failed", Code: http.StatusBadRequest}
+	ERROR_DATABASE_RECORD_NOT_FOUND = &Error{Message: "record not found", Code: http.StatusNotFound}
 )
 
 func BAD_REQUEST_ERROR(message string, args ...any) *Error {

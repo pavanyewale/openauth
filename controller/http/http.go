@@ -51,6 +51,7 @@ func (ctrl *HTTPController) Listen(ctx context.Context) {
 	handlers.NewPingHandler(ctrl.serviceFactory.GetPingService()).Register(router)
 	handlers.NewGroupHandler(ctrl.serviceFactory.GetGroupService()).Register(router)
 	handlers.NewPermissionHandler(ctrl.serviceFactory.GetPermissionService()).Register(router)
+	handlers.NewLoginHandler(ctrl.serviceFactory.GetAuthService()).Register(router)
 	handlers.NewSwaggerHandler().Register(router)
 
 	//listening on port

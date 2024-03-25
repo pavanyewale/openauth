@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS users (
 	last_name varchar(30) NULL,
 	username varchar(30) NULL,
 	bio varchar(250) NULL,
-	salt varchar(30) NULL,
 	"password" varchar(250) NULL,
 	mobile varchar(15) NULL,
 	email varchar(50) NULL,
@@ -100,7 +99,6 @@ CREATE TABLE IF NOT EXISTS user_permissions (
 	deleted bool NULL,
 	CONSTRAINT user_permissions_pkey PRIMARY KEY (id)
 );
-
-CREATE UNIQUE INDEX unique_user_permission ON user_permissions USING btree (user_id, permission_id);
-CREATE UNIQUE INDEX unique_group_permission ON group_permissions USING btree (group_id, permission_id);
-CREATE UNIQUE INDEX unique_user_group ON user_groups USING btree (user_id, group_id);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_user_permission ON user_permissions USING btree (user_id, permission_id);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_group_permission ON group_permissions USING btree (group_id, permission_id);
+CREATE UNIQUE INDEX IF NOT EXISTS unique_user_group ON user_groups USING btree (user_id, group_id);

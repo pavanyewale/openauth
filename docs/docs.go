@@ -99,119 +99,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/openauth/login": {
-            "post": {
-                "description": "Log in a user with username, password, OTP, and device details (username can be mobile,email or username).",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Login"
-                ],
-                "summary": "User Login",
-                "parameters": [
-                    {
-                        "description": "Login Request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.LoginResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    },
-                    "402": {
-                        "description": "Payment Required",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/openauth/logout": {
-            "put": {
-                "description": "marks the session as logged out.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Login"
-                ],
-                "summary": "marks the session as logged out",
-                "operationId": "logout",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication Token",
-                        "name": "AuthToken",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RefreshTokenResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/openauth/ping": {
-            "get": {
-                "description": "Pings the server and returns \"Everything is working fine.\"",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ping"
-                ],
-                "summary": "Ping the server",
-                "operationId": "ping-endpoint",
-                "responses": {
-                    "200": {
-                        "description": "Everything is working fine.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/userservice/group": {
+        "/openauth/group": {
             "get": {
                 "description": "Get a list of all groups with optional limit and offset parameters",
                 "consumes": [
@@ -408,7 +296,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/group/user": {
+        "/openauth/group/user": {
             "get": {
                 "description": "Get groups associated with a user by providing the user ID",
                 "consumes": [
@@ -600,7 +488,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/group/{id}": {
+        "/openauth/group/{id}": {
             "get": {
                 "description": "Get details of a group by providing the group ID",
                 "consumes": [
@@ -669,7 +557,92 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/permissions": {
+        "/openauth/login": {
+            "post": {
+                "description": "Log in a user with username, password, OTP, and device details (username can be mobile,email or username).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "Login Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "402": {
+                        "description": "Payment Required",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/openauth/logout": {
+            "put": {
+                "description": "marks the session as logged out.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "marks the session as logged out",
+                "operationId": "logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication Token",
+                        "name": "AuthToken",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/openauth/permissions": {
             "get": {
                 "description": "Get a list of all permissions",
                 "consumes": [
@@ -791,7 +764,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/permissions/groups": {
+        "/openauth/permissions/groups": {
             "get": {
                 "description": "Get permissions of a group by group ID",
                 "consumes": [
@@ -905,7 +878,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/permissions/users": {
+        "/openauth/permissions/users": {
             "get": {
                 "description": "Get permissions of a user by user ID",
                 "consumes": [
@@ -1019,7 +992,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/userservice/permissions/{id}": {
+        "/openauth/permissions/{id}": {
             "get": {
                 "description": "Get details of a permission by its ID",
                 "consumes": [
@@ -1053,6 +1026,33 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.PermissionDetails"
+                        }
+                    }
+                }
+            }
+        },
+        "/openauth/ping": {
+            "get": {
+                "description": "Pings the server and returns \"Everything is working fine.\"",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ping"
+                ],
+                "summary": "Ping the server",
+                "operationId": "ping-endpoint",
+                "responses": {
+                    "200": {
+                        "description": "Everything is working fine.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
                         }
                     }
                 }
