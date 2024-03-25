@@ -1,7 +1,7 @@
 Name: openauth-local
 Build: dev
 LogLevel: debug # debug/info/warn/error/panic/fatal
-App: RESTAPP # RESTAPP/MIGRATION
+App: MIGRATION # RESTAPP/MIGRATION
 CTRL:
   Name: HTTP
   HTTP:
@@ -16,3 +16,6 @@ Repository:
     Password: 1234
     Database: openauth    
     SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default
+Migration:
+  FilesPath: ./resources/sql/
+  Action: UP  # UP | DOWN  

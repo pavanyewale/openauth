@@ -79,12 +79,9 @@ func (app *MigrationScript) Start(ctx context.Context) {
 			return
 		}
 	default:
-		logger.Panic(ctx, "invalid action")
-
+		logger.Panic(ctx, "invalid action current: `%s` Expected : `%s` | `%s`", app.conf.Migration.Action, ACTION_UP, ACTION_DOWN)
 	}
-
 	fmt.Println("Migration applied successfully!")
-
 }
 
 func (app *MigrationScript) Shutdown(ctx context.Context) {
