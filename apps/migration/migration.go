@@ -54,17 +54,15 @@ func (app *MigrationScript) Start(ctx context.Context) {
 	}
 	defer fileSource.Close()
 	conn, db, dbname := getDBDriver(ctx, &app.conf.Repository)
-
-	result, err := conn.Exec("update schema_migrations  set dirty  = false;")
-	if err != nil {
-		logger.Panic(ctx, "failed to set dirty false, Err: %s", err.Error())
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		logger.Panic(ctx, "failed to retrive rows affected, Err: %s", err.Error())
-	}
-	if rowsAffected > 0 {
-		app.conf.Migration.Action = ACTION_DOWN
+	if app.conf.Migration.Action == ACTION_DOWN {
+		result, err := conn.Exec("update schema_migrations  set dirty  = false where dirty = true;")
+		if err != nil {
+			logger.Panic(ctx, "failed to set dirty false, Err: %s", err.Error())
+		}
+		_, err = result.RowsAffected()
+		if err != nil {
+			logger.Panic(ctx, "failed to retrive rows affected, Err: %s", err.Error())
+		}
 	}
 
 	// Create a new migrate instance
