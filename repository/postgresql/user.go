@@ -43,8 +43,7 @@ func (r *Repository) GetUserByFilter(ctx context.Context, filter *filters.UserFi
 	if filter.Mobile != "" {
 		query += fmt.Sprintf(" AND mobile = '%s'", filter.Mobile)
 	}
-	query += fmt.Sprintf(" LIMIT %d OFFSET %d", filter.Limit, filter.Offset)
-
+	logger.Debug(ctx, "query: %s", query)
 	row := r.conn.QueryRowContext(ctx, query)
 	err := row.Scan(&user.ID, &user.FirstName, &user.MiddleName, &user.LastName, &user.Username, &user.Bio, &user.Password, &user.Mobile, &user.Email, &user.MobileVerified, &user.EmailVerified, &user.CreatedByUser, &user.CreatedOn, &user.UpdatedOn)
 	if err != nil {

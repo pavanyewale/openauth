@@ -5,8 +5,6 @@ type UserFilter struct {
 	Username string
 	Email    string
 	Mobile   string
-	Limit    int
-	Offset   int
 }
 
 type GroupFilter struct {
