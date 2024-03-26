@@ -9,12 +9,12 @@ CREATE TABLE IF NOT EXISTS users (
 	"password" varchar(250) NOT NULL DEFAULT '',
 	mobile varchar(15) NOT NULL DEFAULT '',
 	email varchar(50) NOT NULL DEFAULT '',
-	mobile_verified bit NOT NULL DEFAULT 0,
-	email_verified bit NOT NULL DEFAULT 0,
+	mobile_verified bool NOT NULL DEFAULT false,
+	email_verified bool NOT NULL DEFAULT false,
 	created_by_user int8 NOT NULL DEFAULT 0,
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
-	deleted bit NOT NULL DEFAULT 0,
+	deleted bool NOT NULL DEFAULT false,
 	CONSTRAINT users_pkey PRIMARY KEY (id),
 	CONSTRAINT users_username_key UNIQUE (username)
 );
@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS sessions (
 	user_id int8 NOT NULL,
 	"token" varchar(300) NOT NULL,
 	expriry_date timestamptz NOT NULL,
-	logged_out bool NOT NULL,
-	permissions bool NOT NULL,
-	device_details varchar(255) NOT NULL,
+	logged_out bool NOT NULL DEFAULT false,
+	permissions bool NOT null DEFAULT false,
+	device_details varchar(255) NOT NULL default '',
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
 	CONSTRAINT sessions_pkey PRIMARY KEY (id)
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS permissions (
 	created_by_user int8 NULL,
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
-	deleted bool NOT NULL,
+	deleted bool NOT NULL default false, 
 	CONSTRAINT permissions_name_key UNIQUE (name),
 	CONSTRAINT permissions_pkey PRIMARY KEY (id)
 );
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS "groups" (
 	created_by_user int8 NULL,
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
-	deleted bool NOT NULL,
+	deleted bool NOT null default false,
 	CONSTRAINT groups_name_key UNIQUE (name),
 	CONSTRAINT groups_pkey PRIMARY KEY (id)
 );
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS user_groups (
 	created_by_user int8 NULL,
 	created_on int8 NULL,
 	updated_on int8 NULL,
-	deleted bool NULL,
+	deleted bool not null default FALSE,
 	CONSTRAINT user_groups_pkey PRIMARY KEY (id)
 );
 
@@ -84,21 +84,19 @@ CREATE TABLE IF NOT EXISTS group_permissions (
 	created_by_user int8 NULL,
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
-	deleted bool NOT NULL,
+	deleted bool NOT NULL default false,
 	CONSTRAINT group_permissions_pkey PRIMARY KEY (id)
 );
 
 
 CREATE TABLE IF NOT EXISTS user_permissions (
-	id bigserial NOT NULL,
 	user_id int8 NULL,
 	permission_id int8 NULL,
 	created_by_user int8 NULL,
 	created_on int8 NULL,
 	updated_on int8 NULL,
-	deleted bool NULL,
-	CONSTRAINT user_permissions_pkey PRIMARY KEY (id)
+	CONSTRAINT user_permissions_pkey PRIMARY KEY (user_id,permission_id)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS unique_user_permission ON user_permissions USING btree (user_id, permission_id);
+-- CREATE UNIQUE INDEX IF NOT EXISTS unique_user_permission ON user_permissions USING btree (user_id, permission_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unique_group_permission ON group_permissions USING btree (group_id, permission_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unique_user_group ON user_groups USING btree (user_id, group_id);

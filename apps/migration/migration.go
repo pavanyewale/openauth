@@ -2,6 +2,7 @@ package migration
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"openauth/config"
@@ -30,6 +31,7 @@ type Config struct {
 
 type MigrationScript struct {
 	conf *Config
+	m    *migrate.Migrate
 }
 
 func NewMigrationApp(ctx context.Context, configfile string) *MigrationScript {
@@ -51,17 +53,31 @@ func (app *MigrationScript) Start(ctx context.Context) {
 		return
 	}
 	defer fileSource.Close()
-	db, dbname := getDBDriver(ctx, &app.conf.Repository)
+	conn, db, dbname := getDBDriver(ctx, &app.conf.Repository)
+
+	result, err := conn.Exec("update schema_migrations  set dirty  = false;")
+	if err != nil {
+		logger.Panic(ctx, "failed to set dirty false, Err: %s", err.Error())
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		logger.Panic(ctx, "failed to retrive rows affected, Err: %s", err.Error())
+	}
+	if rowsAffected > 0 {
+		app.conf.Migration.Action = ACTION_DOWN
+	}
+
 	// Create a new migrate instance
-	m, err := migrate.NewWithInstance("source", fileSource, dbname, db)
+	app.m, err = migrate.NewWithInstance("source", fileSource, dbname, db)
 	if err != nil {
 		logger.Panic(ctx, "error creating migrate instance: %v", err)
 		return
 	}
+
 	switch app.conf.Migration.Action {
 	case ACTION_UP:
 		// Apply the migration
-		if err := m.Up(); err != nil {
+		if err := app.m.Up(); err != nil {
 			if err == migrate.ErrNoChange {
 				logger.Info(ctx, "no change")
 				return
@@ -70,7 +86,7 @@ func (app *MigrationScript) Start(ctx context.Context) {
 			return
 		}
 	case ACTION_DOWN:
-		if err := m.Down(); err != nil {
+		if err := app.m.Down(); err != nil {
 			if err == migrate.ErrNoChange {
 				logger.Info(ctx, "no change")
 				return
@@ -86,18 +102,20 @@ func (app *MigrationScript) Start(ctx context.Context) {
 
 func (app *MigrationScript) Shutdown(ctx context.Context) {
 	logger.Info(ctx, "MigrationScript shutdown successful!")
+	app.m.GracefulStop <- true
 }
 
-func getDBDriver(ctx context.Context, conf *repository.Config) (database.Driver, string) {
+func getDBDriver(ctx context.Context, conf *repository.Config) (*sql.DB, database.Driver, string) {
 	switch conf.Name {
 	case repository.PGSQL:
-		driver, err := postgres.WithInstance(postgresql.NewConnection(ctx, conf.PGSQL), &postgres.Config{DatabaseName: conf.PGSQL.Database})
+		conn := postgresql.NewConnection(ctx, conf.PGSQL)
+		driver, err := postgres.WithInstance(conn, &postgres.Config{DatabaseName: conf.PGSQL.Database})
 		if err != nil {
 			logger.Panic(ctx, "error creating postgres driver: %v", err)
 		}
-		return driver, conf.PGSQL.Database
+		return conn, driver, conf.PGSQL.Database
 	}
 
 	logger.Panic(ctx, "invalid repository name: current: %s , Expected: %s", conf.Name, repository.PGSQL)
-	return nil, ""
+	return nil, nil, ""
 }
