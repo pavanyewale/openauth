@@ -11,6 +11,7 @@ Highly scallable User Management application written in golang.
 
 Note: if you want to run it on server you can create a binary using ```make build``` it will build the binary then copy it to server and your configuration file and run it.  using ```./application```
 
+Note: when you are setting this up for first time. after migrations you can login using username `root` and password `1234`.
 ## adding new migrations
 Setup migrate command using 
 ```

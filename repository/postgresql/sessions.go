@@ -11,10 +11,11 @@ import (
 
 func (r *Repository) GetSessionByToken(ctx context.Context, token string) (*dao.Session, error) {
 	var session dao.Session
+	logger.Debug(ctx, "token: %v", token)
 	row := r.conn.QueryRowContext(ctx, `
 		SELECT id, user_id, token, expriry_date, logged_out, permissions, device_details, created_on, updated_on
 		FROM sessions
-		WHERE token = $1
+		WHERE token = '$1'
 	`, token)
 	err := row.Scan(&session.ID, &session.UserID, &session.Token, &session.ExpriryDate, &session.LoggedOut, &session.Permissions, &session.DeviceDetails, &session.CreatedOn, &session.UpdatedOn)
 	if err != nil {

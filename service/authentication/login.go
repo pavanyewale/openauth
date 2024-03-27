@@ -119,7 +119,7 @@ func (s *Service) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginR
 
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
 		if err != nil {
-			return nil, customerrors.BAD_REQUEST_ERROR("invalid mobile number or password")
+			return nil, customerrors.BAD_REQUEST_ERROR("invalid username or password")
 		}
 		return s.generateTokenAndLoginResponse(ctx, user, req.DeviceDetails, req.Permissions)
 

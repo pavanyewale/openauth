@@ -14,7 +14,9 @@ INSERT INTO permissions ("name", description, created_by_user, created_on, updat
 VALUES ('ASSIGN_GROUP_PERMISSION', 'Permission to assign permissions to groups', 1, 0, 0);
 
 INSERT INTO users (first_name, last_name, username, "password", created_by_user, created_on, updated_on)
-VALUES ('Root', 'User', 'root', '1234', 1, 0, 0);
+VALUES ('Root', 'User', 'root', '$2a$10$GddcnkEBI3nH8p6Nj/DLsuuOInH5Vx8IwDejzZzCUKqQdDUAjjm82', 1, 0, 0); 
+
+-- hashed password for 1234
 
 INSERT INTO user_permissions (user_id, permission_id, created_by_user, created_on, updated_on)
 SELECT u.id, p.id, 1, 0, 0
