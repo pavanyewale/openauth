@@ -11,10 +11,9 @@ import (
 )
 
 type Config struct {
-	CTRL          controller.Config
-	Service       service.Config
-	Repository    repository.Config
-	JWTSecretekey string
+	CTRL       controller.Config
+	Service    service.Config
+	Repository repository.Config
 }
 
 type RestApp struct {
@@ -36,7 +35,7 @@ func (app *RestApp) Start(ctx context.Context) {
 	logger.Info(ctx, "starting RestApp...")
 	repo := repository.NewRepository(ctx, &app.conf.Repository)
 	service := service.NewServiceFactory(ctx, &app.conf.Service, repo)
-	app.controller = controller.NewController(ctx, &app.conf.CTRL, service, app.conf.JWTSecretekey)
+	app.controller = controller.NewController(ctx, &app.conf.CTRL, service, app.conf.Service.Auth.JWTSecretekey)
 	app.controller.Listen(ctx)
 }
 

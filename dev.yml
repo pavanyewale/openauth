@@ -1,0 +1,38 @@
+Name: openauth-local
+Build: dev
+LogLevel: debug # debug/info/warn/error/panic/fatal
+App: RESTAPP # RESTAPP/MIGRATION
+CTRL:
+  Name: HTTP    # HTTP/GRPC
+  HTTP:
+    Port: 8000
+    GinMode: debug # debug/release
+Service:
+  OTP:
+    OtpService:
+      ResendOtpInMins: 1
+      OtpLength: 6
+      HashOTP: false
+      Email:
+        Subject: "verify otp"
+        BodyFormat: "%s is the otp to verify BappaApp\n Please do not share it with anyone!"
+      SMS:
+        Format: "%s is the otp to verify BappaApp\n please do not share it with anyone!"
+    NotificationClient:
+      Name: "mock"
+  Auth:
+    TokenType: JWT
+    JWTSecretekey: secrete123
+    AuthTokenExpriryInDays: 30
+Repository:
+  Name: PGSQL # PGSQL
+  PGSQL:
+    Host: localhost   
+    Port: 5432   
+    Username: postgres
+    Password: 1234
+    Database: openauth    
+    SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default
+Migration:
+  FilesPath: ./resources/sql/
+  Action: UP  # UP/DOWN  
