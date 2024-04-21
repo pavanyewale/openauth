@@ -107,7 +107,7 @@ func (r *Repository) GetAllGroups(ctx context.Context, limit, offset int) ([]*da
 
 func (r *Repository) GetGroupsByUserId(ctx context.Context, userId int64) ([]*dao.Group, error) {
 	// Prepare the SQL statement
-	query := "SELECT g.id, g.name, g.description, g.created_by_user, g.created_on, g.updated_on, g.deleted FROM groups g INNER JOIN user_groups ug ON g.id = ug.group_id WHERE ug.user_id = ?"
+	query := "SELECT g.id, g.name, g.description, g.created_by_user, g.created_on, g.updated_on, g.deleted FROM groups g INNER JOIN user_groups ug ON g.id = ug.group_id WHERE ug.user_id = $1"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
