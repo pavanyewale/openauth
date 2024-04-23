@@ -17,6 +17,7 @@ import (
 
 var (
 	env string
+	app string
 )
 
 const (
@@ -32,6 +33,7 @@ type Application interface {
 func main() {
 
 	flag.StringVar(&env, "env", "dev", "env to run the application")
+	flag.StringVar(&app, "app", "", "appname to start")
 	flag.Parse()
 
 	var conf config.Configurations
@@ -44,7 +46,9 @@ func main() {
 	logger.Config{AppName: conf.Name, Build: conf.Build, Level: logger.LogLevel(conf.LogLevel)}.InitiateLogger()
 	bytes, _ := json.MarshalIndent(conf, "", "   ")
 	logger.Debug(ctx, "main config: %s", bytes)
-
+	if app != "" {
+		conf.App = app
+	}
 	var app Application
 	switch conf.App {
 	case "", RESTAPP:
