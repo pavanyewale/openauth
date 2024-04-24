@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 500),
               child: Column(children: [
                 Text(
-                  "Welcome to TestApp",
+                  "Welcome to OpenAuth",
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontSize: 30,
