@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"net/http"
 	"openauth/utils/logger"
 	"time"
 
@@ -20,13 +19,14 @@ func GetHTTPRouter() *gin.Engine {
 }
 
 func OptionRequestMiddleware(c *gin.Context) {
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	if c.Request.Method == "OPTIONS" {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		c.AbortWithStatus(http.StatusOK)
+		c.AbortWithStatus(200)
 		return
 	}
+	c.Next()
 }
 
 func RequestTimeMiddleware(c *gin.Context) {
