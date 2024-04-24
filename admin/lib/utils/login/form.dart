@@ -1,5 +1,5 @@
-import 'package:admin/screens/login/service.dart';
 import 'package:admin/utils/colors.dart';
+import 'package:admin/utils/login/service.dart';
 import 'package:admin/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,11 +30,11 @@ class _LoginFormState extends State<LoginForm> {
       error = resp.error;
     } else {
       Fluttertoast.showToast(
-          msg: "Logged in successfully!",
-          toastLength: Toast.LENGTH_SHORT,
-          textColor: AppColors.success,
-          webPosition: "center",
-          );
+        msg: "Logged in successfully!",
+        toastLength: Toast.LENGTH_SHORT,
+        textColor: AppColors.success,
+        webPosition: "center",
+      );
     }
     setState(() {
       isSubmitting = false;
