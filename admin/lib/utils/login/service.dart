@@ -19,12 +19,12 @@ class LoginService extends ChangeNotifier {
   static LoginService get instance => _instance;
 
   loadAuthTokenFromLocal() async {
-    if (authToken.isNotEmpty){
+    if (authToken.isNotEmpty) {
       return;
     }
 
-    authToken = (await LocalStorage().getString("authToken"))??'';
-    if (authToken.isNotEmpty){
+    authToken = (await LocalStorage().getString("authToken")) ?? '';
+    if (authToken.isNotEmpty) {
       isLoggedIn = true;
     }
   }
@@ -51,7 +51,7 @@ class LoginService extends ChangeNotifier {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode( request.toJson()),
+        body: jsonEncode(request.toJson()),
       );
 
       if (response.statusCode == 200) {
@@ -62,6 +62,7 @@ class LoginService extends ChangeNotifier {
         return LoginResponse.fromErrorJson(json.decode(response.body));
       }
     } catch (e) {
+      print(e);
       return LoginResponse(
           userId: 0, token: "", message: "", error: "something went wrong!");
     }
