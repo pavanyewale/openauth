@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
       appBar: isMobile
           ? AppBar(
               title: Text(
-                "OpenGate",
+                "OpenAuth",
                 style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold),

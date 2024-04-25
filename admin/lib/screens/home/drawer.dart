@@ -23,7 +23,7 @@ class MyDrawer extends StatelessWidget {
                       ),
                   child: Center(
                       child: Text(
-                    'OpenGate',
+                    'OpenAuth',
                     style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold,
