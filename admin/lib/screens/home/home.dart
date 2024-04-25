@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
           : null,
       body: Row(
         children: [
-          if (!isMobile) const Expanded(child: MyDrawer()),
+          if (!isMobile) const MyDrawer(),
           const Expanded(flex: 5, child: MyBody())
         ],
       ),
