@@ -1,28 +1,47 @@
+import 'package:admin/screens/home/body.dart';
+import 'package:admin/screens/home/drawer.dart';
+import 'package:admin/screens/home/provider.dart';
 import 'package:admin/utils/screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: Screen.isMobile(context)? AppBar():null,
-      drawer:  Screen.isMobile(context)? const Drawer(elevation: double.infinity, child: MyDrawer(), ):null,
-      body: Center(
-        child: Text("Home Screen"),
+    final isMobile = Screen.isMobile(context);
+
+    // appbar
+    AppBar appbar = AppBar(
+      title: Text(
+        "TestApp",
+        style: TextStyle(
+            color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
     );
-  }
-}
 
-class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      
-    );
+    //
+    return ChangeNotifierProvider(
+        create: (_) => HomeProvider.instance,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).highlightColor,
+          appBar: isMobile ? appbar : null,
+          drawer: isMobile
+              ? const Drawer(
+                  elevation: double.infinity,
+                  child: MyDrawer(),
+                )
+              : null,
+          body: Row(
+            children: [
+              if (!isMobile) const MyDrawer(),
+              const SizedBox(
+                width: 5,
+              ),
+              const MyBody()
+            ],
+          ),
+        ));
   }
 }

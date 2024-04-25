@@ -1,8 +1,8 @@
-import 'package:admin/utils/colors.dart';
+import 'package:admin/utils/login/api_structs/login.dart';
 import 'package:admin/utils/login/service.dart';
+import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -29,12 +29,7 @@ class _LoginFormState extends State<LoginForm> {
     if (resp.error.isNotEmpty) {
       error = resp.error;
     } else {
-      Fluttertoast.showToast(
-        msg: "Logged in successfully!",
-        toastLength: Toast.LENGTH_SHORT,
-        textColor: AppColors.success,
-        webPosition: "center",
-      );
+       MyToast.success("Logged in successfully!");
     }
     setState(() {
       isSubmitting = false;

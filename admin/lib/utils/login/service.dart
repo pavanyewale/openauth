@@ -2,13 +2,18 @@ import 'dart:convert';
 
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/local_storage.dart';
+import 'package:admin/utils/login/api_structs/login.dart';
+import 'package:admin/utils/login/api_structs/logout.dart';
+import 'package:admin/utils/login/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decode/jwt_decode.dart';
+
 
 class LoginService extends ChangeNotifier {
   bool isLoggedIn = false;
   String authToken = "";
-
+  User user = User(userId: 0, username: "", firstName: "", lastName: "", permissions: []) ;
   // Private constructor to prevent instantiation from outside
   LoginService._();
 
@@ -18,14 +23,20 @@ class LoginService extends ChangeNotifier {
   // Getter to access the singleton instance
   static LoginService get instance => _instance;
 
+  updateUser(String token){
+     Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
+     user = User.fromJson( jsonDecode( decodedToken["userDetails"]));
+  }
+
   loadAuthTokenFromLocal() async {
-    if (authToken.isNotEmpty){
+    if (authToken.isNotEmpty) {
       return;
     }
 
-    authToken = (await LocalStorage().getString("authToken"))??'';
-    if (authToken.isNotEmpty){
+    authToken = (await LocalStorage().getString("authToken")) ?? '';
+    if (authToken.isNotEmpty) {
       isLoggedIn = true;
+      updateUser(authToken);
     }
   }
 
@@ -36,6 +47,8 @@ class LoginService extends ChangeNotifier {
     isLoggedIn = true;
     if (authToken.isEmpty) {
       isLoggedIn = false;
+    }else{
+      updateUser(authToken);
     }
     notifyListeners();
   }
@@ -51,7 +64,7 @@ class LoginService extends ChangeNotifier {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode( request.toJson()),
+        body: jsonEncode(request.toJson()),
       );
 
       if (response.statusCode == 200) {
@@ -91,82 +104,5 @@ class LoginService extends ChangeNotifier {
     } catch (e) {
       return LogoutResponse(message: "", error: "something went wrong!");
     }
-  }
-}
-
-// login
-
-class LoginRequest {
-  String deviceDetails;
-  String otp;
-  String password;
-  bool permissions;
-  String username;
-
-  LoginRequest({
-    required this.deviceDetails,
-    required this.otp,
-    required this.password,
-    required this.permissions,
-    required this.username,
-  });
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['deviceDetails'] = deviceDetails;
-    data['otp'] = otp;
-    data['password'] = password;
-    data['permissions'] = permissions;
-    data['username'] = username;
-    return data;
-  }
-}
-
-class LoginResponse {
-  int userId;
-  String token;
-  String message;
-  String error;
-
-  LoginResponse(
-      {required this.userId,
-      required this.token,
-      required this.message,
-      required this.error});
-
-  factory LoginResponse.fromSuccessJson(Map<String, dynamic> json) {
-    return LoginResponse(
-        userId: json['userId'],
-        token: json['token'],
-        message: json['message'],
-        error: "");
-  }
-
-  factory LoginResponse.fromErrorJson(Map<String, dynamic> json) {
-    return LoginResponse(
-      userId: 0,
-      token: "",
-      message: "",
-      error: json['error'],
-    );
-  }
-}
-
-// logout
-
-class LogoutResponse {
-  String message;
-  String error;
-
-  LogoutResponse({required this.message, required this.error});
-  factory LogoutResponse.fromSuccessJson(Map<String, dynamic> json) {
-    return LogoutResponse(message: json['message'], error: "");
-  }
-
-  factory LogoutResponse.fromErrorJson(Map<String, dynamic> json) {
-    return LogoutResponse(
-      message: "",
-      error: json['error'],
-    );
   }
 }
