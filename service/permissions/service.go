@@ -69,16 +69,20 @@ func (s *Service) GetPermissionsByUserId(ctx context.Context, userId int64) ([]*
 	return uniqueShortPermissions(groupPermissions, userPermissions), nil
 }
 
-func (s *Service) GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetailsShort, error) {
+func (s *Service) GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetails, error) {
 	perms, err := s.repo.GetAllPermissions(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	shortPerms := make([]*dto.PermissionDetailsShort, len(perms))
+	shortPerms := make([]*dto.PermissionDetails, len(perms))
 	for i, p := range perms {
-		shortPerms[i] = &dto.PermissionDetailsShort{
-			ID:   p.ID,
-			Name: p.Name,
+		shortPerms[i] = &dto.PermissionDetails{
+			ID:            p.ID,
+			Name:          p.Name,
+			Description:   p.Description,
+			CreatedByUser: p.CreatedByUser,
+			CreatedOn:     p.CreatedOn,
+			UpdatedOn:     p.UpdatedOn,
 		}
 	}
 

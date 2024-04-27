@@ -14,6 +14,10 @@ type PermissionDetails struct {
 	UpdatedOn     int64  `json:"updatedOn"`
 }
 
+type GetPermissionsResponse struct {
+	Permissions []*PermissionDetails `json:"permissions"`
+}
+
 func (pd *PermissionDetails) FromPermission(perm *dao.Permission) *PermissionDetails {
 	pd.ID = perm.ID
 	pd.Name = perm.Name

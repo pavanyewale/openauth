@@ -10,18 +10,19 @@ import (
 type Response struct {
 	Message *string `json:"message"`
 	Error   *string `json:"error"`
+	Code    int     `json:"code"`
 }
 
 func WriteError(ctx *gin.Context, err error) {
 	errStr := "something went wrong"
 	if customErr, ok := err.(*customerrors.Error); ok {
 		errStr = customErr.Error()
-		ctx.JSON(customErr.Code, &Response{Error: &errStr})
+		ctx.JSON(customErr.Code, &Response{Error: &errStr, Code: customErr.Code})
 		return
 	}
-	ctx.JSON(http.StatusInternalServerError, &Response{Error: &errStr})
+	ctx.JSON(http.StatusInternalServerError, &Response{Error: &errStr, Code: http.StatusInternalServerError})
 }
 
 func WriteSuccess(ctx *gin.Context, message string) {
-	ctx.JSON(http.StatusOK, &Response{Message: &message})
+	ctx.JSON(http.StatusOK, &Response{Message: &message, Code: http.StatusOK})
 }

@@ -44,13 +44,13 @@ func (s *Service) sendOTP(ctx context.Context, emailOrMobile string, otp string)
 	return customerrors.BAD_REQUEST_ERROR("invalid email or mobile")
 }
 
-func (s *Service) SendOTPOnEmailOrMobile(ctx context.Context, emailOrMobile string) error {
+func (s *Service) SendOTPOnEmailOrMobile(ctx context.Context, emailOrMobile string) (*dao.Otp, error) {
 	//checking if otp is already sent on provided email or mobile
 	var should_sent bool
 	otp, err := s.repo.GetLatestOTPByFilter(ctx, &filters.OTPFilter{To: emailOrMobile})
 	if err != nil {
-		if !customerrors.IS_RECORD_NOT_FOUND_ERROR(err) {
-			return err
+		if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+			return nil, err
 		}
 		should_sent = true
 	} else {
@@ -58,33 +58,35 @@ func (s *Service) SendOTPOnEmailOrMobile(ctx context.Context, emailOrMobile stri
 			should_sent = true
 		}
 	}
+
 	if !should_sent {
 		logger.Debug(ctx, "otp already sent on %s so skipping", emailOrMobile)
-		return nil
+		return otp, nil
 	}
+
 	otpStr := s.generateOTP(ctx)
 
 	if err = s.sendOTP(ctx, emailOrMobile, otpStr); err != nil {
-		return err
+		return nil, err
 	}
-
-	err = s.repo.CreateOTP(ctx, &dao.Otp{
+	otp = &dao.Otp{
 		SentTo:    emailOrMobile,
 		OTP:       otpStr,
 		Expriry:   time.Now().Add(time.Second * 60 * time.Duration(s.cfg.GetOTPConfig().ResendOTPInMins)).UnixMilli(),
 		CreatedOn: time.Now().UnixMilli(),
 		UpdatedOn: time.Now().UnixMilli(),
-	})
-	if err != nil {
-		return err
 	}
-	return nil
+	err = s.repo.CreateOTP(ctx, otp)
+	if err != nil {
+		return nil, err
+	}
+	return otp, nil
 }
 
 func (s *Service) ValidateOtp(ctx context.Context, emailOrMobile string, otp string) error {
 	latestOtp, err := s.repo.GetLatestOTPByFilter(ctx, &filters.OTPFilter{To: emailOrMobile})
 	if err != nil {
-		if customerrors.IS_RECORD_NOT_FOUND_ERROR(err) {
+		if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
 			return customerrors.BAD_REQUEST_ERROR("invalid email/mobile/otp")
 		}
 		return err

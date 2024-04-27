@@ -9,7 +9,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	UserId  int64  `json:"userId"`
-	Token   string `json:"token"`
-	Message string `json:"message"`
+	UserId     int64  `json:"userId"`
+	Token      string `json:"token"`
+	OtpExpriry int64  `json:"otpExpriry"`
+	Message    string `json:"message"`
 }

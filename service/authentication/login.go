@@ -111,7 +111,7 @@ func (s *Service) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginR
 	if req.Password != "" {
 		user, err := s.getUserByMobileOrEmailOrUsername(req.Username)
 		if err != nil {
-			if customerrors.IS_RECORD_NOT_FOUND_ERROR(err) {
+			if err == customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
 				return nil, customerrors.BAD_REQUEST_ERROR("invalid username or password")
 			}
 			return nil, err
@@ -130,7 +130,7 @@ func (s *Service) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginR
 		}
 		user, err := s.getUserByMobileOrEmailOrUsername(req.Username)
 		if err != nil {
-			if !customerrors.IS_RECORD_NOT_FOUND_ERROR(err) {
+			if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
 				return nil, err
 			}
 			//create new user
@@ -144,10 +144,10 @@ func (s *Service) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginR
 		return s.generateTokenAndLoginResponse(ctx, user, req.DeviceDetails, req.Permissions)
 	} else {
 		//send otp
-		err := s.serviceFactory.GetOTPService().SendOTPOnEmailOrMobile(ctx, req.Username)
+		otp, err := s.serviceFactory.GetOTPService().SendOTPOnEmailOrMobile(ctx, req.Username)
 		if err != nil {
 			return nil, err
 		}
-		return &dto.LoginResponse{Message: "otp sent to email/mobile"}, nil
+		return &dto.LoginResponse{Message: "otp sent to email/mobile", OtpExpriry: otp.Expriry}, nil
 	}
 }

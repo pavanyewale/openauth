@@ -1,7 +1,7 @@
 Name: openauth-local
 Build: dev
 LogLevel: debug # debug/info/warn/error/panic/fatal
-App: MIGRATION # RESTAPP/MIGRATION
+App: RESTAPP # RESTAPP/MIGRATION
 CTRL:
   Name: HTTP    # HTTP/GRPC
   HTTP:

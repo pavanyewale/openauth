@@ -20,7 +20,7 @@ var (
 type PermissionService interface {
 	CreatePermission(ctx context.Context, req *dto.CreatePermissionRequest) (*dto.PermissionDetails, error)
 	GetPermissionDetails(ctx context.Context, id int64) (*dto.PermissionDetails, error)
-	GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetailsShort, error)
+	GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetails, error)
 	DeletePermissionById(ctx context.Context, req *dto.DeletePermissionRequest) error
 	AddPermissionsToUser(ctx context.Context, req *dto.AddRemovePermissionsToUserRequest) error
 	GetPermissionsByUserId(ctx context.Context, userId int64) ([]*dto.PermissionDetailsShort, error)
@@ -498,7 +498,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param limit query integer false "Limit the number of results (default 10)"
 // @Param offset query integer false "Offset for pagination (default 0)"
-// @Success 200 {array} dto.PermissionDetailsShort
+// @Success 200 object dto.GetPermissionsResponse
 // @Router /openauth/permissions [get]
 func (ph *PermissionsHandler) GetAllPermissions(ctx *gin.Context) {
 	// Get user ID and permissions from the context
@@ -536,5 +536,5 @@ func (ph *PermissionsHandler) GetAllPermissions(ctx *gin.Context) {
 	}
 
 	// Return the permissions in the response
-	ctx.JSON(http.StatusOK, allPermissions)
+	ctx.JSON(http.StatusOK, &dto.GetPermissionsResponse{Permissions: allPermissions})
 }

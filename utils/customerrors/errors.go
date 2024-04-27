@@ -18,7 +18,7 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("Error: Code: %d , Message: %s", e.Code, e.Message)
+	return e.Message
 }
 
 var (

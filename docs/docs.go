@@ -680,10 +680,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.PermissionDetailsShort"
-                            }
+                            "$ref": "#/definitions/dto.GetPermissionsResponse"
                         }
                     }
                 }
@@ -1189,6 +1186,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GetPermissionsResponse": {
+            "type": "object",
+            "properties": {
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PermissionDetails"
+                    }
+                }
+            }
+        },
         "dto.GroupDetails": {
             "type": "object",
             "properties": {
@@ -1249,6 +1257,9 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
+                "otpExpriry": {
+                    "type": "integer"
+                },
                 "token": {
                     "type": "string"
                 },
@@ -1302,6 +1313,9 @@ const docTemplate = `{
         "handlers.Response": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
                 "error": {
                     "type": "string"
                 },

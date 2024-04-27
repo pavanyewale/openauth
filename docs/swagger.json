@@ -669,10 +669,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.PermissionDetailsShort"
-                            }
+                            "$ref": "#/definitions/dto.GetPermissionsResponse"
                         }
                     }
                 }
@@ -1178,6 +1175,17 @@
                 }
             }
         },
+        "dto.GetPermissionsResponse": {
+            "type": "object",
+            "properties": {
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PermissionDetails"
+                    }
+                }
+            }
+        },
         "dto.GroupDetails": {
             "type": "object",
             "properties": {
@@ -1238,6 +1246,9 @@
                 "message": {
                     "type": "string"
                 },
+                "otpExpriry": {
+                    "type": "integer"
+                },
                 "token": {
                     "type": "string"
                 },
@@ -1291,6 +1302,9 @@
         "handlers.Response": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
                 "error": {
                     "type": "string"
                 },
