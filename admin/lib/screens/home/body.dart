@@ -27,18 +27,6 @@ class MyBody extends StatelessWidget {
 
     return Padding(
         padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(provider.currentTab,
-                  style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(
-                height: 10,
-              ),
-              getCurrentScreen()
-            ],
-          ),
-        ));
+        child: SingleChildScrollView(child: getCurrentScreen()));
   }
 }

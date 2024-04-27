@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isMobile) const MyDrawer(),
-              const VerticalDivider(),
+              if (!isMobile) const VerticalDivider(),
               const Expanded(flex: 1, child: MyBody())
             ],
           ),

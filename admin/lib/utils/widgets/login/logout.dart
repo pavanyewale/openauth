@@ -25,6 +25,7 @@ class LogoutButton extends StatelessWidget {
                 if (res.error.isNotEmpty) {
                   MyToast.error(res.error);
                 }
+                // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
               child: const Text('Logout'),

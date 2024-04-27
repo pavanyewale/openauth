@@ -57,3 +57,18 @@ class GetPermissionsResponse {
     );
   }
 }
+
+class UpdatePermissionResponse {
+  String error;
+
+  UpdatePermissionResponse({this.error = ''});
+
+  factory UpdatePermissionResponse.fromSuccessJson(Map<String, dynamic> json) {
+    return UpdatePermissionResponse();
+  }
+  factory UpdatePermissionResponse.fromErrorJson(Map<String, dynamic> json) {
+    return UpdatePermissionResponse(
+      error: json['error'],
+    );
+  }
+}
