@@ -39,17 +39,18 @@ class PermissionService {
       PermissionDetails perm) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/permissions');
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = perm.name;
+    data['description'] = perm.description;
     try {
-      final response = await http.put(
+      final response = await http.post(
         url,
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'AuthToken': LoginService.instance.authToken
         },
-        body: json.encode({
-          {"description": perm.description, "name": perm.name}
-        }),
+        body: json.encode(data),
       );
 
       if (response.statusCode == 200) {
@@ -69,6 +70,8 @@ class PermissionService {
   Future<UpdatePermissionResponse> deletePermission(int permissionId) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/permissions');
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['permId'] = permissionId;
     try {
       final response = await http.delete(
         url,
@@ -77,7 +80,7 @@ class PermissionService {
           'Content-Type': 'application/json',
           'AuthToken': LoginService.instance.authToken
         },
-        body: json.encode({'permId': permissionId}),
+        body: json.encode(data),
       );
 
       if (response.statusCode == 200) {

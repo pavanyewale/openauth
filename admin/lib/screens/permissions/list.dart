@@ -83,8 +83,8 @@ class _PermissionsListState extends State<PermissionsList> {
                     context: context,
                     builder: (context) => AlertDialog(
                       title: const Text('Delete Permission'),
-                      content: const Text(
-                          'Are you sure you want to delete this permission?'),
+                      content: Text(
+                          'Are you sure you want to delete `${permission.name}` permission?'),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {

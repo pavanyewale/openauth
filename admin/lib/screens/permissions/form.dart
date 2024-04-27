@@ -74,7 +74,12 @@ class PermissionFormState extends State<PermissionForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isEdit ? (widget.isCreate ? "Create" : "Edit") : "Details",
+            Text(
+                isEdit
+                    ? (widget.isCreate
+                        ? "Create Permission"
+                        : "Edit Permission")
+                    : "Permission Details",
                 style: Theme.of(context).textTheme.titleLarge),
             TextFormField(
               readOnly: !isEdit,

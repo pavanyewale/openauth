@@ -56,6 +56,7 @@ class LoginService extends ChangeNotifier {
   Future<LoginResponse> login(LoginRequest request) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/login');
+
     try {
       final response = await http.post(
         url,
