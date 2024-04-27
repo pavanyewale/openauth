@@ -33,4 +33,17 @@ class Utils {
     }
     return info;
   }
+
+  bool isValidMobileOrEmail(String value) {
+    return isValidMobile(value) || isValidEmail(value);
+  }
+
+  bool isValidMobile(String value) {
+    return RegExp(r'^[0-9]{10}$').hasMatch(value);
+  }
+
+  bool isValidEmail(String value) {
+    return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+        .hasMatch(value);
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:admin/screens/home/home.dart';
 import 'package:admin/screens/login/login.dart';
 import 'package:admin/screens/splash_screen.dart';
-import 'package:admin/utils/login/service.dart';
+import 'package:admin/utils/widgets/login/service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'OpenAuth',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

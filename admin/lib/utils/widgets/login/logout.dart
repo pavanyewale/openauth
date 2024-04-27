@@ -1,5 +1,4 @@
-
-import 'package:admin/utils/login/service.dart';
+import 'package:admin/utils/widgets/login/service.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:flutter/material.dart';
 
@@ -21,10 +20,9 @@ class LogoutButton extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () async  {
-               
-                final res =  await LoginService.instance.logout();
-                if (res.error.isNotEmpty){
+              onPressed: () async {
+                final res = await LoginService.instance.logout();
+                if (res.error.isNotEmpty) {
                   MyToast.error(res.error);
                 }
                 Navigator.of(context).pop();

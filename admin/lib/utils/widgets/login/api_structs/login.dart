@@ -4,6 +4,7 @@ class LoginRequest {
   String password;
   bool permissions;
   String username;
+  bool sendOtp = false;
 
   LoginRequest({
     required this.deviceDetails,
@@ -29,6 +30,8 @@ class LoginResponse {
   String token;
   String message;
   String error;
+
+  bool get hasError => error.isNotEmpty;
 
   LoginResponse(
       {required this.userId,

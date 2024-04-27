@@ -2,18 +2,18 @@ import 'dart:convert';
 
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/local_storage.dart';
-import 'package:admin/utils/login/api_structs/login.dart';
-import 'package:admin/utils/login/api_structs/logout.dart';
-import 'package:admin/utils/login/user_details.dart';
+import 'package:admin/utils/widgets/login/api_structs/login.dart';
+import 'package:admin/utils/widgets/login/api_structs/logout.dart';
+import 'package:admin/utils/widgets/login/user_details.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 
-
 class LoginService extends ChangeNotifier {
   bool isLoggedIn = false;
   String authToken = "";
-  User user = User(userId: 0, username: "", firstName: "", lastName: "", permissions: []) ;
+  User user = User(
+      userId: 0, username: "", firstName: "", lastName: "", permissions: []);
   // Private constructor to prevent instantiation from outside
   LoginService._();
 
@@ -23,9 +23,9 @@ class LoginService extends ChangeNotifier {
   // Getter to access the singleton instance
   static LoginService get instance => _instance;
 
-  updateUser(String token){
-     Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
-     user = User.fromJson( jsonDecode( decodedToken["userDetails"]));
+  updateUser(String token) {
+    Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
+    user = User.fromJson(jsonDecode(decodedToken["userDetails"]));
   }
 
   loadAuthTokenFromLocal() async {
@@ -47,7 +47,7 @@ class LoginService extends ChangeNotifier {
     isLoggedIn = true;
     if (authToken.isEmpty) {
       isLoggedIn = false;
-    }else{
+    } else {
       updateUser(authToken);
     }
     notifyListeners();
@@ -56,7 +56,6 @@ class LoginService extends ChangeNotifier {
   Future<LoginResponse> login(LoginRequest request) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/login');
-
     try {
       final response = await http.post(
         url,
@@ -69,6 +68,9 @@ class LoginService extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final res = LoginResponse.fromSuccessJson(json.decode(response.body));
+        if (request.sendOtp) {
+          return res;
+        }
         _saveAuthToken(res.token);
         return res;
       } else {

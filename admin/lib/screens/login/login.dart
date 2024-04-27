@@ -1,4 +1,4 @@
-import 'package:admin/utils/login/form.dart';
+import 'package:admin/utils/widgets/login/form.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {

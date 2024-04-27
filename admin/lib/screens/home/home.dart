@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
     // appbar
     AppBar appbar = AppBar(
       title: Text(
-        "TestApp",
+        "OpenAuth",
         style: TextStyle(
             color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
       ),
@@ -23,10 +23,10 @@ class HomeScreen extends StatelessWidget {
 
     //
     return ChangeNotifierProvider(
-        create: (_) => HomeProvider.instance,
+        create: (_) => HomeProvider(),
         child: Scaffold(
-          backgroundColor: Theme.of(context).highlightColor,
-          appBar: isMobile ? appbar : null,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: appbar,
           drawer: isMobile
               ? const Drawer(
                   elevation: double.infinity,
@@ -34,12 +34,11 @@ class HomeScreen extends StatelessWidget {
                 )
               : null,
           body: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isMobile) const MyDrawer(),
-              const SizedBox(
-                width: 5,
-              ),
-              const MyBody()
+              const VerticalDivider(),
+              const Expanded(flex: 1, child: MyBody())
             ],
           ),
         ));
