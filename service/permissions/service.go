@@ -7,6 +7,7 @@ import (
 	"openauth/models/dto"
 	"openauth/service/group"
 	"openauth/service/history"
+	"openauth/utils/customerrors"
 	"time"
 )
 
@@ -22,6 +23,7 @@ func NewService(sf serviceFactory, r Repository) *Service {
 type Repository interface {
 	CreatePermission(ctx context.Context, permission *dao.Permission) error
 	GetPermissionById(ctx context.Context, id int64) (*dao.Permission, error)
+	GetPermissionByName(ctx context.Context, name string) (*dao.Permission, error)
 	DeletePermissionById(ctx context.Context, id int64) error
 	CreateGroupPermissions(ctx context.Context, perms []*dao.GroupPermission) error
 	GetPermissionsByGroupIds(ctx context.Context, groupIds []int64) ([]*dao.Permission, error)
@@ -77,12 +79,13 @@ func (s *Service) GetAllPermissions(ctx context.Context, limit, offset int) ([]*
 	shortPerms := make([]*dto.PermissionDetails, len(perms))
 	for i, p := range perms {
 		shortPerms[i] = &dto.PermissionDetails{
-			ID:            p.ID,
-			Name:          p.Name,
-			Description:   p.Description,
-			CreatedByUser: p.CreatedByUser,
-			CreatedOn:     p.CreatedOn,
-			UpdatedOn:     p.UpdatedOn,
+			ID:          p.ID,
+			Name:        p.Name,
+			Category:    p.Category,
+			Description: p.Description,
+			CreatedBy:   p.CreatedBy,
+			CreatedOn:   p.CreatedOn,
+			UpdatedOn:   p.UpdatedOn,
 		}
 	}
 
@@ -91,18 +94,25 @@ func (s *Service) GetAllPermissions(ctx context.Context, limit, offset int) ([]*
 
 func (s *Service) CreatePermission(ctx context.Context, req *dto.CreatePermissionRequest) (*dto.PermissionDetails, error) {
 	go s.serviceFactory.GetHistoryService().AddLogAsync(ctx, constants.OPERATION_CREATE_PERMISSION, req, req.UpdatedByUser)
-
-	var perm dao.Permission
+	perm, err := s.repo.GetPermissionByName(ctx, req.Name)
+	if err != nil && err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+		return nil, err
+	}
+	if perm != nil {
+		return nil, customerrors.BAD_REQUEST_ERROR("permission already exists")
+	}
+	perm = new(dao.Permission)
 	perm.Name = req.Name
+	perm.Category = req.Category
 	perm.Description = req.Description
-	perm.CreatedByUser = req.UpdatedByUser
+	perm.CreatedBy = req.UpdatedByUser
 	perm.CreatedOn = time.Now().UnixMilli()
 	perm.UpdatedOn = time.Now().UnixMilli()
-	err := s.repo.CreatePermission(ctx, &perm)
+	err = s.repo.CreatePermission(ctx, perm)
 	if err != nil {
 		return nil, err
 	}
-	return (&dto.PermissionDetails{}).FromPermission(&perm), nil
+	return (&dto.PermissionDetails{}).FromPermission(perm), nil
 }
 
 func (s *Service) GetPermissionDetails(ctx context.Context, id int64) (*dto.PermissionDetails, error) {
@@ -136,6 +146,16 @@ func (s *Service) RemovePermissionsOfUser(ctx context.Context, req *dto.AddRemov
 }
 
 func (s *Service) DeletePermissionById(ctx context.Context, req *dto.DeletePermissionRequest) error {
+	perm, err := s.repo.GetPermissionById(ctx, req.PermissionId)
+	if err != nil {
+		if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+			return customerrors.BAD_REQUEST_ERROR("invalid permission id")
+		}
+		return err
+	}
+	if perm.Category == "default" {
+		return customerrors.BAD_REQUEST_ERROR("default permission cannot be deleted")
+	}
 	go s.serviceFactory.GetHistoryService().AddLogAsync(ctx, constants.OPERATION_DELETE_PERMISSION, req, req.UpdatedByUser)
 
 	return s.repo.DeletePermissionById(ctx, req.PermissionId)

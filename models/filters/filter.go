@@ -13,12 +13,6 @@ type GroupFilter struct {
 	Offset int
 }
 
-type PermissionFilter struct {
-	UserId int64
-	Limit  int
-	Offset int
-}
-
 type OTPFilter struct {
 	To string
 }

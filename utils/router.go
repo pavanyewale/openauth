@@ -34,7 +34,7 @@ func RequestTimeMiddleware(c *gin.Context) {
 	c.Next()
 	field := &logger.Fields{}
 	field.AddField("totalTime", time.Since(start).Milliseconds())
-	logger.Infof(c, fmt.Sprintf("%s %s request end ", c.Request.Method, c.Request.URL.Path), field)
+	logger.Infof(c, fmt.Sprintf("%s %s request end ", c.Request.Method, c.Request.URL.RequestURI()), field)
 
 }
 

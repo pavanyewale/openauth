@@ -9,7 +9,7 @@ import (
 
 func (r *Repository) CreateHistory(ctx context.Context, history *dao.History) error {
 	_, err := r.conn.ExecContext(ctx, `
-		INSERT INTO history (operation, data, created_by_user, created_on)
+		INSERT INTO history (operation, data, created_by, created_on)
 		VALUES ($1, $2, $3, $4)
 	`, history.Operation, history.Data, history.CreatedByUser, history.CreatedOn)
 	if err != nil {

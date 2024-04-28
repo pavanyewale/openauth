@@ -6,12 +6,13 @@ import (
 )
 
 type PermissionDetails struct {
-	ID            int64  `json:"id"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	CreatedByUser int64  `json:"createdByUser"`
-	CreatedOn     int64  `json:"createdOn"`
-	UpdatedOn     int64  `json:"updatedOn"`
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Category    string `json:"category"`
+	Description string `json:"description"`
+	CreatedBy   int64  `json:"createdByUser"`
+	CreatedOn   int64  `json:"createdOn"`
+	UpdatedOn   int64  `json:"updatedOn"`
 }
 
 type GetPermissionsResponse struct {
@@ -21,8 +22,9 @@ type GetPermissionsResponse struct {
 func (pd *PermissionDetails) FromPermission(perm *dao.Permission) *PermissionDetails {
 	pd.ID = perm.ID
 	pd.Name = perm.Name
+	pd.Category = perm.Category
 	pd.Description = perm.Description
-	pd.CreatedByUser = perm.CreatedByUser
+	pd.CreatedBy = perm.CreatedBy
 	pd.CreatedOn = perm.CreatedOn
 	pd.UpdatedOn = perm.UpdatedOn
 	return pd
@@ -35,6 +37,7 @@ type PermissionDetailsShort struct {
 
 type CreatePermissionRequest struct {
 	Name          string `json:"name"`
+	Category      string `json:"category"`
 	Description   string `json:"description"`
 	UpdatedByUser int64  `json:"-"`
 }

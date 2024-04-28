@@ -12,9 +12,10 @@ import (
 
 func (r *Repository) CreatePermission(ctx context.Context, permission *dao.Permission) error {
 	_, err := r.conn.ExecContext(ctx, `
-		INSERT INTO permissions (name, description, created_by_user, created_on, updated_on, deleted)
-		VALUES ($1, $2, $3, $4, $5, $6)
-	`, permission.Name, permission.Description, permission.CreatedByUser, permission.CreatedOn, permission.UpdatedOn, permission.Deleted)
+		INSERT INTO permissions (name, category, description, created_by_user, created_on, updated_on, deleted)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`, permission.Name, permission.Category, permission.Description, permission.CreatedBy, permission.CreatedOn, permission.UpdatedOn, permission.Deleted)
+
 	if err != nil {
 		logger.Error(ctx, "failed to create permission, Err: %v", err.Error())
 		return customerrors.ERROR_DATABASE
@@ -25,14 +26,35 @@ func (r *Repository) CreatePermission(ctx context.Context, permission *dao.Permi
 func (r *Repository) GetPermissionById(ctx context.Context, id int64) (*dao.Permission, error) {
 	var permission dao.Permission
 	row := r.conn.QueryRowContext(ctx, `
-		SELECT id, "name", description, created_by_user, created_on, updated_on, deleted
+		SELECT id, "name", category, description, created_by_user, created_on, updated_on, deleted
 		FROM permissions
 		WHERE id = $1
 	`, id)
-	err := row.Scan(&permission.ID, &permission.Name, &permission.Description, &permission.CreatedByUser, &permission.CreatedOn, &permission.UpdatedOn, &permission.Deleted)
+	// check if record not found
+	if row.Err() != nil {
+		logger.Error(ctx, "failed to get permission by id: %d, Err: %s", id, row.Err().Error())
+		return nil, customerrors.ERROR_DATABASE_RECORD_NOT_FOUND
+	}
+	err := row.Scan(&permission.ID, &permission.Name, &permission.Category, &permission.Description, &permission.CreatedBy, &permission.CreatedOn, &permission.UpdatedOn, &permission.Deleted)
 	if err != nil {
 		logger.Error(ctx, "failed to get permission by id: %d, Err: %s", id, err.Error())
-		return nil, customerrors.ERROR_DATABASE
+		return nil, parseError(err)
+	}
+	return &permission, nil
+}
+
+func (r *Repository) GetPermissionByName(ctx context.Context, name string) (*dao.Permission, error) {
+	var permission dao.Permission
+	row := r.conn.QueryRowContext(ctx, `
+		SELECT id, "name", category, description, created_by_user, created_on, updated_on, deleted
+		FROM permissions
+		WHERE "name" = $1
+	`, name)
+
+	err := row.Scan(&permission.ID, &permission.Name, &permission.Category, &permission.Description, &permission.CreatedBy, &permission.CreatedOn, &permission.UpdatedOn, &permission.Deleted)
+	if err != nil {
+		logger.Error(ctx, "failed to get permission by name: %s, Err: %s", name, err.Error())
+		return nil, parseError(err)
 	}
 	return &permission, nil
 }
@@ -44,14 +66,14 @@ func (r *Repository) DeletePermissionById(ctx context.Context, id int64) error {
 	`, id)
 	if err != nil {
 		logger.Error(ctx, "failed to delete permission by id:%d, Err: %s", id, err.Error())
-		return customerrors.ERROR_DATABASE
+		return parseError(err)
 	}
 	return nil
 }
 
 func (r *Repository) GetAllPermissions(ctx context.Context, limit, offset int) ([]*dao.Permission, error) {
 	query := `
-		SELECT id, "name", description, created_by_user, created_on, updated_on, deleted
+		SELECT id, "name", category, description, created_by_user, created_on, updated_on, deleted
 		FROM permissions
 		LIMIT $1 OFFSET $2
 	`
@@ -65,7 +87,7 @@ func (r *Repository) GetAllPermissions(ctx context.Context, limit, offset int) (
 	var permissions []*dao.Permission
 	for rows.Next() {
 		var permission dao.Permission
-		err := rows.Scan(&permission.ID, &permission.Name, &permission.Description, &permission.CreatedByUser, &permission.CreatedOn, &permission.UpdatedOn, &permission.Deleted)
+		err := rows.Scan(&permission.ID, &permission.Name, &permission.Category, &permission.Description, &permission.CreatedBy, &permission.CreatedOn, &permission.UpdatedOn, &permission.Deleted)
 		if err != nil {
 			logger.Error(ctx, "failed to scan permission row: %s", err.Error())
 			return nil, customerrors.ERROR_DATABASE
@@ -106,7 +128,7 @@ func (r *Repository) CreateGroupPermissions(ctx context.Context, perms []*dao.Gr
 
 func (r *Repository) GetPermissionsByGroupIds(ctx context.Context, groupIds []int64) ([]*dao.Permission, error) {
 	query := `
-        SELECT p.id, p.name, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
+        SELECT p.id, p.name, p.category, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
         FROM permissions p
         JOIN group_permissions gp ON p.id = gp.permission_id
         WHERE gp.group_id = ANY($1)
@@ -120,7 +142,7 @@ func (r *Repository) GetPermissionsByGroupIds(ctx context.Context, groupIds []in
 	var permissions []*dao.Permission
 	for rows.Next() {
 		var perm dao.Permission
-		err := rows.Scan(&perm.ID, &perm.Name, &perm.Description, &perm.CreatedByUser, &perm.CreatedOn, &perm.UpdatedOn, &perm.Deleted)
+		err := rows.Scan(&perm.ID, &perm.Name, &perm.Category, &perm.Description, &perm.CreatedBy, &perm.CreatedOn, &perm.UpdatedOn, &perm.Deleted)
 		if err != nil {
 			return nil, err
 		}
@@ -163,12 +185,12 @@ func (r *Repository) CreateUserPermissions(ctx context.Context, perms []*dao.Use
 }
 func (r *Repository) GetPermissionsByUserId(ctx context.Context, userId int64) ([]*dao.Permission, error) {
 	query := `
-		SELECT DISTINCT p.id, p.name, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
+		SELECT DISTINCT p.id, p.name,p.category, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
 		FROM permissions p
 		JOIN user_permissions up ON p.id = up.permission_id
 		WHERE up.user_id = $1
 		UNION
-		SELECT DISTINCT p.id, p.name, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
+		SELECT DISTINCT p.id, p.name,p.category, p.description, p.created_by_user, p.created_on, p.updated_on, p.deleted
 		FROM permissions p
 		JOIN group_permissions gp ON p.id = gp.permission_id
 		JOIN user_groups ug ON gp.group_id = ug.group_id
@@ -183,7 +205,7 @@ func (r *Repository) GetPermissionsByUserId(ctx context.Context, userId int64) (
 	var permissions []*dao.Permission
 	for rows.Next() {
 		var perm dao.Permission
-		err := rows.Scan(&perm.ID, &perm.Name, &perm.Description, &perm.CreatedByUser, &perm.CreatedOn, &perm.UpdatedOn, &perm.Deleted)
+		err := rows.Scan(&perm.ID, &perm.Name, &perm.Category, &perm.Description, &perm.CreatedBy, &perm.CreatedOn, &perm.UpdatedOn, &perm.Deleted)
 		if err != nil {
 			return nil, err
 		}

@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS otps (
 CREATE TABLE IF NOT EXISTS permissions (
 	id bigserial NOT NULL,
 	"name" varchar(30) NOT NULL,
+	category varchar(30) NOT NULL,
 	description text NULL,
 	created_by_user int8 NULL,
 	created_on int8 NOT NULL,
@@ -88,7 +89,6 @@ CREATE TABLE IF NOT EXISTS group_permissions (
 	CONSTRAINT group_permissions_pkey PRIMARY KEY (id)
 );
 
-
 CREATE TABLE IF NOT EXISTS user_permissions (
 	user_id int8 NULL,
 	permission_id int8 NULL,
@@ -97,6 +97,15 @@ CREATE TABLE IF NOT EXISTS user_permissions (
 	updated_on int8 NULL,
 	CONSTRAINT user_permissions_pkey PRIMARY KEY (user_id,permission_id)
 );
+
+CREATE TABLE IF NOT EXISTS history (
+  id bigserial NOT NULL,
+  operation VARCHAR(255) NOT NULL,
+  data TEXT NOT NULL,
+  created_by int8 NOT NULL,
+  created_on int8 NOT NULL
+  );
+
 -- CREATE UNIQUE INDEX IF NOT EXISTS unique_user_permission ON user_permissions USING btree (user_id, permission_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unique_group_permission ON group_permissions USING btree (group_id, permission_id);
 CREATE UNIQUE INDEX IF NOT EXISTS unique_user_group ON user_groups USING btree (user_id, group_id);
