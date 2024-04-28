@@ -1,4 +1,5 @@
 import 'package:admin/screens/dashboard/dashboard.dart';
+import 'package:admin/screens/history/history.dart';
 import 'package:admin/screens/home/constants.dart';
 import 'package:admin/screens/home/provider.dart';
 import 'package:admin/screens/permissions/permissions_screen.dart';
@@ -21,6 +22,10 @@ class MyBody extends StatelessWidget {
           return const Users();
         case PERMISSIONS:
           return const PermissionsScreen();
+        case HISTORY:
+          return const HistoryScreen();
+        case GROUPS:
+          return const Text("Groups");
       }
       return Text("invalid tab ${provider.currentTab}");
     }

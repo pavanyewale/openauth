@@ -5,15 +5,13 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("History", style: TextStyle(fontSize: 24)),
-          Text("Coming soon"),
-        ],
-      ),
-    );
+    return SingleChildScrollView(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("History", style: Theme.of(context).textTheme.titleLarge),
+        // add history list
+      ],
+    ));
   }
 }

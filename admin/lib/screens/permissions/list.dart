@@ -14,7 +14,7 @@ class PermissionsList extends StatefulWidget {
 
 class _PermissionsListState extends State<PermissionsList> {
   final List<PermissionDetails> permissions = [];
-  int limit = 2;
+  int limit = 10;
   int skip = 0;
   bool isLoading = false;
   String error = '';
@@ -36,7 +36,6 @@ class _PermissionsListState extends State<PermissionsList> {
     setState(() {
       permissions.clear();
       permissions.addAll(res.permissions);
-      skip += res.permissions.length;
       isLoading = false;
     });
   }
@@ -118,7 +117,10 @@ class _PermissionsListState extends State<PermissionsList> {
             return ListTile(
               tileColor: Theme.of(context).primaryColorLight,
               key: ValueKey(permission.id),
-              leading: const Icon(Icons.security),
+              leading: Icon(
+                Icons.security,
+                color: Theme.of(context).primaryColorDark,
+              ),
               title: Text(permission.name),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +130,10 @@ class _PermissionsListState extends State<PermissionsList> {
                 ],
               ),
               trailing: IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -150,6 +155,9 @@ class _PermissionsListState extends State<PermissionsList> {
                             if (res.error.isNotEmpty) {
                               MyToast.error(res.error);
                               return;
+                            } else {
+                              MyToast.success(
+                                  "Permission deleted successfully!");
                             }
                             setState(() {
                               permissions.removeAt(index);
@@ -157,7 +165,10 @@ class _PermissionsListState extends State<PermissionsList> {
                             // ignore: use_build_context_synchronously
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Delete'),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: AppColors.error),
+                          ),
                         ),
                       ],
                     ),
@@ -184,34 +195,36 @@ class _PermissionsListState extends State<PermissionsList> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (skip >= 0)
-              ElevatedButton(
-                onPressed: () {
-                  skip -= limit;
-                  fetchPermissions();
-                },
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_back),
-                    SizedBox(width: 5),
-                    Text('Prev'),
-                  ],
-                ),
-              ),
-            if (permissions.length == limit)
-              ElevatedButton(
-                onPressed: () {
-                  skip += limit;
-                  fetchPermissions();
-                },
-                child: const Row(
-                  children: [
-                    Icon(Icons.arrow_forward),
-                    SizedBox(width: 5),
-                    Text('Next'),
-                  ],
-                ),
-              ),
+            (skip > 0)
+                ? ElevatedButton(
+                    onPressed: () {
+                      skip -= limit;
+                      fetchPermissions();
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.arrow_back),
+                        SizedBox(width: 5),
+                        Text('Prev'),
+                      ],
+                    ),
+                  )
+                : const SizedBox(),
+            (permissions.length == limit)
+                ? ElevatedButton(
+                    onPressed: () {
+                      skip += limit;
+                      fetchPermissions();
+                    },
+                    child: const Row(
+                      children: [
+                        Text('Next'),
+                        SizedBox(width: 5),
+                        Icon(Icons.arrow_forward),
+                      ],
+                    ),
+                  )
+                : const SizedBox(),
           ],
         )
       ])
