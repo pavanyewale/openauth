@@ -1,6 +1,7 @@
 class PermissionDetails {
   int id;
   String name;
+  String category;
   String description;
   int createdByUser;
   int createdOn;
@@ -9,6 +10,7 @@ class PermissionDetails {
   PermissionDetails({
     required this.id,
     required this.name,
+    required this.category,
     required this.description,
     required this.createdByUser,
     required this.createdOn,
@@ -19,6 +21,7 @@ class PermissionDetails {
     return PermissionDetails(
       id: json['id'],
       name: json['name'],
+      category: json['category'],
       description: json['description'],
       createdByUser: json['createdByUser'],
       createdOn: json['createdOn'],
@@ -30,6 +33,7 @@ class PermissionDetails {
     return {
       'id': id,
       'name': name,
+      'category': category,
       'description': description,
       'createdByUser': createdByUser,
       'createdOn': createdOn,

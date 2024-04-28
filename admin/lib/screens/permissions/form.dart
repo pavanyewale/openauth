@@ -17,6 +17,7 @@ class PermissionFormState extends State<PermissionForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _categoryController;
   bool isEdit = false;
   bool isLoading = false;
   @override
@@ -26,12 +27,15 @@ class PermissionFormState extends State<PermissionForm> {
     _descriptionController =
         TextEditingController(text: widget.permission.description);
     isEdit = widget.isCreate;
+    _categoryController =
+        TextEditingController(text: widget.permission.category);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
@@ -41,7 +45,11 @@ class PermissionFormState extends State<PermissionForm> {
         isLoading = true;
       });
       widget.permission.name = _nameController.text;
+
+      widget.permission.category = _nameController.text;
       widget.permission.description = _descriptionController.text;
+      widget.permission.category = _categoryController.text;
+
       UpdatePermissionResponse res =
           await PermissionService.instance.createPermission(widget.permission);
       if (res.error.isNotEmpty) {
@@ -88,6 +96,17 @@ class PermissionFormState extends State<PermissionForm> {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter permission name';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              readOnly: !isEdit,
+              controller: _categoryController,
+              decoration: const InputDecoration(labelText: 'Category'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter category name';
                 }
                 return null;
               },

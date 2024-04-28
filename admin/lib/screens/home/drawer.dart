@@ -60,6 +60,14 @@ class MyDrawer extends StatelessWidget {
                     selectTab(PERMISSIONS);
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('History'),
+                  selected: provider.currentTab == HISTORY,
+                  onTap: () {
+                    selectTab(HISTORY);
+                  },
+                ),
                 const LogoutButton(),
               ],
             ),

@@ -14,8 +14,8 @@ class PermissionsList extends StatefulWidget {
 
 class _PermissionsListState extends State<PermissionsList> {
   final List<PermissionDetails> permissions = [];
-  int limit = 20;
-  int offset = 0;
+  int limit = 2;
+  int skip = 0;
   bool isLoading = false;
   String error = '';
 
@@ -24,7 +24,7 @@ class _PermissionsListState extends State<PermissionsList> {
       isLoading = true;
     });
 
-    final res = await PermissionService.instance.getPermissions(offset, limit);
+    final res = await PermissionService.instance.getPermissions(skip, limit);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -34,8 +34,9 @@ class _PermissionsListState extends State<PermissionsList> {
       return;
     }
     setState(() {
+      permissions.clear();
       permissions.addAll(res.permissions);
-      offset += res.permissions.length;
+      skip += res.permissions.length;
       isLoading = false;
     });
   }
@@ -49,13 +50,50 @@ class _PermissionsListState extends State<PermissionsList> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
+      /*
+      
+       add loading indicator
+      
+      */
       if (isLoading)
         const Center(
           child: CircularProgressIndicator(),
         ),
+
+      /*
+      
+       add error message
+      
+      */
+
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            //add refresh button
+
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  skip = 0;
+                  fetchPermissions();
+                });
+              },
+              child: const Row(
+                children: [
+                  Icon(Icons.refresh),
+                  SizedBox(width: 5),
+                  Text('Refresh'),
+                ],
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
-        if (error.isEmpty && permissions.isEmpty)
+        if (!isLoading && error.isEmpty && permissions.isEmpty)
           const Center(
             child: Text('No permissions found'),
           ),
@@ -63,6 +101,12 @@ class _PermissionsListState extends State<PermissionsList> {
           Center(
             child: Text(error, style: const TextStyle(color: AppColors.error)),
           ),
+
+        /*
+        
+         add list of permissions
+        
+        */
         ListView.separated(
           separatorBuilder: (context, index) =>
               const SizedBox(height: 5), // Add space between items
@@ -76,6 +120,13 @@ class _PermissionsListState extends State<PermissionsList> {
               key: ValueKey(permission.id),
               leading: const Icon(Icons.security),
               title: Text(permission.name),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Category:  ${permission.category}'),
+                  Text('Description: ${permission.description}'),
+                ],
+              ),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -103,6 +154,7 @@ class _PermissionsListState extends State<PermissionsList> {
                             setState(() {
                               permissions.removeAt(index);
                             });
+                            // ignore: use_build_context_synchronously
                             Navigator.of(context).pop();
                           },
                           child: const Text('Delete'),
@@ -112,7 +164,6 @@ class _PermissionsListState extends State<PermissionsList> {
                   );
                 },
               ),
-              subtitle: Text(permission.description),
               onTap: () {
                 showDialog(
                   context: context,
@@ -122,6 +173,46 @@ class _PermissionsListState extends State<PermissionsList> {
               },
             );
           },
+        ),
+        const SizedBox(height: 10),
+
+        /*
+        
+         add next and prev buttons
+        
+        */
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (skip >= 0)
+              ElevatedButton(
+                onPressed: () {
+                  skip -= limit;
+                  fetchPermissions();
+                },
+                child: const Row(
+                  children: [
+                    Icon(Icons.arrow_back),
+                    SizedBox(width: 5),
+                    Text('Prev'),
+                  ],
+                ),
+              ),
+            if (permissions.length == limit)
+              ElevatedButton(
+                onPressed: () {
+                  skip += limit;
+                  fetchPermissions();
+                },
+                child: const Row(
+                  children: [
+                    Icon(Icons.arrow_forward),
+                    SizedBox(width: 5),
+                    Text('Next'),
+                  ],
+                ),
+              ),
+          ],
         )
       ])
     ]);

@@ -7,3 +7,5 @@ const USERS = "Users";
 const GROUPS = "Groups";
 
 const PERMISSIONS = "Permissions";
+
+const HISTORY = "History";

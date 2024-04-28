@@ -41,6 +41,7 @@ class PermissionService {
     final url = Uri.parse('$baseUrl/openauth/permissions');
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = perm.name;
+    data['category'] = perm.category;
     data['description'] = perm.description;
     try {
       final response = await http.post(
@@ -53,7 +54,7 @@ class PermissionService {
         body: json.encode(data),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return UpdatePermissionResponse.fromSuccessJson(
             json.decode(response.body));
       } else {

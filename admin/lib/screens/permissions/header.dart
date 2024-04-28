@@ -20,6 +20,7 @@ class PermissionHeader extends StatelessWidget {
                 permission: PermissionDetails(
                   id: 0,
                   name: '',
+                  category: '',
                   description: '',
                   createdByUser: 0,
                   createdOn: 0,
