@@ -1,3 +1,5 @@
+import 'package:admin/screens/users/header.dart';
+import 'package:admin/screens/users/list.dart';
 import 'package:flutter/material.dart';
 
 class Users extends StatelessWidget {
@@ -5,11 +7,15 @@ class Users extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      child: const Center(
-        child: Text('Welcome to users screen!'),
-      ),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        UserHeader(),
+        SizedBox(
+          height: 20,
+        ),
+        UserList()
+      ],
     );
   }
 }

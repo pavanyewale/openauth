@@ -1,4 +1,4 @@
-import 'package:admin/apis/permissions/service.dart';
+import 'package:admin/apis/permissions.dart';
 import 'package:admin/models/permissions.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +51,7 @@ class PermissionFormState extends State<PermissionForm> {
       widget.permission.category = _categoryController.text;
 
       UpdatePermissionResponse res =
-          await PermissionService.instance.createPermission(widget.permission);
+          await PermissionService.createPermission(widget.permission);
       if (res.error.isNotEmpty) {
         MyToast.error(res.error);
         setState(() {
@@ -130,14 +130,28 @@ class PermissionFormState extends State<PermissionForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 15),
-                  Text(
-                      "Created By User Id : ${widget.permission.createdByUser}"),
-                  const SizedBox(height: 15),
-                  Text(
-                      "Created On :  ${DateTime.fromMillisecondsSinceEpoch(widget.permission.createdOn).toString()}"),
-                  const SizedBox(height: 15),
-                  Text(
-                      "Updated On : ${DateTime.fromMillisecondsSinceEpoch(widget.permission.updatedOn).toString()}"),
+                  TextFormField(
+                    readOnly: true,
+                    decoration:
+                        const InputDecoration(labelText: "Created By User ID"),
+                    initialValue: widget.permission.createdByUser.toString(),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    readOnly: true,
+                    decoration: const InputDecoration(labelText: "Created On"),
+                    initialValue: DateTime.fromMillisecondsSinceEpoch(
+                            widget.permission.createdOn)
+                        .toString(),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    readOnly: true,
+                    decoration: const InputDecoration(labelText: "Updated On"),
+                    initialValue: DateTime.fromMillisecondsSinceEpoch(
+                            widget.permission.updatedOn)
+                        .toString(),
+                  ),
                 ],
               ),
             const SizedBox(height: 20),

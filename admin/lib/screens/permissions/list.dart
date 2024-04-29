@@ -1,4 +1,4 @@
-import 'package:admin/apis/permissions/service.dart';
+import 'package:admin/apis/permissions.dart';
 import 'package:admin/models/permissions.dart';
 import 'package:admin/screens/permissions/edit_dialog.dart';
 import 'package:admin/utils/colors.dart';
@@ -24,7 +24,7 @@ class _PermissionsListState extends State<PermissionsList> {
       isLoading = true;
     });
 
-    final res = await PermissionService.instance.getPermissions(skip, limit);
+    final res = await PermissionService.getPermissions(skip, limit);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -69,28 +69,6 @@ class _PermissionsListState extends State<PermissionsList> {
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            //add refresh button
-
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  skip = 0;
-                  fetchPermissions();
-                });
-              },
-              child: const Row(
-                children: [
-                  Icon(Icons.refresh),
-                  SizedBox(width: 5),
-                  Text('Refresh'),
-                ],
-              ),
-            ),
-          ],
-        ),
         const SizedBox(height: 10),
         if (!isLoading && error.isEmpty && permissions.isEmpty)
           const Center(
@@ -115,7 +93,7 @@ class _PermissionsListState extends State<PermissionsList> {
           itemBuilder: (BuildContext context, int index) {
             final permission = permissions[index];
             return ListTile(
-              tileColor: Theme.of(context).primaryColorLight,
+              tileColor: Theme.of(context).secondaryHeaderColor,
               key: ValueKey(permission.id),
               leading: Icon(
                 Icons.security,
@@ -132,7 +110,6 @@ class _PermissionsListState extends State<PermissionsList> {
               trailing: IconButton(
                 icon: const Icon(
                   Icons.delete,
-                  color: Colors.red,
                 ),
                 onPressed: () {
                   showDialog(
@@ -150,8 +127,9 @@ class _PermissionsListState extends State<PermissionsList> {
                         ),
                         TextButton(
                           onPressed: () async {
-                            final res = await PermissionService.instance
-                                .deletePermission(permission.id);
+                            final res =
+                                await PermissionService.deletePermission(
+                                    permission.id);
                             if (res.error.isNotEmpty) {
                               MyToast.error(res.error);
                               return;

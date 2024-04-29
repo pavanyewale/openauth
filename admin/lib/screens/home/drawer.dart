@@ -28,6 +28,14 @@ class MyDrawer extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 if (isMobile) const UserAccDrawerHeader(),
+                if (!isMobile)
+                  ListTile(
+                    title: Text('OpenAuth',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold)),
+                  ),
                 ListTile(
                   leading: const Icon(Icons.dashboard),
                   title: const Text('Dashboard'),

@@ -6,11 +6,11 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      child: const Center(
-        child: Text('Dashboard'),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
+      ],
     );
   }
 }

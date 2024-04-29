@@ -5,14 +5,12 @@ class GroupsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Groups", style: Theme.of(context).textTheme.titleLarge),
-          // add groups list
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Groups", style: Theme.of(context).textTheme.titleLarge),
+        // add groups list
+      ],
     );
   }
 }

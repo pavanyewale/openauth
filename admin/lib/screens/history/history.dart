@@ -1,3 +1,4 @@
+import 'package:admin/screens/history/list.dart';
 import 'package:flutter/material.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -5,13 +6,12 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("History", style: Theme.of(context).textTheme.titleLarge),
-        // add history list
+        const HistoryList()
       ],
-    ));
+    );
   }
 }

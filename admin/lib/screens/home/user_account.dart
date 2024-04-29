@@ -7,7 +7,9 @@ class UserAccDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = LoginService.instance.user;
-    final name = '${user.firstName} ${user.lastName}';
+    final name = (user.firstName.isNotEmpty || user.lastName.isNotEmpty)
+        ? '${user.firstName} ${user.lastName}'
+        : 'Unknown User';
     return DecoratedBox(
         decoration: BoxDecoration(color: Theme.of(context).primaryColor),
         child: Padding(

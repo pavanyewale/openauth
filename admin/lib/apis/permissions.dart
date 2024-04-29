@@ -5,11 +5,8 @@ import 'package:admin/utils/widgets/login/service.dart';
 import 'package:http/http.dart' as http;
 
 class PermissionService {
-  PermissionService._privateConstructor();
-  static final PermissionService instance =
-      PermissionService._privateConstructor();
-
-  Future<GetPermissionsResponse> getPermissions(int offset, int limit) async {
+  static Future<GetPermissionsResponse> getPermissions(
+      int offset, int limit) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url =
         Uri.parse('$baseUrl/openauth/permissions?offset=$offset&limit=$limit');
@@ -30,12 +27,11 @@ class PermissionService {
         return GetPermissionsResponse.fromErrorJson(json.decode(response.body));
       }
     } catch (e) {
-      print(e);
       return GetPermissionsResponse(error: "something went wrong!");
     }
   }
 
-  Future<UpdatePermissionResponse> createPermission(
+  static Future<UpdatePermissionResponse> createPermission(
       PermissionDetails perm) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/permissions');
@@ -62,13 +58,13 @@ class PermissionService {
             json.decode(response.body));
       }
     } catch (e) {
-      print(e);
       return UpdatePermissionResponse(error: "something went wrong!");
     }
   }
 
   //delete permission
-  Future<UpdatePermissionResponse> deletePermission(int permissionId) async {
+  static Future<UpdatePermissionResponse> deletePermission(
+      int permissionId) async {
     final baseUrl = BaseURL.instance.baseURL;
     final url = Uri.parse('$baseUrl/openauth/permissions');
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -92,7 +88,6 @@ class PermissionService {
             json.decode(response.body));
       }
     } catch (e) {
-      print(e);
       return UpdatePermissionResponse(error: "something went wrong!");
     }
   }

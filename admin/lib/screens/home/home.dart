@@ -14,6 +14,7 @@ class HomeScreen extends StatelessWidget {
 
     // appbar
     AppBar appbar = AppBar(
+      centerTitle: false,
       title: Text(
         "OpenAuth",
         style: TextStyle(
@@ -26,7 +27,7 @@ class HomeScreen extends StatelessWidget {
         create: (_) => HomeProvider(),
         child: Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          appBar: appbar,
+          appBar: isMobile ? appbar : null,
           drawer: isMobile
               ? const Drawer(
                   elevation: double.infinity,
@@ -37,7 +38,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isMobile) const MyDrawer(),
-              if (!isMobile) const VerticalDivider(),
+              if (!isMobile) Container(width: 2, color: Colors.grey[300]),
               const Expanded(flex: 1, child: MyBody())
             ],
           ),
