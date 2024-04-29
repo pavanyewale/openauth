@@ -11,6 +11,7 @@ type Response struct {
 	Message *string `json:"message,omitempty"`
 	Error   *string `json:"error,omitempty"`
 	Code    int     `json:"code"`
+	Data    any     `json:"data,omitempty"`
 }
 
 func WriteError(ctx *gin.Context, err error) {
@@ -23,6 +24,10 @@ func WriteError(ctx *gin.Context, err error) {
 	ctx.JSON(http.StatusInternalServerError, &Response{Error: &errStr, Code: http.StatusInternalServerError})
 }
 
-func WriteSuccess(ctx *gin.Context, message string) {
-	ctx.JSON(http.StatusOK, &Response{Message: &message, Code: http.StatusOK})
+func WriteSuccess(ctx *gin.Context, data any) {
+	if msg, ok := data.(string); ok {
+		ctx.JSON(http.StatusOK, &Response{Message: &msg, Code: http.StatusOK})
+		return
+	}
+	ctx.JSON(http.StatusOK, &Response{Data: data, Code: http.StatusOK})
 }

@@ -12,11 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	PERMISSION_EDIT_PERMISSIONS        = []constants.Permission{constants.PERM_EDIT_PERMISSION, constants.PERM_SUPER_USER}
-	PERMISSION_ADD_TO_USER_PERMISSIONS = []constants.Permission{constants.PERM_SUPER_USER, constants.PERM_EDIT_PERMISSION, constants.PERM_ASSIGN_GROUP_PERMISSION}
-)
-
 type PermissionService interface {
 	CreatePermission(ctx context.Context, req *dto.CreatePermissionRequest) (*dto.PermissionDetails, error)
 	GetPermissionDetails(ctx context.Context, id int64) (*dto.PermissionDetails, error)
@@ -69,7 +64,7 @@ func (ph *PermissionsHandler) CreatePermission(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for creating a permission
-	permitted := utils.IsPermited(permissions, PERMISSION_EDIT_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_PERMISSIONS_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -119,7 +114,7 @@ func (ph *PermissionsHandler) GetPermissionDetails(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for viewing permission details
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_PERMISSIONS_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -161,7 +156,7 @@ func (ph *PermissionsHandler) DeletePermissionById(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for deleting a permission
-	permitted := utils.IsPermited(permissions, PERMISSION_EDIT_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.DELETE_PERMISSIONS_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -211,7 +206,7 @@ func (ph *PermissionsHandler) AddPermissionsToUser(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for adding permissions to a user
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_USER_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -253,19 +248,6 @@ func (ph *PermissionsHandler) AddPermissionsToUser(ctx *gin.Context) {
 // @Success 200 {array} dto.PermissionDetailsShort
 // @Router /openauth/permissions/users [get]
 func (ph *PermissionsHandler) GetPermissionsByUserId(ctx *gin.Context) {
-	// Get user ID and permissions from the context
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	// Validate user permissions for getting permissions by user ID
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 
 	// Parse user ID from the query parameters
 	userIdParam := ctx.Query("userId")
@@ -309,7 +291,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfUser(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for removing permissions from a user
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_USER_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -359,7 +341,7 @@ func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for adding permissions to a group
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -401,19 +383,6 @@ func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 // @Success 200 {array} dto.PermissionDetailsShort
 // @Router /openauth/permissions/groups [get]
 func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
-	// Get user ID and permissions from the context
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	// Validate user permissions for getting permissions by group ID
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 	// Parse user ID from the query parameters
 	groupIdParam := ctx.Query("groupId")
 	if groupIdParam == "" {
@@ -457,7 +426,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 	}
 
 	// Validate user permissions for removing permissions from a group
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -501,19 +470,6 @@ func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 // @Success 200 object dto.GetPermissionsResponse
 // @Router /openauth/permissions [get]
 func (ph *PermissionsHandler) GetAllPermissions(ctx *gin.Context) {
-	// Get user ID and permissions from the context
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	// Validate user permissions for getting all permissions
-	permitted := utils.IsPermited(permissions, PERMISSION_ADD_TO_USER_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 
 	// Get limit and offset parameters from the query
 	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "50"))

@@ -35,4 +35,4 @@ Repository:
     SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default
 Migration:
   FilesPath: ./resources/sql/
-  Action: UP  # UP/DOWN  
+  Action: DOWN  # UP/DOWN  

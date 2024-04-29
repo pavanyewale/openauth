@@ -67,6 +67,8 @@ definitions:
     type: object
   dto.CreatePermissionRequest:
     properties:
+      category:
+        type: string
       description:
         type: string
       name:
@@ -137,6 +139,8 @@ definitions:
     type: object
   dto.PermissionDetails:
     properties:
+      category:
+        type: string
       createdByUser:
         type: integer
       createdOn:
@@ -162,10 +166,42 @@ definitions:
       token:
         type: string
     type: object
+  dto.UserDetails:
+    properties:
+      bio:
+        type: string
+      createdBy:
+        type: integer
+      createdOn:
+        type: integer
+      deleted:
+        type: boolean
+      email:
+        type: string
+      emailVerified:
+        type: boolean
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      middleName:
+        type: string
+      mobile:
+        type: string
+      mobileVerified:
+        type: boolean
+      updatedOn:
+        type: integer
+      username:
+        type: string
+    type: object
   handlers.Response:
     properties:
       code:
         type: integer
+      data: {}
       error:
         type: string
       message:
@@ -867,4 +903,112 @@ paths:
       summary: Ping the server
       tags:
       - Ping
+  /openauth/user:
+    get:
+      consumes:
+      - application/json
+      description: Get users by filter
+      operationId: get-users-by-filter
+      parameters:
+      - description: User ID
+        in: query
+        name: userId
+        type: integer
+      - description: Username
+        in: query
+        name: username
+        type: string
+      - description: Email
+        in: query
+        name: email
+        type: string
+      - description: Mobile
+        in: query
+        name: mobile
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.UserDetails'
+            type: array
+      summary: Get users by filter
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Create/Update user
+      operationId: create-update-user
+      parameters:
+      - description: User Details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserDetails'
+      summary: Create/Update user
+      tags:
+      - user
+  /openauth/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by id
+      operationId: delete-user-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Delete user by id
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Get user details by id
+      operationId: get-user-details-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserDetails'
+      summary: Get user details by id
+      tags:
+      - user
 swagger: "2.0"

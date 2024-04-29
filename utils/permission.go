@@ -11,16 +11,9 @@ import (
 )
 
 // returns true if any string from permsNeeded exists in userPerms
-func IsPermited(userPerms []string, permsNeeded []constants.Permission) bool {
-	// Convert userPerms to a map for faster lookups
-	userPermsMap := make(map[string]struct{})
+func IsPermited(userPerms []string, permsNeeded map[constants.Permission]bool) bool {
 	for _, perm := range userPerms {
-		userPermsMap[perm] = struct{}{}
-	}
-
-	// Check if any permission in permsNeeded exists in userPerms
-	for _, permNeeded := range permsNeeded {
-		if _, exists := userPermsMap[string(permNeeded)]; exists {
+		if permsNeeded[constants.Permission(perm)] {
 			return true
 		}
 	}

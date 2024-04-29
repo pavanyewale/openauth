@@ -12,13 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	GROUP_EDIT_PERMISSIONS       = []constants.Permission{constants.PERM_SUPER_USER, constants.PERM_EDIT_GROUP}
-	GROUP_VIEW_PERMISSIONS       = []constants.Permission{constants.PERM_SUPER_USER, constants.PERM_EDIT_GROUP}
-	GROUP_DELETE_PERMISSIONS     = []constants.Permission{constants.PERM_SUPER_USER, constants.PERM_EDIT_GROUP}
-	EDIT_USER_GROUPS_PERMISSIONS = []constants.Permission{constants.PERM_SUPER_USER, constants.PERM_ASSIGN_GROUP_PERMISSION}
-)
-
 type GroupService interface {
 	CreateGroup(ctx context.Context, req *dto.CreateGroupRequest) (*dto.GroupDetails, error)
 	GetGroupDetails(ctx context.Context, groupId int64) (*dto.GroupDetails, error)
@@ -68,7 +61,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 		return
 	}
 	//validating permissions
-	permitted := utils.IsPermited(permissions, GROUP_EDIT_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -117,7 +110,7 @@ func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 		return
 	}
 
-	permitted := utils.IsPermited(permissions, GROUP_DELETE_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.DELETE_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -159,17 +152,6 @@ func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 // @Failure 500 {object} Response
 // @Router /openauth/group/{id} [get]
 func (lh *GroupHandler) GetGroupDetails(ctx *gin.Context) {
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	permitted := utils.IsPermited(permissions, GROUP_VIEW_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 
 	groupID, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
@@ -206,7 +188,7 @@ func (lh *GroupHandler) AddUsersToGroup(ctx *gin.Context) {
 		return
 	}
 
-	permitted := utils.IsPermited(permissions, EDIT_USER_GROUPS_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -254,7 +236,7 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 		return
 	}
 
-	permitted := utils.IsPermited(permissions, EDIT_USER_GROUPS_PERMISSIONS)
+	permitted := utils.IsPermited(permissions, constants.EDIT_GROUP_PERMISSIONS)
 	if !permitted {
 		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
 		return
@@ -296,17 +278,6 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 // @Failure 500 {object} Response
 // @Router /openauth/group/user [get]
 func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	permitted := utils.IsPermited(permissions, GROUP_VIEW_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 	userId, err := strconv.ParseInt(ctx.Query("userId"), 10, 64)
 	if err != nil {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid userId"))
@@ -336,17 +307,6 @@ func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
 // @Failure 500 {object} Response
 // @Router /openauth/group [get]
 func (lh *GroupHandler) GetAllGroups(ctx *gin.Context) {
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	permitted := utils.IsPermited(permissions, GROUP_VIEW_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
 
 	// Extract limit and offset from query parameters
 	limit, err := strconv.Atoi(ctx.Query("limit"))

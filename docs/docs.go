@@ -1054,6 +1054,168 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/openauth/user": {
+            "get": {
+                "description": "Get users by filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get users by filter",
+                "operationId": "get-users-by-filter",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Mobile",
+                        "name": "mobile",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UserDetails"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create/Update user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create/Update user",
+                "operationId": "create-update-user",
+                "parameters": [
+                    {
+                        "description": "User Details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDetails"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDetails"
+                        }
+                    }
+                }
+            }
+        },
+        "/openauth/user/{id}": {
+            "get": {
+                "description": "Get user details by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user details by id",
+                "operationId": "get-user-details-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDetails"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete user by id",
+                "operationId": "delete-user-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1162,6 +1324,9 @@ const docTemplate = `{
         "dto.CreatePermissionRequest": {
             "type": "object",
             "properties": {
+                "category": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1271,6 +1436,9 @@ const docTemplate = `{
         "dto.PermissionDetails": {
             "type": "object",
             "properties": {
+                "category": {
+                    "type": "string"
+                },
                 "createdByUser": {
                     "type": "integer"
                 },
@@ -1310,12 +1478,60 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UserDetails": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "createdOn": {
+                    "type": "integer"
+                },
+                "deleted": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailVerified": {
+                    "type": "boolean"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "mobileVerified": {
+                    "type": "boolean"
+                },
+                "updatedOn": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.Response": {
             "type": "object",
             "properties": {
                 "code": {
                     "type": "integer"
                 },
+                "data": {},
                 "error": {
                     "type": "string"
                 },

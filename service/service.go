@@ -8,6 +8,7 @@ import (
 	"openauth/service/otp"
 	"openauth/service/permissions"
 	"openauth/service/ping"
+	"openauth/service/user"
 )
 
 type ServiceFactory struct {
@@ -17,6 +18,7 @@ type ServiceFactory struct {
 	groupService      *group.Service
 	authService       *authentication.Service
 	historyService    *history.Service
+	userService       *user.Service
 }
 
 func (s *ServiceFactory) GetOTPService() *otp.Service {
@@ -43,6 +45,10 @@ func (s *ServiceFactory) GetHistoryService() *history.Service {
 	return s.historyService
 }
 
+func (s *ServiceFactory) GetUserService() *user.Service {
+	return s.userService
+}
+
 type Config struct {
 	OTP  otp.Config
 	Auth authentication.Config
@@ -55,6 +61,7 @@ type Repository interface {
 	group.Repository
 	permissions.Repository
 	authentication.Repository
+	user.Repository
 }
 
 func NewServiceFactory(ctx context.Context, conf *Config, repo Repository) *ServiceFactory {
@@ -66,5 +73,6 @@ func NewServiceFactory(ctx context.Context, conf *Config, repo Repository) *Serv
 	serviceFactory.permissionService = permissions.NewService(serviceFactory, repo)
 	serviceFactory.authService = authentication.NewService(ctx, &conf.Auth, repo, serviceFactory)
 	serviceFactory.groupService = group.NewService(serviceFactory, repo)
+	serviceFactory.userService = user.NewService(serviceFactory, repo)
 	return serviceFactory
 }
