@@ -7,6 +7,7 @@ import (
 	"openauth/models/filters"
 	"openauth/service/otp"
 	"openauth/utils/customerrors"
+	"openauth/utils/logger"
 )
 
 type Service struct {
@@ -202,4 +203,62 @@ func (s *Service) CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUs
 		return s.CreateUser(ctx, user, updatedByUserId)
 	}
 	return s.UpdateUser(ctx, user, updatedByUserId)
+}
+
+// VerifyDetails implements handlers.service.
+func (s *Service) VerifyAvailability(ctx context.Context, details *dto.VerifyAvailabilityRequest) (*dto.VerifyAvailabilityResponse, error) {
+	var res dto.VerifyAvailabilityResponse
+
+	if details.Username != "" {
+		_, err := s.repo.GetUserByFilter(ctx, &filters.UserFilter{Username: details.Username})
+		if err != nil {
+			if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+				return nil, err
+			}
+		} else {
+			res.UsernameErr = "username already exists"
+		}
+	}
+
+	if details.Mobile != "" {
+		_, err := s.repo.GetUserByFilter(ctx, &filters.UserFilter{Mobile: details.Mobile})
+		if err != nil {
+			if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+				return nil, err
+			}
+		} else {
+			res.MobileErr = "mobile already exists"
+		}
+	}
+
+	if details.Email != "" {
+		_, err := s.repo.GetUserByFilter(ctx, &filters.UserFilter{Email: details.Email})
+		if err != nil {
+			if err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+				return nil, err
+			}
+		} else {
+			res.EmailErr = "email already exists"
+		}
+	}
+
+	if details.SendOtp && (res.MobileErr == "" && res.EmailErr == "" && res.UsernameErr == "") {
+		logger.Debug(ctx, "all availables so sending otp")
+		// send otp
+		if details.Mobile != "" {
+			_, err := s.sf.GetOTPService().SendOTPOnEmailOrMobile(ctx, details.Mobile)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if details.Email != "" {
+			otpRes, err := s.sf.GetOTPService().SendOTPOnEmailOrMobile(ctx, details.Email)
+			if err != nil {
+				return nil, err
+			}
+			res.OtpExpriry = otpRes.Expriry
+		}
+	}
+	return &res, nil
+
 }

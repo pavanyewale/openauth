@@ -1139,7 +1139,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UserDetails"
+                            "$ref": "#/definitions/dto.CreateUpdateUserRequest"
                         }
                     }
                 ],
@@ -1148,6 +1148,41 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.UserDetails"
+                        }
+                    }
+                }
+            }
+        },
+        "/openauth/user/verify": {
+            "put": {
+                "description": "Verify availability of username, email, mobile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Verify availability of username, email, mobile",
+                "operationId": "verify-availability",
+                "parameters": [
+                    {
+                        "description": "Details",
+                        "name": "details",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.VerifyAvailabilityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.VerifyAvailabilityResponse"
                         }
                     }
                 }
@@ -1331,6 +1366,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateUpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailOTP": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "mobileOTP": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -1521,6 +1591,40 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.VerifyAvailabilityRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "sendOtp": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.VerifyAvailabilityResponse": {
+            "type": "object",
+            "properties": {
+                "emailErr": {
+                    "type": "string"
+                },
+                "mobileErr": {
+                    "type": "string"
+                },
+                "otpExpriry": {
+                    "type": "integer"
+                },
+                "usernameErr": {
                     "type": "string"
                 }
             }

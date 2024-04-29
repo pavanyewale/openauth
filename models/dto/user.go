@@ -61,3 +61,17 @@ func (ud *CreateUpdateUserRequest) ToUser() *dao.User {
 		Email:      ud.Email,
 	}
 }
+
+type VerifyAvailabilityRequest struct {
+	SendOtp  bool   `json:"sendOtp"`
+	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
+
+type VerifyAvailabilityResponse struct {
+	EmailErr    string `json:"emailErr"`
+	MobileErr   string `json:"mobileErr"`
+	UsernameErr string `json:"usernameErr"`
+	OtpExpriry  int64  `json:"otpExpriry"`
+}

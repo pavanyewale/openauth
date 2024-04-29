@@ -74,6 +74,29 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateUpdateUserRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      emailOTP:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      middleName:
+        type: string
+      mobile:
+        type: string
+      mobileOTP:
+        type: string
+      username:
+        type: string
+    type: object
   dto.DeleteGroupRequest:
     properties:
       groupId:
@@ -195,6 +218,28 @@ definitions:
       updatedOn:
         type: integer
       username:
+        type: string
+    type: object
+  dto.VerifyAvailabilityRequest:
+    properties:
+      email:
+        type: string
+      mobile:
+        type: string
+      sendOtp:
+        type: boolean
+      username:
+        type: string
+    type: object
+  dto.VerifyAvailabilityResponse:
+    properties:
+      emailErr:
+        type: string
+      mobileErr:
+        type: string
+      otpExpriry:
+        type: integer
+      usernameErr:
         type: string
     type: object
   handlers.Response:
@@ -957,7 +1002,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/dto.UserDetails'
+          $ref: '#/definitions/dto.CreateUpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -1009,6 +1054,29 @@ paths:
           schema:
             $ref: '#/definitions/dto.UserDetails'
       summary: Get user details by id
+      tags:
+      - user
+  /openauth/user/verify:
+    put:
+      consumes:
+      - application/json
+      description: Verify availability of username, email, mobile
+      operationId: verify-availability
+      parameters:
+      - description: Details
+        in: body
+        name: details
+        required: true
+        schema:
+          $ref: '#/definitions/dto.VerifyAvailabilityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.VerifyAvailabilityResponse'
+      summary: Verify availability of username, email, mobile
       tags:
       - user
 swagger: "2.0"

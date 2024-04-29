@@ -21,6 +21,7 @@ type service interface {
 	GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.UserDetails, error)
 	DeleteUserById(ctx context.Context, id int64, deletedByUserId int64) error
 	CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error
+	VerifyAvailability(ctx context.Context, details *dto.VerifyAvailabilityRequest) (*dto.VerifyAvailabilityResponse, error)
 }
 
 func NewUserHandler(service service) *UserHandler {
@@ -32,6 +33,7 @@ func (ph *UserHandler) Register(router gin.IRouter) {
 	router.GET("/openauth/user", ph.GetUsersByFilter)
 	router.DELETE("/openauth/user/:id", ph.DeleteUserById)
 	router.POST("/openauth/user", ph.CreateUpdateUser)
+	router.PUT("/openauth/user/verify", ph.VerifyAvailability)
 }
 
 // GetUserDetailsById godoc
@@ -152,7 +154,7 @@ func (ph *UserHandler) DeleteUserById(ctx *gin.Context) {
 // @Tags user
 // @Accept  json
 // @Produce  json
-// @Param user body dto.UserDetails true "User Details"
+// @Param user body dto.CreateUpdateUserRequest true "User Details"
 // @Success 200 {object} dto.UserDetails
 // @Router /openauth/user [post]
 func (ph *UserHandler) CreateUpdateUser(ctx *gin.Context) {
@@ -185,4 +187,28 @@ func (ph *UserHandler) CreateUpdateUser(ctx *gin.Context) {
 		return
 	}
 	WriteSuccess(ctx, user)
+}
+
+// VerifyAvailability godoc
+// @Summary Verify availability of username, email, mobile
+// @Description Verify availability of username, email, mobile
+// @ID verify-availability
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Param details body dto.VerifyAvailabilityRequest true "Details"
+// @Success 200 {object} dto.VerifyAvailabilityResponse
+// @Router /openauth/user/verify [put]
+func (ph *UserHandler) VerifyAvailability(ctx *gin.Context) {
+	var details dto.VerifyAvailabilityRequest
+	if err := ctx.ShouldBindJSON(&details); err != nil {
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body details"))
+		return
+	}
+	response, err := ph.service.VerifyAvailability(ctx, &details)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+	WriteSuccess(ctx, response)
 }
