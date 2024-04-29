@@ -14,9 +14,9 @@ import (
 // Repository is the postgresql repository for user
 func (r *Repository) CreateUser(ctx context.Context, user *dao.User) error {
 	_, err := r.conn.ExecContext(ctx, `
-		INSERT INTO users (first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, created_by_user, created_on, updated_on)
+		INSERT INTO users (first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, created_by_user, created_on, updated_on, deleted)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-	`, user.FirstName, user.MiddleName, user.LastName, user.Username, user.Bio, user.Password, user.Mobile, user.Email, user.MobileVerified, user.EmailVerified, user.CreatedByUser, user.CreatedOn, user.UpdatedOn)
+	`, user.FirstName, user.MiddleName, user.LastName, user.Username, user.Bio, user.Password, user.Mobile, user.Email, user.MobileVerified, user.EmailVerified, user.CreatedByUser, user.CreatedOn, user.UpdatedOn, user.Deleted)
 	if err != nil {
 		logger.Error(ctx, "failed to create user, Err: %s", err.Error())
 		return customerrors.ERROR_DATABASE

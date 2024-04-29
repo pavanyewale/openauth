@@ -18,7 +18,7 @@ type UserHandler struct {
 
 type service interface {
 	GetUserDetailsById(ctx context.Context, id int64) (*dto.UserDetails, error)
-	GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.UserDetails, error)
+	GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.ShortUserDetails, error)
 	DeleteUserById(ctx context.Context, id int64, deletedByUserId int64) error
 	CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error
 	VerifyAvailability(ctx context.Context, details *dto.VerifyAvailabilityRequest) (*dto.VerifyAvailabilityResponse, error)
@@ -75,7 +75,7 @@ func (ph *UserHandler) GetUserDetailsById(c *gin.Context) {
 // @Param mobile query string false "Mobile"
 // @Param limit query int false "Limit"
 // @Param offset query int false "Offset"
-// @Success 200 {array} dto.UserDetails
+// @Success 200 {array} dto.ShortUserDetails
 // @Router /openauth/user [get]
 func (ph *UserHandler) GetUsersByFilter(c *gin.Context) {
 	filter := &filters.UserFilter{}

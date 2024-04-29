@@ -189,6 +189,23 @@ definitions:
       token:
         type: string
     type: object
+  dto.ShortUserDetails:
+    properties:
+      createdOn:
+        type: integer
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      mobile:
+        type: string
+      username:
+        type: string
+    type: object
   dto.UserDetails:
     properties:
       bio:
@@ -986,7 +1003,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.UserDetails'
+              $ref: '#/definitions/dto.ShortUserDetails'
             type: array
       summary: Get users by filter
       tags:

@@ -44,29 +44,16 @@ func (s *Service) GetUserDetailsById(ctx context.Context, id int64) (*dto.UserDe
 }
 
 // GetUsersByFilter fetches users by filter
-func (s *Service) GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.UserDetails, error) {
+func (s *Service) GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.ShortUserDetails, error) {
 	users, err := s.repo.GetUsersByFilter(ctx, filter, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	userDetails := make([]*dto.UserDetails, len(users))
+	userDetails := make([]*dto.ShortUserDetails, len(users))
 	for i, u := range users {
-		userDetails[i] = (&dto.UserDetails{}).FromUser(u)
+		userDetails[i] = (&dto.ShortUserDetails{}).FromUser(u)
 	}
 	return userDetails, nil
-}
-
-// DeleteUserById deletes user by id
-func (s *Service) DeleteUserById(ctx context.Context, id int64, deletedByUserId int64) error {
-	user, err := s.repo.GetUserById(ctx, id)
-	if err != nil {
-		if err == customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
-			return customerrors.BAD_REQUEST_ERROR("user not found")
-		}
-		return err
-	}
-	user.Deleted = true
-	return s.repo.UpdateUser(ctx, user)
 }
 
 func (s *Service) validateUsername(ctx context.Context, username string) error {

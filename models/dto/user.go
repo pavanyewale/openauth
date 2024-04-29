@@ -37,6 +37,27 @@ func (ud *UserDetails) FromUser(u *dao.User) *UserDetails {
 	return ud
 }
 
+type ShortUserDetails struct {
+	ID        int64  `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Username  string `json:"username"`
+	Mobile    string `json:"mobile"`
+	Email     string `json:"email"`
+	CreatedOn int64  `json:"createdOn"`
+}
+
+func (ud *ShortUserDetails) FromUser(u *dao.User) *ShortUserDetails {
+	ud.ID = u.ID
+	ud.FirstName = u.FirstName
+	ud.LastName = u.LastName
+	ud.Username = u.Username
+	ud.Mobile = u.Mobile
+	ud.Email = u.Email
+	ud.CreatedOn = u.CreatedOn
+	return ud
+}
+
 type CreateUpdateUserRequest struct {
 	ID         int64  `json:"id"`
 	FirstName  string `json:"firstName"`

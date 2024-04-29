@@ -1113,7 +1113,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.UserDetails"
+                                "$ref": "#/definitions/dto.ShortUserDetails"
                             }
                         }
                     }
@@ -1544,6 +1544,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ShortUserDetails": {
+            "type": "object",
+            "properties": {
+                "createdOn": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "mobile": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
