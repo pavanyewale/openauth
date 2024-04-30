@@ -2,6 +2,7 @@ import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
 import 'package:admin/screens/users/filter.dart';
 import 'package:admin/screens/users/user_tile.dart';
+import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,7 @@ class _UserListState extends State<UserList> {
   void fetchUsers() async {
     setState(() {
       isLoading = true;
+      error = '';
     });
 
     final res = await UsersService.getUsers(filters, offset, limit);
@@ -59,31 +61,37 @@ class _UserListState extends State<UserList> {
           },
         ),
         const Divider(),
-        ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return UserTile(
-                  user: users[index],
-                  onDelete: () {
-                    setState(() {
-                      users.removeAt(index);
-                    });
-                  });
-            },
-            separatorBuilder: (context, index) => const Divider(),
-            itemCount: users.length),
-        //next
-        NextAndPrevPaginationButtons(
-            onNextClicked: () {
-              offset += limit;
-              fetchUsers();
-            },
-            onPrevClicked: () {
-              offset -= limit;
-              fetchUsers();
-            },
-            isNext: users.length == limit,
-            isPrev: offset > 0)
+        if (isLoading)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        (error.isEmpty)
+            ? ListView.separated(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return UserTile(
+                      user: users[index],
+                      onDelete: () {
+                        setState(() {
+                          users.removeAt(index);
+                        });
+                      });
+                },
+                separatorBuilder: (context, index) => const Divider(),
+                itemCount: users.length)
+            : const MyErrorWidget(),
+        if (error.isEmpty)
+          NextAndPrevPaginationButtons(
+              onNextClicked: () {
+                offset += limit;
+                fetchUsers();
+              },
+              onPrevClicked: () {
+                offset -= limit;
+                fetchUsers();
+              },
+              isNext: users.length == limit,
+              isPrev: offset > 0)
       ],
     );
   }

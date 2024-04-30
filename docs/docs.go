@@ -557,6 +557,67 @@ const docTemplate = `{
                 }
             }
         },
+        "/openauth/history": {
+            "get": {
+                "description": "Get history of user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "History"
+                ],
+                "summary": "Get History",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "startDate",
+                        "name": "request",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "endDate",
+                        "name": "request",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "request",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "offset",
+                        "name": "request",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HistoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "402": {
+                        "description": "Payment Required",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/openauth/login": {
             "post": {
                 "description": "Log in a user with username, password, OTP, and device details (username can be mobile,email or username).",
@@ -1463,6 +1524,37 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.History": {
+            "type": "object",
+            "properties": {
+                "createdByUser": {
+                    "type": "integer"
+                },
+                "createdOn": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "operation": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.HistoryResponse": {
+            "type": "object",
+            "properties": {
+                "history": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.History"
+                    }
                 }
             }
         },

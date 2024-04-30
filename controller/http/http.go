@@ -53,6 +53,7 @@ func (ctrl *HTTPController) Listen(ctx context.Context) {
 	handlers.NewPermissionHandler(ctrl.serviceFactory.GetPermissionService()).Register(router)
 	handlers.NewLoginHandler(ctrl.serviceFactory.GetAuthService()).Register(router)
 	handlers.NewUserHandler(ctrl.serviceFactory.GetUserService()).Register(router)
+	handlers.NewHistoryHandler(ctrl.serviceFactory.GetHistoryService()).Register(router)
 	handlers.NewAdminUIHandler().Register(router)
 	handlers.NewSwaggerHandler().Register(router)
 

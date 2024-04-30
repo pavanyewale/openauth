@@ -3,6 +3,7 @@ import 'package:admin/models/permissions.dart';
 import 'package:admin/screens/permissions/permission_tile.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
 
@@ -66,10 +67,7 @@ class _PermissionsListState extends State<PermissionsList> {
           const Center(
             child: Text('No permissions found'),
           ),
-        if (error.isNotEmpty)
-          Center(
-            child: Text(error, style: const TextStyle(color: AppColors.error)),
-          ),
+        if (error.isNotEmpty) const MyErrorWidget(),
 
         // add list of permissions
         ListView.separated(
@@ -91,18 +89,19 @@ class _PermissionsListState extends State<PermissionsList> {
         ),
 
         // add next and prev buttons
-        NextAndPrevPaginationButtons(
-          onNextClicked: () {
-            skip += limit;
-            fetchPermissions();
-          },
-          onPrevClicked: () {
-            skip -= limit;
-            fetchPermissions();
-          },
-          isPrev: skip > 0,
-          isNext: permissions.length == limit,
-        )
+        if (error.isEmpty)
+          NextAndPrevPaginationButtons(
+            onNextClicked: () {
+              skip += limit;
+              fetchPermissions();
+            },
+            onPrevClicked: () {
+              skip -= limit;
+              fetchPermissions();
+            },
+            isPrev: skip > 0,
+            isNext: permissions.length == limit,
+          )
       ])
     ]);
   }

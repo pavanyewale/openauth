@@ -10,6 +10,13 @@ class Dashboard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(
+          height: 200,
+          width: double.infinity,
+          child: Center(
+            child: Text("comming soon...."),
+          ),
+        ),
       ],
     );
   }

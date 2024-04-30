@@ -1,6 +1,7 @@
 import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/utils/widgets/common.dart';
+import 'package:admin/utils/widgets/errors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -54,13 +55,7 @@ class _GroupsListState extends State<GroupsList> {
           child: CircularProgressIndicator(),
         ),
       //add error message
-      if (error.isNotEmpty)
-        Center(
-          child: Text(
-            error,
-            style: const TextStyle(color: Colors.red),
-          ),
-        ),
+      if (error.isNotEmpty) const MyErrorWidget(),
       //show empty list message
       if (groups.isEmpty && error.isEmpty)
         const Center(

@@ -136,6 +136,26 @@ definitions:
       name:
         type: string
     type: object
+  dto.History:
+    properties:
+      createdByUser:
+        type: integer
+      createdOn:
+        type: integer
+      data:
+        type: string
+      id:
+        type: integer
+      operation:
+        type: string
+    type: object
+  dto.HistoryResponse:
+    properties:
+      history:
+        items:
+          $ref: '#/definitions/dto.History'
+        type: array
+    type: object
   dto.LoginRequest:
     properties:
       deviceDetails:
@@ -633,6 +653,46 @@ paths:
       summary: Add users to a group
       tags:
       - Groups
+  /openauth/history:
+    get:
+      consumes:
+      - application/json
+      description: Get history of user
+      parameters:
+      - description: startDate
+        in: query
+        name: request
+        type: string
+      - description: endDate
+        in: query
+        name: request
+        type: string
+      - description: limit
+        in: query
+        name: request
+        type: string
+      - description: offset
+        in: query
+        name: request
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "402":
+          description: Payment Required
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Get History
+      tags:
+      - History
   /openauth/login:
     post:
       consumes:
