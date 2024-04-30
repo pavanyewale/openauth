@@ -3,6 +3,7 @@ import 'package:admin/models/permissions.dart';
 import 'package:admin/screens/permissions/edit_dialog.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
 
 class PermissionsList extends StatefulWidget {
@@ -86,25 +87,27 @@ class _PermissionsListState extends State<PermissionsList> {
         */
         ListView.separated(
           separatorBuilder: (context, index) =>
-              const SizedBox(height: 5), // Add space between items
+              const Divider(), // Add space between items
           itemCount: permissions.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             final permission = permissions[index];
             return ListTile(
-              tileColor: Theme.of(context).secondaryHeaderColor,
               key: ValueKey(permission.id),
               leading: Icon(
                 Icons.security,
                 color: Theme.of(context).primaryColorDark,
               ),
               title: Text(permission.name),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              subtitle: Wrap(
+                spacing: 10,
+                runSpacing: 5,
                 children: [
-                  Text('Category:  ${permission.category}'),
-                  Text('Description: ${permission.description}'),
+                  SubTextWithIcon(
+                      icon: Icons.category, text: permission.category),
+                  SubTextWithIcon(
+                      icon: Icons.description, text: permission.description),
                 ],
               ),
               trailing: IconButton(

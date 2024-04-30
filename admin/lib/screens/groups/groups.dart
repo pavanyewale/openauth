@@ -1,3 +1,5 @@
+import 'package:admin/screens/groups/header.dart';
+import 'package:admin/screens/groups/list.dart';
 import 'package:flutter/material.dart';
 
 class GroupsScreen extends StatelessWidget {
@@ -5,11 +7,12 @@ class GroupsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Groups", style: Theme.of(context).textTheme.titleLarge),
-        // add groups list
+        GroupHeader(),
+        SizedBox(height: 20),
+        GroupsList(),
       ],
     );
   }

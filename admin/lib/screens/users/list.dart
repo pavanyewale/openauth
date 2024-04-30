@@ -2,7 +2,9 @@ import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class UserList extends StatefulWidget {
   const UserList({super.key});
@@ -46,6 +48,7 @@ class _UserListState extends State<UserList> {
 
   @override
   Widget build(BuildContext context) {
+    final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,20 +60,23 @@ class _UserListState extends State<UserList> {
                   ? 'Unknown User'
                   : '${user.firstName} ${user.lastName}';
               return ListTile(
-                tileColor: Theme.of(context).primaryColorLight,
                 leading: CircleAvatar(
                   child: Text(name[0]),
                 ),
                 title: Text(name),
-                subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (user.username.isNotEmpty) Text(user.username),
-                      if (user.email.isNotEmpty) Text(user.email),
-                      if (user.mobile.isNotEmpty) Text(user.mobile),
-                      Text(DateTime.fromMillisecondsSinceEpoch(user.createdOn)
-                          .toString())
-                    ]),
+                subtitle: Wrap(
+                  spacing: 10,
+                  runSpacing: 5,
+                  children: [
+                    SubTextWithIcon(icon: Icons.email, text: user.email),
+                    SubTextWithIcon(icon: Icons.phone, text: user.mobile),
+                    SubTextWithIcon(
+                        icon: Icons.calendar_today,
+                        text: formatter.format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                                user.createdOn)))
+                  ],
+                ),
                 trailing: IconButton(
                   icon: const Icon(
                     Icons.delete,
@@ -117,9 +123,7 @@ class _UserListState extends State<UserList> {
                 ),
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(
-                  height: 10,
-                ),
+            separatorBuilder: (context, index) => const Divider(),
             itemCount: users.length)
       ],
     );
