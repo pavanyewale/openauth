@@ -15,8 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
 	created_on int8 NOT NULL,
 	updated_on int8 NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
-	CONSTRAINT users_pkey PRIMARY KEY (id),
-	CONSTRAINT users_username_key UNIQUE (username)
+	CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
