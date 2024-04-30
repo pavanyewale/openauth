@@ -18,7 +18,7 @@ class UserHeader extends StatelessWidget {
             SizedBox(
               width: 5,
             ),
-            Text("New")
+            Text("New User")
           ]),
         )
       ],

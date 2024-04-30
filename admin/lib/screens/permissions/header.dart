@@ -34,7 +34,7 @@ class PermissionHeader extends StatelessWidget {
             children: [
               Icon(Icons.add),
               SizedBox(width: 5),
-              Text('Add Permission'),
+              Text('New Permission'),
             ],
           ))
     ]);

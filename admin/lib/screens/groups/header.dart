@@ -19,7 +19,7 @@ class GroupHeader extends StatelessWidget {
             SizedBox(
               width: 10,
             ),
-            Text("Add Group")
+            Text("New Group")
           ]),
         )
       ],

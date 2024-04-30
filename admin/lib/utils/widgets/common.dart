@@ -9,6 +9,7 @@ class SubTextWithIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
@@ -18,9 +19,12 @@ class SubTextWithIcon extends StatelessWidget {
           const SizedBox(
             width: 5,
           ),
-          Text(
+          Flexible(
+              child: Text(
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             text.isNotEmpty ? text : "Not Available",
-          )
+          ))
         ]);
   }
 }

@@ -10,7 +10,8 @@ class UsersService {
   static Future<GetUsersResponse> getUsers(
       GetUsersFilters filters, int offset, int limit) async {
     final baseUrl = BaseURL.instance.baseURL;
-    Uri url = Uri.parse('$baseUrl/openauth/user?offset=$offset&limit=$limit');
+    Uri url = Uri.parse(
+        '$baseUrl/openauth/user?offset=$offset&limit=$limit&email=${filters.email}&mobile=${filters.mobile}&userId=${filters.userId}&username=${filters.username}');
 
     try {
       final response = await http.get(

@@ -40,6 +40,7 @@ class LoginResponse {
       required this.error});
 
   factory LoginResponse.fromSuccessJson(Map<String, dynamic> json) {
+    json = json['data'];
     return LoginResponse(
         userId: json['userId'],
         token: json['token'],
