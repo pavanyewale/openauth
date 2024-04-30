@@ -81,14 +81,14 @@ func (s *Service) GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.G
 	return userGroups, nil
 }
 
-func (s *Service) GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetailsShort, error) {
+func (s *Service) GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetails, error) {
 	groups, err := s.repo.GetAllGroups(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	var shortGroups []*dto.GroupDetailsShort
+	var shortGroups []*dto.GroupDetails = []*dto.GroupDetails{}
 	for _, g := range groups {
-		shortGroups = append(shortGroups, &dto.GroupDetailsShort{ID: g.ID, Name: g.Name})
+		shortGroups = append(shortGroups, (&dto.GroupDetails{}).FromGroup(g))
 	}
 	return shortGroups, nil
 }

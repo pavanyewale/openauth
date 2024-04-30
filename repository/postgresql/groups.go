@@ -75,7 +75,7 @@ func (r *Repository) GetGroupById(ctx context.Context, id int64) (*dao.Group, er
 
 func (r *Repository) GetAllGroups(ctx context.Context, limit, offset int) ([]*dao.Group, error) {
 	// Prepare the SQL statement
-	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups LIMIT ? OFFSET ?"
+	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups LIMIT $1 OFFSET $2"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -146,7 +146,7 @@ func (r *Repository) CreateUserGroups(ctx context.Context, userGroups []*dao.Use
 	defer tx.Rollback()
 
 	// Prepare the SQL statement for inserting user groups
-	query := "INSERT INTO user_groups (user_id, group_id, created_by_user, created_on, updated_on, deleted) VALUES (?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO user_groups (user_id, group_id, created_by_user, created_on, updated_on, deleted) VALUES ($1, $2, $3, $4, $5, $6)"
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -181,7 +181,7 @@ func (r *Repository) DeleteUsersFromGroup(ctx context.Context, groupId int64, us
 	defer tx.Rollback()
 
 	// Prepare the SQL statement for deleting user group entries
-	query := "DELETE FROM user_groups WHERE group_id = ? AND user_id = ?"
+	query := "DELETE FROM user_groups WHERE group_id = $1 AND user_id = $2"
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return err

@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"openauth/constants"
 	"openauth/models/dto"
 	"openauth/utils/customerrors"
@@ -18,7 +17,7 @@ type LoginHandler struct {
 type AuthService interface {
 	Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginResponse, error)
 	Authenticate(ctx context.Context, req *dto.AuthRequest) (*dto.AuthenticationResponse, error)
-	RefreshToken(ctx context.Context, token string) (string, error)
+	RefreshToken(ctx context.Context, token string) (*dto.RefreshTokenResponse, error)
 	Logout(ctx context.Context, token string) error
 }
 
@@ -55,7 +54,7 @@ func (lh *LoginHandler) login(ctx *gin.Context) {
 		WriteError(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	WriteSuccess(ctx, res)
 }
 
 // logout godoc
@@ -79,7 +78,7 @@ func (lh *LoginHandler) logout(ctx *gin.Context) {
 		WriteError(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, map[string]any{"message": "logged out successfully"})
+	WriteSuccess(ctx, "logged out successfully")
 }
 
 // authenticate godoc
@@ -107,7 +106,7 @@ func (lh *LoginHandler) authenticate(ctx *gin.Context) {
 		WriteError(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	WriteSuccess(ctx, res)
 }
 
 // authRefresh godoc
@@ -126,12 +125,12 @@ func (lh *LoginHandler) authRefresh(ctx *gin.Context) {
 	if token == "" {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR(fmt.Sprintf("%s missing in header", constants.AUTH_TOKEN)))
 	}
-	freshToken, err := lh.service.RefreshToken(ctx, token)
+	res, err := lh.service.RefreshToken(ctx, token)
 	if err != nil {
 		WriteError(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, dto.RefreshTokenResponse{Token: freshToken})
+	WriteSuccess(ctx, res)
 }
 
 func (lh *LoginHandler) resetPassword(ctx *gin.Context) {

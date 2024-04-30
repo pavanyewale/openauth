@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"net/http"
 	"openauth/constants"
 	"openauth/models/dto"
 	"openauth/utils"
@@ -19,7 +18,7 @@ type GroupService interface {
 	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetailsShort, error)
 	AddUsersToGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
 	RemoveUsersFromGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
-	GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetailsShort, error)
+	GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetails, error)
 }
 
 type GroupHandler struct {
@@ -87,7 +86,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, group)
+	WriteSuccess(ctx, group)
 }
 
 // @Summary Delete a group
@@ -165,7 +164,7 @@ func (lh *GroupHandler) GetGroupDetails(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, group)
+	WriteSuccess(ctx, group)
 }
 
 // @Summary Add users to a group
@@ -289,7 +288,7 @@ func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, groups)
+	WriteSuccess(ctx, groups)
 }
 
 // @Summary Get all groups
@@ -336,5 +335,5 @@ func (lh *GroupHandler) GetAllGroups(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, groups)
+	WriteSuccess(ctx, groups)
 }

@@ -36,27 +36,27 @@ func (s *Service) Authenticate(ctx context.Context, req *dto.AuthRequest) (*dto.
 	return &authResponse, nil
 }
 
-func (s *Service) RefreshToken(ctx context.Context, token string) (string, error) {
+func (s *Service) RefreshToken(ctx context.Context, token string) (*dto.RefreshTokenResponse, error) {
 	session, err := s.repo.GetSessionByToken(ctx, token)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if session.LoggedOut {
-		return "", customerrors.ERROR_UNAUTHORISED
+		return nil, customerrors.ERROR_UNAUTHORISED
 	}
 	user, err := s.repo.GetUserByFilter(ctx, &filters.UserFilter{UserId: session.UserID})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	session.LoggedOut = true
 	session.UpdatedOn = time.Now().UnixMilli()
 	err = s.repo.UpdateSession(ctx, session)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	res, err := s.generateTokenAndLoginResponse(ctx, user, session.DeviceDetails, session.Permissions)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return res.Token, nil
+	return &dto.RefreshTokenResponse{Token: res.Token}, nil
 }
