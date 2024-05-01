@@ -41,7 +41,8 @@ class HistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(
-        Icons.history_edu,
+        Icons.notes,
+        size: 30,
         color: Theme.of(context).primaryColorDark,
       ),
       title: Text(history.operation),
@@ -49,6 +50,7 @@ class HistoryTile extends StatelessWidget {
         SubTextWithIcon(
           icon: Icons.description,
           text: history.data,
+          maxLines: 1,
         ),
         SubTextWithIcon(
           icon: Icons.person,

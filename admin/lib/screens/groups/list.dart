@@ -1,6 +1,8 @@
 import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/groups.dart';
+import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
+import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +28,7 @@ class _GroupsListState extends State<GroupsList> {
 
     final res = await GroupService.getGroups(limit, skip);
     if (res.error.isNotEmpty) {
+      MyToast.error(res.error);
       setState(() {
         error = res.error;
         isLoading = false;
@@ -57,10 +60,8 @@ class _GroupsListState extends State<GroupsList> {
       //add error message
       if (error.isNotEmpty) const MyErrorWidget(),
       //show empty list message
-      if (groups.isEmpty && error.isEmpty)
-        const Center(
-          child: Text("No groups found!"),
-        ),
+      if (groups.isEmpty && !isLoading && error.isEmpty)
+        const EmptyListWidget(),
       // add list of groups
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -15,15 +15,34 @@ class HistoryFiltersWidget extends StatefulWidget {
 class _HistoryFiltersWidgetState extends State<HistoryFiltersWidget> {
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _userIDController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
+  int _userID = 0;
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 20,
       runSpacing: 10,
       children: [
-        //date range picker
+        TextField(
+          controller: _userIDController,
+          maxLines: 1,
+          decoration: const InputDecoration(
+            constraints: BoxConstraints(maxWidth: 150, maxHeight: 40),
+            label: Text('User ID'),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+            isDense: true, // Reduces the height of the input box
+            border: OutlineInputBorder(),
+            hintText: 'e.g. 128974',
+          ),
+          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            _userID = int.tryParse(value) ?? 0;
+          },
+        ),
+        //date picker
         TextField(
           readOnly: true, // Makes the input box read-only
           controller: _startDateController,
@@ -86,14 +105,22 @@ class _HistoryFiltersWidgetState extends State<HistoryFiltersWidget> {
         ),
         //clear button
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            _startDateController.clear();
+            _endDateController.clear();
+            _userIDController.clear();
+            _startDate = null;
+            _endDate = null;
+            _userID = 0;
+          },
           child: const Text('Clear'),
         ),
         ElevatedButton(
           onPressed: () {
             widget.onFetchClicked(HistoryFilters(
                 startDate: _startDate!.millisecondsSinceEpoch,
-                endDate: _endDate!.millisecondsSinceEpoch));
+                endDate: _endDate!.millisecondsSinceEpoch,
+                userID: _userID));
           },
           child: const Text('Fetch'),
         ),

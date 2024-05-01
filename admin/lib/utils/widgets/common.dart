@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class SubTextWithIcon extends StatelessWidget {
   final IconData icon;
   final String text;
-  const SubTextWithIcon({super.key, required this.icon, required this.text});
+  final int maxLines;
+  const SubTextWithIcon(
+      {super.key, required this.icon, required this.text, this.maxLines = 3});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class SubTextWithIcon extends StatelessWidget {
           ),
           Flexible(
               child: Text(
-            maxLines: 3,
+            maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
             text.isNotEmpty ? text : "Not Available",
           ))

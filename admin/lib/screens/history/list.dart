@@ -4,6 +4,7 @@ import 'package:admin/models/history/history.dart';
 import 'package:admin/screens/history/filters.dart';
 import 'package:admin/screens/history/history_tile.dart';
 import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
@@ -69,12 +70,15 @@ class _HistoryListState extends State<HistoryList> {
         if (error.isNotEmpty) const MyErrorWidget(),
         if (error.isEmpty)
           ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
               separatorBuilder: (context, index) => const Divider(),
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return HistoryTile(history: history[index]);
               },
               itemCount: history.length),
+        if (history.isEmpty && !isLoading && error.isEmpty)
+          const EmptyListWidget(),
         // next and prev buttons
         NextAndPrevPaginationButtons(
             onNextClicked: () {

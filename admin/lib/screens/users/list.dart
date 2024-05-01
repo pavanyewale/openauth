@@ -2,6 +2,8 @@ import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
 import 'package:admin/screens/users/filter.dart';
 import 'package:admin/screens/users/user_tile.dart';
+import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,7 @@ class _UserListState extends State<UserList> {
 
     final res = await UsersService.getUsers(filters, offset, limit);
     if (res.error.isNotEmpty) {
+      MyToast.error(res.error);
       setState(() {
         error = res.error;
         isLoading = false;
@@ -80,6 +83,8 @@ class _UserListState extends State<UserList> {
                 separatorBuilder: (context, index) => const Divider(),
                 itemCount: users.length)
             : const MyErrorWidget(),
+        if (users.isEmpty && !isLoading && error.isEmpty)
+          const EmptyListWidget(),
         if (error.isEmpty)
           NextAndPrevPaginationButtons(
               onNextClicked: () {

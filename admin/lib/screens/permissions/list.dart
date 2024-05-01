@@ -2,6 +2,7 @@ import 'package:admin/apis/permissions.dart';
 import 'package:admin/models/permissions.dart';
 import 'package:admin/screens/permissions/permission_tile.dart';
 import 'package:admin/utils/toast.dart';
+import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
@@ -63,9 +64,7 @@ class _PermissionsListState extends State<PermissionsList> {
         ),
         const SizedBox(height: 10),
         if (!isLoading && error.isEmpty && permissions.isEmpty)
-          const Center(
-            child: Text('No permissions found'),
-          ),
+          const EmptyListWidget(),
         if (error.isNotEmpty) const MyErrorWidget(),
 
         // add list of permissions

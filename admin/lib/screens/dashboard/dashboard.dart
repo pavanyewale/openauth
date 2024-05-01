@@ -1,4 +1,5 @@
 //dashboard widget to show the dashboard screen
+import 'package:admin/utils/widgets/comming_soon.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatelessWidget {
@@ -13,9 +14,7 @@ class Dashboard extends StatelessWidget {
         const SizedBox(
           height: 200,
           width: double.infinity,
-          child: Center(
-            child: Text("comming soon...."),
-          ),
+          child: CommingSoon(),
         ),
       ],
     );
