@@ -1,5 +1,4 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
+import 'package:universal_html/html.dart' as html;
 // ignore: library_prefixes
 import 'dart:io' as platformCheck;
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -55,12 +54,12 @@ class WebLocalStorage implements LocalStorage {
 
   @override
   Future<String?> getString(String key) async {
-    return window.localStorage[key];
+    return html.window.localStorage[key];
   }
 
   @override
   void setString(String key, String value) {
-    window.localStorage[key] = value;
+    html.window.localStorage[key] = value;
   }
 }
 
