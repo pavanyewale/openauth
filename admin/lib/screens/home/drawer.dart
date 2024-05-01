@@ -29,10 +29,12 @@ class MyDrawer extends StatelessWidget {
               children: [
                 if (isMobile) const UserAccDrawerHeader(),
                 if (!isMobile)
-                  Image.asset(
-                    "assets/images/logo2.png",
-                    height: 100,
-                  ),
+                  Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset(
+                        "assets/images/logo2.png",
+                        height: 100,
+                      )),
                 ListTile(
                   leading: const Icon(Icons.dashboard),
                   title: const Text('Dashboard'),

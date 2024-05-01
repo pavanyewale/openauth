@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
       centerTitle: false,
       title: Image.asset(
         "assets/images/logo2.png",
-        height: 50,
+        height: 30,
       ),
     );
 

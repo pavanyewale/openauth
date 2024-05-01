@@ -28,7 +28,10 @@ class LogoutButton extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop();
               },
-              child: const Text('Logout'),
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );
