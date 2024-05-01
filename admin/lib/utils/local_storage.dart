@@ -3,6 +3,7 @@ import 'dart:html';
 // ignore: library_prefixes
 import 'dart:io' as platformCheck;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class LocalStorage {
   void setString(String key, String value);
@@ -24,6 +25,8 @@ abstract class LocalStorage {
 }
 
 class IOSLocalStorage implements LocalStorage {
+  final SharedPreferences _sharedPreferences =
+      SharedPreferences.getInstance() as SharedPreferences;
   IOSLocalStorage._privateConstructor();
 
   static final IOSLocalStorage _instance =
@@ -32,16 +35,14 @@ class IOSLocalStorage implements LocalStorage {
   factory IOSLocalStorage() => _instance;
 
   @override
-  Future<String> getString(String key) {
-    // TODO: implement getString
-    throw UnimplementedError();
+  Future<String> getString(String key) async {
+    return _sharedPreferences.getString(key) ?? '';
   }
 
   @override
   void setString(String key, String value) {
-    // TODO: implement setString
+    _sharedPreferences.setString(key, value);
   }
-  
 }
 
 class WebLocalStorage implements LocalStorage {
@@ -61,10 +62,11 @@ class WebLocalStorage implements LocalStorage {
   void setString(String key, String value) {
     window.localStorage[key] = value;
   }
-  
 }
 
 class AndroidLocalStorage implements LocalStorage {
+  final SharedPreferences _sharedPreferences =
+      SharedPreferences.getInstance() as SharedPreferences;
   AndroidLocalStorage._privateConstructor();
 
   static final AndroidLocalStorage _instance =
@@ -73,14 +75,12 @@ class AndroidLocalStorage implements LocalStorage {
   factory AndroidLocalStorage() => _instance;
 
   @override
-  Future<String> getString(String key) {
-    // TODO: implement getString
-    throw UnimplementedError();
+  Future<String> getString(String key) async {
+    return _sharedPreferences.getString(key) ?? '';
   }
 
   @override
   void setString(String key, String value) {
-    // TODO: implement setString
+    _sharedPreferences.setString(key, value);
   }
-  
 }
