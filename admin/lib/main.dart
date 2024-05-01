@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
       title: 'OpenAuth',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 39, 2, 34)),
+            seedColor: const Color.fromARGB(255, 0, 80, 129),
+            secondary: const Color.fromARGB(255, 94, 53, 54)),
         useMaterial3: true,
       ),
       home: const MainScreen(),

@@ -15,10 +15,9 @@ class HomeScreen extends StatelessWidget {
     // appbar
     AppBar appbar = AppBar(
       centerTitle: false,
-      title: Text(
-        "OpenAuth",
-        style: TextStyle(
-            color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+      title: Image.asset(
+        "assets/images/logo2.png",
+        height: 50,
       ),
     );
 

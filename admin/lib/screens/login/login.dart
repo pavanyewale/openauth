@@ -13,13 +13,9 @@ class LoginScreen extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 500),
               child: Column(children: [
-                Text(
-                  "Welcome to OpenAuth",
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Image.asset(
+                  "assets/images/logo.png",
+                  height: 200,
                 ),
                 const SizedBox(
                   height: 30,

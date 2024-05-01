@@ -1,14 +1,16 @@
 import 'dart:convert';
+import 'package:admin/models/groups/filters.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/widgets/login/service.dart';
 import 'package:http/http.dart' as http;
 
 class GroupService {
-  static Future<GetGroupsResponse> getGroups(int limit, int offset) async {
+  static Future<GetGroupsResponse> getGroups(
+      GroupFilters filters, int limit, int offset) async {
     final baseUrl = BaseURL.instance.baseURL;
-    final url =
-        Uri.parse('$baseUrl/openauth/group?offset=$offset&limit=$limit');
+    final url = Uri.parse(
+        '$baseUrl/openauth/group?offset=$offset&limit=$limit&name=${filters.name ?? ''}');
     try {
       final response = await http.get(
         url,

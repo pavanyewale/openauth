@@ -1,5 +1,7 @@
 import 'package:admin/apis/permissions.dart';
-import 'package:admin/models/permissions.dart';
+import 'package:admin/models/permissions/filters.dart';
+import 'package:admin/models/permissions/permissions.dart';
+import 'package:admin/screens/permissions/filters.dart';
 import 'package:admin/screens/permissions/permission_tile.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
@@ -20,13 +22,14 @@ class _PermissionsListState extends State<PermissionsList> {
   int skip = 0;
   bool isLoading = false;
   String error = '';
+  PermissionsFilters filters = PermissionsFilters();
 
   void fetchPermissions() async {
     setState(() {
       isLoading = true;
     });
 
-    final res = await PermissionService.getPermissions(skip, limit);
+    final res = await PermissionService.getPermissions(filters, skip, limit);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -59,10 +62,11 @@ class _PermissionsListState extends State<PermissionsList> {
 
       // add error message
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const SizedBox(
-          height: 10,
-        ),
-        const SizedBox(height: 10),
+        PermissionsFilterWidget(onFetchClicked: (filters) {
+          filters = filters;
+          fetchPermissions();
+        }),
+        const Divider(),
         if (!isLoading && error.isEmpty && permissions.isEmpty)
           const EmptyListWidget(),
         if (error.isNotEmpty) const MyErrorWidget(),

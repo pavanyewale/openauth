@@ -7,11 +7,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-      child: Text(
-        "Welcome to OpenAuth",
-        style: TextStyle(
-            color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-      ),
+      child: Image.asset("assets/images/logo.png", height: 300),
     ));
   }
 }

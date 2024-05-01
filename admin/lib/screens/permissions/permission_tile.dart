@@ -1,5 +1,5 @@
 import 'package:admin/apis/permissions.dart';
-import 'package:admin/models/permissions.dart';
+import 'package:admin/models/permissions/permissions.dart';
 import 'package:admin/screens/permissions/edit_dialog.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
@@ -18,7 +18,7 @@ class PermissionTile extends StatelessWidget {
       key: ValueKey(permission.id),
       leading: Icon(
         Icons.security,
-        color: Theme.of(context).primaryColorDark,
+        color: Theme.of(context).colorScheme.secondary,
       ),
       title: Text(permission.name),
       subtitle: Wrap(

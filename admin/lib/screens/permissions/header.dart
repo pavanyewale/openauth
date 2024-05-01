@@ -1,4 +1,4 @@
-import 'package:admin/models/permissions.dart';
+import 'package:admin/models/permissions/permissions.dart';
 import 'package:admin/screens/permissions/edit_dialog.dart';
 import 'package:flutter/material.dart';
 

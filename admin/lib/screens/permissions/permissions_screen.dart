@@ -16,6 +16,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PermissionHeader(),
+        SizedBox(height: 20),
         PermissionsList(),
       ],
     );

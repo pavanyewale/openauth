@@ -29,12 +29,9 @@ class MyDrawer extends StatelessWidget {
               children: [
                 if (isMobile) const UserAccDrawerHeader(),
                 if (!isMobile)
-                  ListTile(
-                    title: Text('OpenAuth',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold)),
+                  Image.asset(
+                    "assets/images/logo2.png",
+                    height: 100,
                   ),
                 ListTile(
                   leading: const Icon(Icons.dashboard),

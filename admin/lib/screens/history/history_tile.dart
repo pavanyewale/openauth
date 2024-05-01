@@ -43,7 +43,7 @@ class HistoryTile extends StatelessWidget {
       leading: Icon(
         Icons.notes,
         size: 30,
-        color: Theme.of(context).primaryColorDark,
+        color: Theme.of(context).colorScheme.secondary,
       ),
       title: Text(history.operation),
       subtitle: Wrap(spacing: 20, runSpacing: 10, children: [

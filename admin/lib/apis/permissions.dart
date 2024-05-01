@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'package:admin/models/permissions.dart';
+import 'package:admin/models/permissions/filters.dart';
+import 'package:admin/models/permissions/permissions.dart';
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/widgets/login/service.dart';
 import 'package:http/http.dart' as http;
 
 class PermissionService {
   static Future<GetPermissionsResponse> getPermissions(
-      int offset, int limit) async {
+      PermissionsFilters filters, int offset, int limit) async {
     final baseUrl = BaseURL.instance.baseURL;
-    final url =
-        Uri.parse('$baseUrl/openauth/permissions?offset=$offset&limit=$limit');
+    final url = Uri.parse(
+        '$baseUrl/openauth/permissions?offset=$offset&limit=$limit&name=${filters.name ?? ''}&category=${filters.category ?? ''}');
     try {
       final response = await http.get(
         url,

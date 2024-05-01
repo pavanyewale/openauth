@@ -1,5 +1,5 @@
 import 'package:admin/apis/permissions.dart';
-import 'package:admin/models/permissions.dart';
+import 'package:admin/models/permissions/permissions.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:flutter/material.dart';
 
