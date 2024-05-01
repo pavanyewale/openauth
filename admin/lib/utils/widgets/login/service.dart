@@ -102,10 +102,12 @@ class LoginService extends ChangeNotifier {
         _saveAuthToken("");
         return res;
       } else {
-        return LogoutResponse.fromErrorJson(json.decode(response.body));
+        _saveAuthToken('');
+        return LogoutResponse(message: "logged out successfully!", error: "");
       }
     } catch (e) {
-      return LogoutResponse(message: "", error: "something went wrong!");
+      _saveAuthToken('');
+      return LogoutResponse(message: "logged out successfully!", error: "");
     }
   }
 }

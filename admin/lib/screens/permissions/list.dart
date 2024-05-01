@@ -1,7 +1,6 @@
 import 'package:admin/apis/permissions.dart';
 import 'package:admin/models/permissions.dart';
 import 'package:admin/screens/permissions/permission_tile.dart';
-import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';

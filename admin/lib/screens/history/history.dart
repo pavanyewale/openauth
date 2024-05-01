@@ -10,6 +10,7 @@ class HistoryScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("History", style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 20),
         const HistoryList()
       ],
     );

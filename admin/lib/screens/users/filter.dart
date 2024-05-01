@@ -19,7 +19,7 @@ class _UsersFiltersState extends State<UsersFilters> {
   @override
   Widget build(BuildContext context) {
     const boxConstrants = BoxConstraints(maxWidth: 150, maxHeight: 40);
-    ;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
