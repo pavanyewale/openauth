@@ -36,4 +36,4 @@ INSERT INTO user_permissions (user_id, permission_id, created_by_user, created_o
 SELECT u.id, p.id, 1, 0, 0
 FROM users u
 JOIN permissions p ON p.name = 'SUPER_USER'
-WHERE u.username = 'root';
+WHERE u.username = 'admin';

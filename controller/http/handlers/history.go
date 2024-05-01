@@ -4,6 +4,7 @@ import (
 	"context"
 	"openauth/models/dto"
 	"openauth/utils/customerrors"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -40,10 +41,47 @@ func (hh *HistoryHandler) Register(router gin.IRouter) {
 // @Router /openauth/history [get]
 func (hh *HistoryHandler) getHistory(ctx *gin.Context) {
 	var req dto.HistoryRequest
-	if err := ctx.ShouldBindQuery(&req); err != nil {
-		WriteError(ctx, customerrors.BAD_REQUEST_ERROR(err.Error()))
-		return
+
+	startDateStr := ctx.Query("startDate")
+	if startDateStr != "" {
+		startDate, err := strconv.ParseInt(startDateStr, 10, 64)
+		if err != nil {
+			WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid start date"))
+			return
+		}
+		req.StartDate = startDate
 	}
+
+	endDateStr := ctx.Query("endDate")
+	if endDateStr != "" {
+		endDate, err := strconv.ParseInt(endDateStr, 10, 64)
+		if err != nil {
+			WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid end date"))
+			return
+		}
+		req.EndDate = endDate
+	}
+
+	limitStr := ctx.Query("limit")
+	if limitStr != "" {
+		limit, err := strconv.ParseInt(limitStr, 10, 64)
+		if err != nil {
+			WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid limit"))
+			return
+		}
+		req.Limit = limit
+	}
+
+	offsetStr := ctx.Query("offset")
+	if offsetStr != "" {
+		offset, err := strconv.ParseInt(offsetStr, 10, 64)
+		if err != nil {
+			WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid offset"))
+			return
+		}
+		req.Offset = offset
+	}
+
 	if req.StartDate == 0 {
 		req.StartDate = time.Now().Add(-time.Hour * 24 * 7).UnixMilli()
 	}

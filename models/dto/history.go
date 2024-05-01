@@ -3,7 +3,6 @@ package dto
 // HistoryRequest struct
 
 type HistoryRequest struct {
-	//quuery params tags
 	StartDate int64 `query:"startDate"`
 	EndDate   int64 `query:"endDate"`
 	Limit     int64 `query:"limit"`

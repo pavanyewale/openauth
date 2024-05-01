@@ -82,15 +82,11 @@ func (ph *UserHandler) GetUsersByFilter(c *gin.Context) {
 	if id, err := strconv.ParseInt(c.Query("userId"), 10, 64); err == nil {
 		filter.UserId = id
 	}
-	if username := c.Query("username"); username != "" {
-		filter.Username = username
-	}
-	if email := c.Query("email"); email != "" {
-		filter.Email = email
-	}
-	if mobile := c.Query("mobile"); mobile != "" {
-		filter.Mobile = mobile
-	}
+	filter.Username = c.Query("username")
+
+	filter.Email = c.Query("email")
+	filter.Mobile = c.Query("mobile")
+
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil || limit == 0 || limit > 100 {
 		limit = 10

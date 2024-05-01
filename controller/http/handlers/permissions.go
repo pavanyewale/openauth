@@ -106,20 +106,6 @@ func (ph *PermissionsHandler) CreatePermission(ctx *gin.Context) {
 // @Success 200 {object} dto.PermissionDetails
 // @Router /openauth/permissions/{id} [get]
 func (ph *PermissionsHandler) GetPermissionDetails(ctx *gin.Context) {
-	// Get user ID and permissions from the context
-	_, permissions, err := utils.Get_UserId_Permissions(ctx)
-	if err != nil {
-		WriteError(ctx, err)
-		return
-	}
-
-	// Validate user permissions for viewing permission details
-	permitted := utils.IsPermited(permissions, constants.EDIT_PERMISSIONS_PERMISSIONS)
-	if !permitted {
-		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
-		return
-	}
-
 	// Get permission ID from the request URL
 	permissionID, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
