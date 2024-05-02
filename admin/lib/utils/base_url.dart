@@ -13,6 +13,12 @@ class BaseURL {
   // Getter to access the singleton instance
   static BaseURL get instance => _instance;
 
+  void setBaseURL(String url){
+    if (url.isNotEmpty){
+      baseURL = url;
+    }
+  }
+
   void setEnv(String env){
     baseURL = baseURLMap[env] == null ? baseURLMap["prod"].toString() : baseURLMap[env].toString();
   }

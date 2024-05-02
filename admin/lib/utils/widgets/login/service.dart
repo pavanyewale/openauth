@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 
 class LoginService extends ChangeNotifier {
+  bool isBaseURLSelected = false;
   bool isLoggedIn = false;
   String authToken = "";
   User user = User(
@@ -22,7 +23,11 @@ class LoginService extends ChangeNotifier {
 
   // Getter to access the singleton instance
   static LoginService get instance => _instance;
-
+  
+  markBaseURLSelected(){
+    isBaseURLSelected = true;
+    notifyListeners();  
+  }
   updateUser(String token) {
     Map<String, dynamic> decodedToken = Jwt.parseJwt(token);
     user = User.fromJson(jsonDecode(decodedToken["userDetails"]));
@@ -110,4 +115,6 @@ class LoginService extends ChangeNotifier {
       return LogoutResponse(message: "logged out successfully!", error: "");
     }
   }
+
+
 }

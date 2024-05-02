@@ -1,6 +1,7 @@
 import 'package:admin/screens/home/home.dart';
 import 'package:admin/screens/login/login.dart';
 import 'package:admin/screens/splash_screen.dart';
+import 'package:admin/utils/widgets/base_url_selection_screen.dart';
 import 'package:admin/utils/widgets/login/service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,9 @@ class MainScreen extends StatelessWidget {
         future: provider.loadAuthTokenFromLocal(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
+            if (!provider.isBaseURLSelected){
+              return const BaseURLSelectionScreen();
+            }
             if (provider.isLoggedIn) {
               return const HomeScreen();
             } else {
