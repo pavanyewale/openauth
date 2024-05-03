@@ -17,11 +17,12 @@ class CountWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        // get a random color
+        // get a random color to generate dark colors only
+
         color: Color.fromRGBO(
-          Random().nextInt(256),
-          Random().nextInt(256),
-          Random().nextInt(256),
+          Random().nextInt(150) + 30,
+          Random().nextInt(150) + 30,
+          Random().nextInt(150) + 30,
           1,
         ),
         borderRadius: BorderRadius.circular(10),

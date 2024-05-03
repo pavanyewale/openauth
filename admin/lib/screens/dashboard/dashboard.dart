@@ -44,26 +44,25 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(
-            height: 20,
-          ),
-          if (isLoading)
-            const Center(
-              child: CircularProgressIndicator(),
-            ),
-          if (error.isNotEmpty) const MyErrorWidget(),
-          if (dashboards.isEmpty && !isLoading) const EmptyListWidget(),
-          if (error.isEmpty)
-            Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              children: dashboards,
-            )
-        ]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(
+        height: 20,
+      ),
+      if (isLoading)
+        const Center(
+          child: CircularProgressIndicator(),
+        ),
+      if (error.isNotEmpty) const MyErrorWidget(),
+      if (dashboards.isEmpty && !isLoading) const EmptyListWidget(),
+      if (error.isEmpty)
+        Center(
+            child: Wrap(
+          spacing: 20,
+          runSpacing: 20,
+          alignment: WrapAlignment.center,
+          children: dashboards,
+        ))
+    ]);
   }
 }
