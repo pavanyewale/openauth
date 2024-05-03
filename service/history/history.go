@@ -24,7 +24,7 @@ func NewService(r Reposiory) *Service {
 }
 
 func (s *Service) AddLogAsync(ctx context.Context, operation constants.Operation, data any, createdByUser int64) {
-	s.AddLog(ctx, operation, data, createdByUser)
+	go s.AddLog(ctx, operation, data, createdByUser)
 }
 
 func (s *Service) AddLog(ctx context.Context, operation constants.Operation, data any, createdByUser int64) error {

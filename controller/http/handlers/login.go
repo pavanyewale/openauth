@@ -19,6 +19,7 @@ type AuthService interface {
 	Authenticate(ctx context.Context, req *dto.AuthRequest) (*dto.AuthenticationResponse, error)
 	RefreshToken(ctx context.Context, token string) (*dto.RefreshTokenResponse, error)
 	Logout(ctx context.Context, token string) error
+	ResetPassword(ctx context.Context, req *dto.ResetPasswordRequest) error
 }
 
 func NewLoginHandler(service AuthService) *LoginHandler {

@@ -20,6 +20,7 @@ var (
 	ERROR_PERMISSION_DENIED         = &Error{Message: "permission denied", Code: http.StatusForbidden}
 	ERROR_DATABASE_UNIQUE_KEY       = &Error{Message: "unique key failed", Code: http.StatusBadRequest}
 	ERROR_DATABASE_RECORD_NOT_FOUND = &Error{Message: "record not found", Code: http.StatusNotFound}
+	ERROR_INTERNAL_SERVER_ERROR     = &Error{Message: "internal server error", Code: http.StatusInternalServerError}
 )
 
 func BAD_REQUEST_ERROR(message string, args ...any) *Error {

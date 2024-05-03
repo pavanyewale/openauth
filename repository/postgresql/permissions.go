@@ -258,3 +258,14 @@ func (r *Repository) DeleteUserPermissions(ctx context.Context, userId int64, pe
 
 	return nil
 }
+
+// get permissions count
+func (r *Repository) GetTotalPermissionCount(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.conn.QueryRowContext(ctx, "SELECT count(*) FROM permissions").Scan(&count)
+	if err != nil {
+		logger.Error(ctx, "failed to get permissions count: %v", err.Error())
+		return 0, customerrors.ERROR_DATABASE
+	}
+	return count, nil
+}

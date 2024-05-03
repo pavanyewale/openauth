@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"openauth/service/authentication"
+	"openauth/service/dashboard"
 	"openauth/service/group"
 	"openauth/service/history"
 	"openauth/service/otp"
@@ -19,6 +20,7 @@ type ServiceFactory struct {
 	authService       *authentication.Service
 	historyService    *history.Service
 	userService       *user.Service
+	dashboardService  *dashboard.Service
 }
 
 func (s *ServiceFactory) GetOTPService() *otp.Service {
@@ -49,6 +51,10 @@ func (s *ServiceFactory) GetUserService() *user.Service {
 	return s.userService
 }
 
+func (s *ServiceFactory) GetDashboardService() *dashboard.Service {
+	return s.dashboardService
+}
+
 type Config struct {
 	OTP  otp.Config
 	Auth authentication.Config
@@ -62,6 +68,7 @@ type Repository interface {
 	permissions.Repository
 	authentication.Repository
 	user.Repository
+	dashboard.Repository
 }
 
 func NewServiceFactory(ctx context.Context, conf *Config, repo Repository) *ServiceFactory {
@@ -74,5 +81,6 @@ func NewServiceFactory(ctx context.Context, conf *Config, repo Repository) *Serv
 	serviceFactory.authService = authentication.NewService(ctx, &conf.Auth, repo, serviceFactory)
 	serviceFactory.groupService = group.NewService(serviceFactory, repo)
 	serviceFactory.userService = user.NewService(serviceFactory, repo)
+	serviceFactory.dashboardService = dashboard.NewService(repo)
 	return serviceFactory
 }

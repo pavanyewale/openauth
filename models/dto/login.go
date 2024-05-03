@@ -14,3 +14,9 @@ type LoginResponse struct {
 	OtpExpriry int64  `json:"otpExpriry"`
 	Message    string `json:"message"`
 }
+
+type ResetPasswordRequest struct {
+	UserId      int64  `json:"userId"`
+	NewPassword string `json:"newPassword"`
+	UpdatedBy   int64  `json:"-"`
+}

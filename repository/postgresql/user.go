@@ -128,3 +128,16 @@ func (r *Repository) UpdateUser(ctx context.Context, user *dao.User) error {
 	}
 	return nil
 }
+
+// get users count
+
+func (r *Repository) GetTotalUserCount(ctx context.Context) (int64, error) {
+	var count int64
+	row := r.conn.QueryRowContext(ctx, "SELECT count(id) FROM users")
+	err := row.Scan(&count)
+	if err != nil {
+		logger.Error(ctx, "failed to get total user count, Err: %s", err.Error())
+		return 0, customerrors.ERROR_DATABASE
+	}
+	return count, nil
+}

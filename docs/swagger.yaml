@@ -58,6 +58,15 @@ definitions:
       username:
         type: string
     type: object
+  dto.Count:
+    properties:
+      key:
+        type: string
+      total:
+        type: integer
+      type:
+        type: string
+    type: object
   dto.CreateGroupRequest:
     properties:
       description:
@@ -96,6 +105,13 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  dto.DashboardResponse:
+    properties:
+      dashboards:
+        items:
+          $ref: '#/definitions/dto.Count'
+        type: array
     type: object
   dto.DeleteGroupRequest:
     properties:
@@ -348,6 +364,47 @@ paths:
       summary: Refresh authentication token
       tags:
       - Authentication
+  /openauth/dashboard:
+    get:
+      consumes:
+      - application/json
+      description: Get dashboard details like total users, groups, permissions
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: AuthToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DashboardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Get dashboard details
+      tags:
+      - Dashboard
   /openauth/group:
     delete:
       consumes:

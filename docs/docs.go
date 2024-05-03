@@ -99,6 +99,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/openauth/dashboard": {
+            "get": {
+                "description": "Get dashboard details like total users, groups, permissions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get dashboard details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer {token}",
+                        "name": "AuthToken",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DashboardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/openauth/group": {
             "get": {
                 "description": "Get a list of all groups with optional limit and offset parameters",
@@ -1406,6 +1468,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Count": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateGroupRequest": {
             "type": "object",
             "properties": {
@@ -1463,6 +1539,17 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.DashboardResponse": {
+            "type": "object",
+            "properties": {
+                "dashboards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Count"
+                    }
                 }
             }
         },

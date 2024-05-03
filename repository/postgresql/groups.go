@@ -204,3 +204,14 @@ func (r *Repository) DeleteUsersFromGroup(ctx context.Context, groupId int64, us
 
 	return nil
 }
+
+// get count of groups
+func (r *Repository) GetTotalGroupCount(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.conn.QueryRowContext(ctx, "SELECT count(*) FROM groups").Scan(&count)
+	if err != nil {
+		logger.Error(ctx, "failed to get groups count: %v", err.Error())
+		return 0, customerrors.ERROR_DATABASE
+	}
+	return count, nil
+}
