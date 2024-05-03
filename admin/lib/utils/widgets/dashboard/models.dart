@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 class DashboardResponse {
   final List<Widget> widgets;
   final String error;
+  final int code;
 
-  DashboardResponse({this.widgets = const [], this.error = ''});
+  DashboardResponse(
+      {this.widgets = const [], this.error = '', this.code = 500});
 
   factory DashboardResponse.fromSuccessJson(Map<String, dynamic> json) {
     return DashboardResponse(
