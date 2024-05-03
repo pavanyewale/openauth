@@ -1,3 +1,4 @@
+import 'package:admin/screens/users/add_new_user/new_user.dart';
 import 'package:flutter/material.dart';
 
 class UserHeader extends StatelessWidget {
@@ -11,7 +12,11 @@ class UserHeader extends StatelessWidget {
         Text("Users", style: Theme.of(context).textTheme.titleLarge),
         ElevatedButton(
           onPressed: () {
-            print("Add user");
+            // navigate to add new user screen
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AddNewUserScreen(userId: 0)));
           },
           child: const Row(children: [
             Icon(Icons.add),

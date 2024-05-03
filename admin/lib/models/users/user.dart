@@ -21,36 +21,36 @@
  */
 
 class UserDetails {
-  final int id;
-  final String firstName;
-  final String middleName;
-  final String lastName;
-  final String username;
-  final String bio;
-  final String mobile;
-  final String email;
-  final bool mobileVerified;
-  final bool emailVerified;
-  final int createdBy;
-  final int createdOn;
-  final int updatedOn;
-  final bool deleted;
+  int id;
+  String firstName;
+  String middleName;
+  String lastName;
+  String username;
+  String bio;
+  String mobile;
+  String email;
+  bool mobileVerified;
+  bool emailVerified;
+  int createdBy;
+  int createdOn;
+  int updatedOn;
+  bool deleted;
 
   UserDetails({
-    required this.id,
-    required this.firstName,
-    required this.middleName,
-    required this.lastName,
-    required this.username,
-    required this.bio,
-    required this.mobile,
-    required this.email,
-    required this.mobileVerified,
-    required this.emailVerified,
-    required this.createdBy,
-    required this.createdOn,
-    required this.updatedOn,
-    required this.deleted,
+    this.id = 0,
+    this.firstName = '',
+    this.middleName = '',
+    this.lastName = '',
+    this.username = '',
+    this.bio = '',
+    this.mobile = '',
+    this.email = '',
+    this.mobileVerified = false,
+    this.emailVerified = false,
+    this.createdBy = 0,
+    this.createdOn = 0,
+    this.updatedOn = 0,
+    this.deleted = false,
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) {
@@ -75,12 +75,12 @@ class UserDetails {
 
 class GetUserResponse {
   final int code;
-  final UserDetails data;
+  final UserDetails? data;
   final String error;
 
   GetUserResponse({
     required this.code,
-    required this.data,
+    this.data,
     this.error = '',
   });
 

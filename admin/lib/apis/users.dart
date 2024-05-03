@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:admin/models/users/delete.dart';
+import 'package:admin/models/users/user.dart';
 import 'package:admin/models/users/users.dart';
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/widgets/login/service.dart';
@@ -59,7 +60,7 @@ class UsersService {
     }
   }
 
-  static Future<GetUsersResponse> getUser(int id) async {
+  static Future<GetUserResponse> getUser(int id) async {
     final baseUrl = BaseURL.instance.baseURL;
     Uri url = Uri.parse('$baseUrl/openauth/user/$id');
 
@@ -74,13 +75,13 @@ class UsersService {
       );
 
       if (response.statusCode == 200) {
-        return GetUsersResponse.fromSuccessJson(json.decode(response.body));
+        return GetUserResponse.fromSuccessJson(json.decode(response.body));
       } else {
-        return GetUsersResponse.fromErrorJson(json.decode(response.body));
+        return GetUserResponse.fromErrorJson(json.decode(response.body));
       }
     } catch (e) {
       print(e);
-      return GetUsersResponse(code: 500, error: "something went wrong!");
+      return GetUserResponse(code: 500, error: "something went wrong!");
     }
   }
 }
