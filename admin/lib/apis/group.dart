@@ -31,4 +31,59 @@ class GroupService {
       return GetGroupsResponse(code: 500, error: "something went wrong!");
     }
   }
+
+  static Future<CreateUpdateGroupResponse> createUpdateGroup(
+      GroupDetails groupDetails) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken
+        },
+        body: json.encode(groupDetails.toCreateUpdateGroupRequest()),
+      );
+
+      if (response.statusCode == 200) {
+        return CreateUpdateGroupResponse.fromSuccessJson(
+            json.decode(response.body));
+      } else {
+        return CreateUpdateGroupResponse.fromErrorJson(
+            json.decode(response.body));
+      }
+    } catch (e) {
+      print(e);
+      return CreateUpdateGroupResponse(
+          code: 500,
+          error: "Something went wrong!",
+          groupDetails: GroupDetails());
+    }
+  }
+
+  static Future<String> deleteGroup(int id) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group/$id');
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return "";
+      } else {
+        return json.decode(response.body)['error'];
+      }
+    } catch (e) {
+      print(e);
+      return "Something went wrong!";
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:admin/screens/groups/edit/edit.dart';
 import 'package:flutter/material.dart';
 
 class GroupHeader extends StatelessWidget {
@@ -12,7 +13,10 @@ class GroupHeader extends StatelessWidget {
         const SizedBox(width: 20),
         ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/groups/add');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const CreateGroupScreen()));
           },
           child: const Row(children: [
             Icon(Icons.add),

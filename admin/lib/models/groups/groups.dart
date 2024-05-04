@@ -1,18 +1,18 @@
 class GroupDetails {
-  final int id;
-  final String name;
-  final String description;
-  final int createdByUser;
-  final int createdOn;
-  final int updatedOn;
+  int id;
+  String name;
+  String description;
+  int createdByUser;
+  int createdOn;
+  int updatedOn;
 
   GroupDetails({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.createdByUser,
-    required this.createdOn,
-    required this.updatedOn,
+    this.id = 0,
+    this.name = '',
+    this.description = '',
+    this.createdByUser = 0,
+    this.createdOn = 0,
+    this.updatedOn = 0,
   });
 
   factory GroupDetails.fromJson(Map<String, dynamic> json) {
@@ -24,6 +24,10 @@ class GroupDetails {
       createdOn: json['createdOn'],
       updatedOn: json['updatedOn'],
     );
+  }
+
+  Map<String, dynamic> toCreateUpdateGroupRequest() {
+    return {'id': id, 'name': name, 'description': description};
   }
 }
 
@@ -52,6 +56,33 @@ class GetGroupsResponse {
   factory GetGroupsResponse.fromErrorJson(Map<String, dynamic> json) {
     return GetGroupsResponse(
       groups: [],
+      error: json['error'],
+      code: json['code'],
+    );
+  }
+}
+
+class CreateUpdateGroupResponse {
+  final GroupDetails groupDetails;
+  final String error;
+  final int code;
+
+  CreateUpdateGroupResponse({
+    required this.groupDetails,
+    this.error = '',
+    required this.code,
+  });
+
+  factory CreateUpdateGroupResponse.fromSuccessJson(Map<String, dynamic> json) {
+    return CreateUpdateGroupResponse(
+      groupDetails: GroupDetails.fromJson(json['data']),
+      code: json['code'],
+    );
+  }
+
+  factory CreateUpdateGroupResponse.fromErrorJson(Map<String, dynamic> json) {
+    return CreateUpdateGroupResponse(
+      groupDetails: GroupDetails(),
       error: json['error'],
       code: json['code'],
     );

@@ -20,7 +20,11 @@ class PermissionTile extends StatelessWidget {
         Icons.security,
         color: Theme.of(context).colorScheme.secondary,
       ),
-      title: Text(permission.name),
+      title: Text(permission.name,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontWeight: FontWeight.bold)),
       subtitle: Wrap(
         spacing: 10,
         runSpacing: 5,

@@ -2,13 +2,12 @@ import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/filters.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/screens/groups/filters.dart';
+import 'package:admin/screens/groups/group_tile.dart';
 import 'package:admin/utils/toast.dart';
-import 'package:admin/utils/widgets/common.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/next_prev.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class GroupsList extends StatefulWidget {
   const GroupsList({super.key});
@@ -42,6 +41,7 @@ class _GroupsListState extends State<GroupsList> {
       groups.clear();
       groups.addAll(res.groups);
       isLoading = false;
+      error = '';
     });
   }
 
@@ -53,7 +53,6 @@ class _GroupsListState extends State<GroupsList> {
 
   @override
   Widget build(BuildContext context) {
-    final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     return
         // add list of groups
         Column(
@@ -78,32 +77,10 @@ class _GroupsListState extends State<GroupsList> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               final group = groups[index];
-              return ListTile(
-                  title: Text(group.name),
-                  subtitle: Column(
-                    children: [
-                      Text(group.description),
-                      SubTextWithIcon(
-                        icon: Icons.person,
-                        text: group.createdByUser.toString(),
-                      ),
-                      SubTextWithIcon(
-                        icon: Icons.date_range,
-                        text: formatter.format(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                group.createdOn)),
-                      ),
-                    ],
-                  ),
-                  //delete button
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.delete,
-                    ),
-                    onPressed: () {
-                      //delete group
-                    },
-                  ));
+              return GroupTile(
+                group: group,
+                onDelete: () => groups.removeAt(index),
+              );
             },
             separatorBuilder: (context, index) => const Divider(),
             itemCount: groups.length),

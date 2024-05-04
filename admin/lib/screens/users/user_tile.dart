@@ -118,7 +118,6 @@ class UserTile extends StatelessWidget {
               } else {
                 MyToast.success("User undeleted successfully!");
               }
-              onDelete();
               // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             },
