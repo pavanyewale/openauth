@@ -113,11 +113,6 @@ definitions:
           $ref: '#/definitions/dto.Count'
         type: array
     type: object
-  dto.DeleteGroupRequest:
-    properties:
-      groupId:
-        type: integer
-    type: object
   dto.DeletePermissionRequest:
     properties:
       permId:
@@ -229,6 +224,8 @@ definitions:
     properties:
       createdOn:
         type: integer
+      deleted:
+        type: boolean
       email:
         type: string
       firstName:
@@ -416,12 +413,11 @@ paths:
         name: AuthToken
         required: true
         type: string
-      - description: Group details
-        in: body
-        name: group
+      - description: Group ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/dto.DeleteGroupRequest'
+        type: integer
       produces:
       - application/json
       responses:

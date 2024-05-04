@@ -4,6 +4,7 @@ import (
 	"context"
 	"openauth/constants"
 	"openauth/models/dto"
+	"openauth/models/filters"
 	"openauth/utils"
 	"openauth/utils/customerrors"
 	"strconv"
@@ -12,13 +13,13 @@ import (
 )
 
 type GroupService interface {
-	CreateGroup(ctx context.Context, req *dto.CreateGroupRequest) (*dto.GroupDetails, error)
+	CreateUpdateGroup(ctx context.Context, req *dto.CreateUpdateGroupRequest) (*dto.GroupDetails, error)
 	GetGroupDetails(ctx context.Context, groupId int64) (*dto.GroupDetails, error)
 	DeleteGroup(ctx context.Context, req *dto.DeleteGroupRequest) error
 	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetailsShort, error)
 	AddUsersToGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
 	RemoveUsersFromGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
-	GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetails, error)
+	GetAllGroups(ctx context.Context, filters *filters.GroupFilter, limit, offset int) ([]*dto.GroupDetails, error)
 }
 
 type GroupHandler struct {
@@ -31,7 +32,7 @@ func NewGroupHandler(groupService GroupService) *GroupHandler {
 
 func (lh *GroupHandler) Register(router gin.IRouter) {
 	router.POST("/openauth/group", lh.CreateGroup)
-	router.DELETE("/openauth/group", lh.DeleteGroup)
+	router.DELETE("/openauth/group/:id", lh.DeleteGroup)
 	router.GET("/openauth/group/:id", lh.GetGroupDetails)
 	router.GET("/openauth/group", lh.GetAllGroups)
 	router.POST("/openauth/group/user", lh.AddUsersToGroup)
@@ -66,7 +67,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 		return
 	}
 
-	var req dto.CreateGroupRequest
+	var req dto.CreateUpdateGroupRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body"))
@@ -80,7 +81,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 	}
 	req.UpdatedbyUserId = userId
 
-	group, err := lh.groupService.CreateGroup(ctx, &req)
+	group, err := lh.groupService.CreateUpdateGroup(ctx, &req)
 	if err != nil {
 		WriteError(ctx, err)
 		return
@@ -95,7 +96,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
-// @Param group body dto.DeleteGroupRequest true "Group details"
+// @Param id path int64 true "Group ID"
 // @Success 200 {object} Response
 // @Failure 400 {object} Response
 // @Failure 401 {object} Response
@@ -117,13 +118,9 @@ func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 
 	var req dto.DeleteGroupRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body"))
-		return
-	}
-	err = req.Validate()
+	req.GroupId, err = strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
-		WriteError(ctx, err)
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid group ID"))
 		return
 	}
 	req.UpdatedbyUserId = userId
@@ -297,6 +294,7 @@ func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
+// @Param name query string false "Group name"
 // @Param limit query int64 false "Limit (default 50)"
 // @Param offset query int64 false "Offset (default 0)"
 // @Success 200 {array} dto.GroupDetails
@@ -328,8 +326,11 @@ func (lh *GroupHandler) GetAllGroups(ctx *gin.Context) {
 	if offset < 0 {
 		offset = 0
 	}
+	var filter filters.GroupFilter
 
-	groups, err := lh.groupService.GetAllGroups(ctx, limit, offset)
+	filter.Name = ctx.Query("name")
+
+	groups, err := lh.groupService.GetAllGroups(ctx, &filter, limit, offset)
 	if err != nil {
 		WriteError(ctx, err)
 		return

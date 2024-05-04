@@ -34,13 +34,14 @@ type DeleteGroupRequest struct {
 	UpdatedbyUserId int64 `json:"-"`
 }
 
-type CreateGroupRequest struct {
+type CreateUpdateGroupRequest struct {
+	ID              int64  `json:"id"`
 	Name            string `json:"name"`
 	Description     string `json:"description"`
 	UpdatedbyUserId int64  `json:"-"`
 }
 
-func (c *CreateGroupRequest) Validate() error {
+func (c *CreateUpdateGroupRequest) Validate() error {
 	if c.Name == "" {
 		return customerrors.BAD_REQUEST_ERROR("name cannot be empty")
 	}

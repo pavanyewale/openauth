@@ -2,14 +2,19 @@ package postgresql
 
 import (
 	"context"
+	"database/sql"
 	"openauth/models/dao"
+	"openauth/models/filters"
 	"openauth/utils/customerrors"
 	"openauth/utils/logger"
+	"time"
 )
 
 func (r *Repository) CreateGroup(ctx context.Context, group *dao.Group) error {
+	group.CreatedOn = time.Now().UnixMilli()
+	group.UpdatedOn = time.Now().UnixMilli()
 	// Prepare the SQL statement
-	query := "INSERT INTO groups (name, description, created_by_user, created_on, updated_on, deleted) VALUES (?, ?, ?, ?, ?, ?)"
+	query := "INSERT INTO groups (name, description, created_by_user, created_on, updated_on, deleted) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -18,9 +23,16 @@ func (r *Repository) CreateGroup(ctx context.Context, group *dao.Group) error {
 	defer stmt.Close()
 
 	// Execute the SQL statement
-	_, err = stmt.ExecContext(ctx, group.Name, group.Description, group.CreatedByUser, group.CreatedOn, group.UpdatedOn, group.Deleted)
+	res := stmt.QueryRowContext(ctx, group.Name, group.Description, group.CreatedByUser, group.CreatedOn, group.UpdatedOn, group.Deleted)
+	if res.Err() != nil {
+		logger.Error(ctx, "failed to execute query: Err: %s", res.Err().Error())
+		return customerrors.ERROR_DATABASE
+	}
+
+	// Get the ID of the newly inserted group
+	err = res.Scan(&group.ID)
 	if err != nil {
-		logger.Error(ctx, "failed to execute query: Err: %s", err.Error())
+		logger.Error(ctx, "failed to scan records: Err: %s", err.Error())
 		return customerrors.ERROR_DATABASE
 	}
 
@@ -29,7 +41,7 @@ func (r *Repository) CreateGroup(ctx context.Context, group *dao.Group) error {
 
 func (r *Repository) DeleteGroupById(ctx context.Context, id int64) error {
 	// Prepare the SQL statement
-	query := "DELETE FROM groups WHERE id = ?"
+	query := "DELETE FROM groups WHERE id = $1"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -49,7 +61,7 @@ func (r *Repository) DeleteGroupById(ctx context.Context, id int64) error {
 
 func (r *Repository) GetGroupById(ctx context.Context, id int64) (*dao.Group, error) {
 	// Prepare the SQL statement
-	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups WHERE id = ?"
+	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups WHERE id = $1"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -73,9 +85,13 @@ func (r *Repository) GetGroupById(ctx context.Context, id int64) (*dao.Group, er
 	return group, nil
 }
 
-func (r *Repository) GetAllGroups(ctx context.Context, limit, offset int) ([]*dao.Group, error) {
+func (r *Repository) GetGroupsByFilter(ctx context.Context, filter *filters.GroupFilter, limit, offset int) ([]*dao.Group, error) {
 	// Prepare the SQL statement
-	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups LIMIT $1 OFFSET $2"
+	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups WHERE 1=1"
+	if filter.Name != "" {
+		query += " AND name like '%" + filter.Name + "%'"
+	}
+	query += " LIMIT $1 OFFSET $2"
 	stmt, err := r.conn.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
@@ -214,4 +230,60 @@ func (r *Repository) GetTotalGroupCount(ctx context.Context) (int64, error) {
 		return 0, customerrors.ERROR_DATABASE
 	}
 	return count, nil
+}
+
+// get group by filter
+
+func (r *Repository) GetGroupByFilter(ctx context.Context, filter *filters.GroupFilter) (*dao.Group, error) {
+	// Prepare the SQL statement
+	query := "SELECT id, name, description, created_by_user, created_on, updated_on, deleted FROM groups WHERE 1=1"
+	if filter.Name != "" {
+		query += " AND name ='" + filter.Name + "'"
+	}
+	stmt, err := r.conn.PrepareContext(ctx, query)
+	if err != nil {
+		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
+		return nil, customerrors.ERROR_DATABASE
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement
+	row := stmt.QueryRowContext(ctx)
+
+	// Create a new Group struct to store the result
+	group := &dao.Group{}
+
+	// Scan the row into the Group struct
+	err = row.Scan(&group.ID, &group.Name, &group.Description, &group.CreatedByUser, &group.CreatedOn, &group.UpdatedOn, &group.Deleted)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, customerrors.ERROR_DATABASE_RECORD_NOT_FOUND
+		}
+		logger.Error(ctx, "failed to scan records: Err: %s", err.Error())
+		return nil, customerrors.ERROR_DATABASE
+	}
+
+	return group, nil
+}
+
+// update group
+func (r *Repository) UpdateGroup(ctx context.Context, group *dao.Group) error {
+	group.UpdatedOn = time.Now().UnixMilli()
+	// Prepare the SQL statement
+	query := "UPDATE groups SET name=$1, description=$2, created_by_user=$3, created_on=$4, updated_on=$5, deleted=$6 WHERE id=$7"
+	stmt, err := r.conn.PrepareContext(ctx, query)
+	if err != nil {
+		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
+		return customerrors.ERROR_DATABASE
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement
+	_, err = stmt.ExecContext(ctx, group.Name, group.Description, group.CreatedByUser, group.CreatedOn, group.UpdatedOn, group.Deleted, group.ID)
+	if err != nil {
+		logger.Error(ctx, "failed to execute query: Err: %s", err.Error())
+		return customerrors.ERROR_DATABASE
+	}
+
+	return nil
 }

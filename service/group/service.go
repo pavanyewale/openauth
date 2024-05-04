@@ -5,6 +5,7 @@ import (
 	"openauth/constants"
 	"openauth/models/dao"
 	"openauth/models/dto"
+	"openauth/models/filters"
 	"openauth/service/history"
 	"openauth/utils/customerrors"
 	"time"
@@ -12,9 +13,11 @@ import (
 
 type Repository interface {
 	CreateGroup(ctx context.Context, group *dao.Group) error
+	UpdateGroup(ctx context.Context, group *dao.Group) error
 	DeleteGroupById(ctx context.Context, id int64) error
+	GetGroupByFilter(ctx context.Context, filter *filters.GroupFilter) (*dao.Group, error)
 	GetGroupById(ctx context.Context, id int64) (*dao.Group, error)
-	GetAllGroups(ctx context.Context, limit, offset int) ([]*dao.Group, error)
+	GetGroupsByFilter(ctx context.Context, filter *filters.GroupFilter, limit, offset int) ([]*dao.Group, error)
 	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dao.Group, error)
 	CreateUserGroups(ctx context.Context, userGroups []*dao.UserGroup) error
 	DeleteUsersFromGroup(ctx context.Context, groupId int64, userIds []int64) error
@@ -33,16 +36,30 @@ func NewService(sf serviceFactory, repo Repository) *Service {
 	return &Service{serviceFactory: sf, repo: repo}
 }
 
-func (s *Service) CreateGroup(ctx context.Context, req *dto.CreateGroupRequest) (*dto.GroupDetails, error) {
+func (s *Service) CreateUpdateGroup(ctx context.Context, req *dto.CreateUpdateGroupRequest) (*dto.GroupDetails, error) {
 	go s.serviceFactory.GetHistoryService().AddLogAsync(ctx, constants.OPERATION_CREATE_GROUP, req, req.UpdatedbyUserId)
 
 	var group dao.Group
+
+	grp, err := s.repo.GetGroupByFilter(ctx, &filters.GroupFilter{Name: req.Name})
+	if err != nil && err != customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+		return nil, err
+	}
+	if grp != nil {
+		if grp.ID != req.ID {
+			return nil, customerrors.BAD_REQUEST_ERROR("group already exists with given name.")
+		}
+		group.CreatedOn = grp.CreatedOn
+	}
+	group.ID = req.ID
 	group.Name = req.Name
 	group.Description = req.Description
-	group.CreatedByUser = req.UpdatedbyUserId
-	group.CreatedOn = time.Now().UnixMilli()
-	group.UpdatedOn = time.Now().UnixMilli()
-	err := s.repo.CreateGroup(ctx, &group)
+	group.CreatedByUser = grp.CreatedByUser
+	if req.ID == 0 {
+		err = s.repo.CreateGroup(ctx, &group)
+	} else {
+		err = s.repo.UpdateGroup(ctx, &group)
+	}
 	if err != nil {
 		if err == customerrors.ERROR_DATABASE_UNIQUE_KEY {
 			return nil, customerrors.BAD_REQUEST_ERROR("group already exists with given name.")
@@ -81,8 +98,8 @@ func (s *Service) GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.G
 	return userGroups, nil
 }
 
-func (s *Service) GetAllGroups(ctx context.Context, limit, offset int) ([]*dto.GroupDetails, error) {
-	groups, err := s.repo.GetAllGroups(ctx, limit, offset)
+func (s *Service) GetAllGroups(ctx context.Context, filter *filters.GroupFilter, limit, offset int) ([]*dto.GroupDetails, error) {
+	groups, err := s.repo.GetGroupsByFilter(ctx, filter, limit, offset)
 	if err != nil {
 		return nil, err
 	}

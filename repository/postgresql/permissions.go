@@ -11,6 +11,8 @@ import (
 )
 
 func (r *Repository) CreatePermission(ctx context.Context, permission *dao.Permission) error {
+	permission.CreatedOn = time.Now().UnixMilli()
+	permission.UpdatedOn = time.Now().UnixMilli()
 	_, err := r.conn.ExecContext(ctx, `
 		INSERT INTO permissions (name, category, description, created_by_user, created_on, updated_on, deleted)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)

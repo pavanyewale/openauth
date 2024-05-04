@@ -315,13 +315,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Group details",
-                        "name": "group",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.DeleteGroupRequest"
-                        }
+                        "type": "integer",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1586,14 +1584,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.DeleteGroupRequest": {
-            "type": "object",
-            "properties": {
-                "groupId": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.DeletePermissionRequest": {
             "type": "object",
             "properties": {
@@ -1765,6 +1755,9 @@ const docTemplate = `{
             "properties": {
                 "createdOn": {
                     "type": "integer"
+                },
+                "deleted": {
+                    "type": "boolean"
                 },
                 "email": {
                     "type": "string"
