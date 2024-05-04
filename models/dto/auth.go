@@ -8,6 +8,7 @@ type AuthResponse struct {
 type AuthRequest struct {
 	Permissions bool   `json:"permissions"`
 	Token       string `json:"-"`
+	SessionID   int64  `json:"-"`
 }
 
 type AuthenticationResponse struct {

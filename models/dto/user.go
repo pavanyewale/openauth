@@ -45,6 +45,7 @@ type ShortUserDetails struct {
 	Mobile    string `json:"mobile"`
 	Email     string `json:"email"`
 	CreatedOn int64  `json:"createdOn"`
+	Deleted   bool   `json:"deleted"`
 }
 
 func (ud *ShortUserDetails) FromUser(u *dao.User) *ShortUserDetails {
@@ -55,6 +56,7 @@ func (ud *ShortUserDetails) FromUser(u *dao.User) *ShortUserDetails {
 	ud.Mobile = u.Mobile
 	ud.Email = u.Email
 	ud.CreatedOn = u.CreatedOn
+	ud.Deleted = u.Deleted
 	return ud
 }
 
@@ -77,6 +79,7 @@ func (ud *CreateUpdateUserRequest) ToUser() *dao.User {
 		FirstName:  ud.FirstName,
 		MiddleName: ud.MiddleName,
 		LastName:   ud.LastName,
+		Username:   ud.Username,
 		Bio:        ud.Bio,
 		Mobile:     ud.Mobile,
 		Email:      ud.Email,

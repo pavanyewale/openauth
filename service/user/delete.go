@@ -24,3 +24,19 @@ func (s *Service) DeleteUserById(ctx context.Context, id int64, deletedByUserId 
 	user.Deleted = true
 	return s.repo.UpdateUser(ctx, user)
 }
+
+func (s *Service) UndeleteUserById(ctx context.Context, id int64, undeletedByUserId int64) error {
+	user, err := s.repo.GetUserById(ctx, id)
+	if err != nil {
+		if err == customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
+			return customerrors.BAD_REQUEST_ERROR("user not found")
+		}
+		return err
+	}
+	if !user.Deleted {
+		return customerrors.BAD_REQUEST_ERROR("user not deleted")
+	}
+
+	user.Deleted = false
+	return s.repo.UpdateUser(ctx, user)
+}

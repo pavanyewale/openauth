@@ -1190,6 +1190,28 @@ paths:
       summary: Get user details by id
       tags:
       - user
+  /openauth/user/undelete/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Undelete user by id
+      operationId: undelete-user-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Undelete user by id
+      tags:
+      - user
   /openauth/user/verify:
     put:
       consumes:

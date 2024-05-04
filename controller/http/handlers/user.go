@@ -20,8 +20,9 @@ type service interface {
 	GetUserDetailsById(ctx context.Context, id int64) (*dto.UserDetails, error)
 	GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dto.ShortUserDetails, error)
 	DeleteUserById(ctx context.Context, id int64, deletedByUserId int64) error
-	CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error
+	CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) (*dto.UserDetails, error)
 	VerifyAvailability(ctx context.Context, details *dto.VerifyAvailabilityRequest) (*dto.VerifyAvailabilityResponse, error)
+	UndeleteUserById(ctx context.Context, id int64, updatedByUserId int64) error
 }
 
 func NewUserHandler(service service) *UserHandler {
@@ -34,6 +35,7 @@ func (ph *UserHandler) Register(router gin.IRouter) {
 	router.DELETE("/openauth/user/:id", ph.DeleteUserById)
 	router.POST("/openauth/user", ph.CreateUpdateUser)
 	router.PUT("/openauth/user/verify", ph.VerifyAvailability)
+	router.PUT("/openauth/user/undelete/:id", ph.UndeleteUserById)
 }
 
 // GetUserDetailsById godoc
@@ -159,6 +161,10 @@ func (ph *UserHandler) CreateUpdateUser(ctx *gin.Context) {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid user details"))
 		return
 	}
+	if user.Username == "" && user.Email == "" && user.Mobile == "" {
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("username, email or mobile is required"))
+		return
+	}
 	var updatedByUserId int64
 	if user.ID != 0 {
 		updatedByUserId, permissions, err := utils.Get_UserId_Permissions(ctx)
@@ -177,12 +183,12 @@ func (ph *UserHandler) CreateUpdateUser(ctx *gin.Context) {
 		}
 	}
 
-	err := ph.service.CreateUpdateUser(ctx, &user, updatedByUserId)
+	userDetails, err := ph.service.CreateUpdateUser(ctx, &user, updatedByUserId)
 	if err != nil {
 		WriteError(ctx, err)
 		return
 	}
-	WriteSuccess(ctx, user)
+	WriteSuccess(ctx, userDetails)
 }
 
 // VerifyAvailability godoc
@@ -207,4 +213,42 @@ func (ph *UserHandler) VerifyAvailability(ctx *gin.Context) {
 		return
 	}
 	WriteSuccess(ctx, response)
+}
+
+// UndeleteUserById godoc
+// @Summary Undelete user by id
+// @Description Undelete user by id
+// @ID undelete-user-by-id
+// @Tags user
+// @Accept  json
+// @Produce  json
+// @Param id path int true "User ID"
+// @Success 200 {object} Response
+// @Router /openauth/user/undelete/{id} [put]
+func (ph *UserHandler) UndeleteUserById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	userID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid user id"))
+		return
+	}
+	updatedByUserId, permissions, err := utils.Get_UserId_Permissions(ctx)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+	// Check if the user has permission to undelete user
+	//validating permissions
+	permitted := utils.IsPermited(permissions, constants.DELETE_USER_PERMISSIONS)
+	if !permitted {
+		WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
+		return
+	}
+
+	err = ph.service.UndeleteUserById(ctx, userID, updatedByUserId)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+	WriteSuccess(ctx, "User undeleted successfully")
 }

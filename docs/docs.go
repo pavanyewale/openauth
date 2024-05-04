@@ -1276,6 +1276,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/openauth/user/undelete/{id}": {
+            "put": {
+                "description": "Undelete user by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Undelete user by id",
+                "operationId": "undelete-user-by-id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/openauth/user/verify": {
             "put": {
                 "description": "Verify availability of username, email, mobile",

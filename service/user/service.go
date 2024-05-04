@@ -84,6 +84,7 @@ func (s *Service) validateMobile(ctx context.Context, mobile string, otp string)
 			if err != nil {
 				return err
 			}
+			return nil
 		}
 	}
 	return customerrors.BAD_REQUEST_ERROR("mobile already exists with another user")
@@ -105,75 +106,82 @@ func (s *Service) isValidEmail(ctx context.Context, email string, otp string) er
 			if err != nil {
 				return err
 			}
+			return nil
 		}
 	}
 	return customerrors.BAD_REQUEST_ERROR("email already exists with another user")
 }
 
-func (s *Service) CreateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error {
-	if user.Username != "" {
-		err := s.validateUsername(ctx, user.Username)
+func (s *Service) CreateUser(ctx context.Context, req *dto.CreateUpdateUserRequest, updatedByUserId int64) (*dto.UserDetails, error) {
+	if req.Username != "" {
+		err := s.validateUsername(ctx, req.Username)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	if user.Mobile != "" {
-		if user.MobileOTP == "" {
-			return customerrors.BAD_REQUEST_ERROR("mobile otp required")
+	if req.Mobile != "" {
+		if req.MobileOTP == "" {
+			return nil, customerrors.BAD_REQUEST_ERROR("mobile otp required")
 		}
-		err := s.validateMobile(ctx, user.Mobile, user.MobileOTP)
+		err := s.validateMobile(ctx, req.Mobile, req.MobileOTP)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	if user.Email != "" {
-		if user.EmailOTP == "" {
-			return customerrors.BAD_REQUEST_ERROR("email otp required")
+	if req.Email != "" {
+		if req.EmailOTP == "" {
+			return nil, customerrors.BAD_REQUEST_ERROR("email otp required")
 		}
-		err := s.isValidEmail(ctx, user.Email, user.EmailOTP)
+		err := s.isValidEmail(ctx, req.Email, req.EmailOTP)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return s.repo.CreateUser(ctx, user.ToUser())
+	user := req.ToUser()
+	user.CreatedByUser = updatedByUserId
+	err := s.repo.CreateUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return s.GetUserDetailsById(ctx, user.ID)
 }
 
-func (s *Service) UpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error {
+func (s *Service) UpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) (*dto.UserDetails, error) {
 	if user.ID == 0 {
-		return customerrors.BAD_REQUEST_ERROR("user id required")
+		return nil, customerrors.BAD_REQUEST_ERROR("user id required")
 	}
 	dbUser, err := s.repo.GetUserById(ctx, user.ID)
 	if err != nil {
 		if err == customerrors.ERROR_DATABASE_RECORD_NOT_FOUND {
-			return customerrors.BAD_REQUEST_ERROR("user not found")
+			return nil, customerrors.BAD_REQUEST_ERROR("user not found")
 		}
-		return err
+		return nil, err
 	}
 	if user.Username != dbUser.Username {
 		err := s.validateUsername(ctx, user.Username)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		dbUser.Username = user.Username
 	}
 	if user.Mobile != dbUser.Mobile {
 		if user.MobileOTP == "" {
-			return customerrors.BAD_REQUEST_ERROR("mobile otp required")
+			return nil, customerrors.BAD_REQUEST_ERROR("mobile otp required")
 		}
 		err := s.validateMobile(ctx, user.Mobile, user.MobileOTP)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		dbUser.Mobile = user.Mobile
 	}
 	if user.Email != dbUser.Email {
 		if user.EmailOTP == "" {
-			return customerrors.BAD_REQUEST_ERROR("email otp required")
+			return nil, customerrors.BAD_REQUEST_ERROR("email otp required")
 		}
 		err := s.isValidEmail(ctx, user.Email, user.EmailOTP)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		dbUser.Email = user.Email
 	}
@@ -181,11 +189,15 @@ func (s *Service) UpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequ
 	dbUser.MiddleName = user.MiddleName
 	dbUser.LastName = user.LastName
 	dbUser.Bio = user.Bio
-	return s.repo.UpdateUser(ctx, dbUser)
+	err = s.repo.UpdateUser(ctx, dbUser)
+	if err != nil {
+		return nil, err
+	}
+	return (&dto.UserDetails{}).FromUser(dbUser), nil
 }
 
 // CreateUpdateUser creates or updates user
-func (s *Service) CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) error {
+func (s *Service) CreateUpdateUser(ctx context.Context, user *dto.CreateUpdateUserRequest, updatedByUserId int64) (*dto.UserDetails, error) {
 	if user.ID == 0 {
 		return s.CreateUser(ctx, user, updatedByUserId)
 	}

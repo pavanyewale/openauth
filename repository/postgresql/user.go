@@ -9,16 +9,28 @@ import (
 	"openauth/models/filters"
 	"openauth/utils/customerrors"
 	"openauth/utils/logger"
+	"time"
 )
 
 // Repository is the postgresql repository for user
 func (r *Repository) CreateUser(ctx context.Context, user *dao.User) error {
-	_, err := r.conn.ExecContext(ctx, `
+	user.CreatedOn = time.Now().UnixMilli()
+	user.UpdatedOn = time.Now().UnixMilli()
+
+	res := r.conn.QueryRowContext(ctx, `
 		INSERT INTO users (first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, created_by_user, created_on, updated_on, deleted)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id
 	`, user.FirstName, user.MiddleName, user.LastName, user.Username, user.Bio, user.Password, user.Mobile, user.Email, user.MobileVerified, user.EmailVerified, user.CreatedByUser, user.CreatedOn, user.UpdatedOn, user.Deleted)
+	if res.Err() != nil {
+		if res.Err() == sql.ErrNoRows {
+			return customerrors.ERROR_DATABASE_RECORD_NOT_FOUND
+		}
+		logger.Error(ctx, "failed to create user, Err: %s", res.Err().Error())
+		return customerrors.ERROR_DATABASE
+	}
+	err := res.Scan(&user.ID)
 	if err != nil {
-		logger.Error(ctx, "failed to create user, Err: %s", err.Error())
+		logger.Error(ctx, "failed to get last insert id, Err: %s", err.Error())
 		return customerrors.ERROR_DATABASE
 	}
 	return nil
@@ -62,7 +74,7 @@ func (r *Repository) GetUserByFilter(ctx context.Context, filter *filters.UserFi
 func (r *Repository) GetUsersByFilter(ctx context.Context, filter *filters.UserFilter, limit, offset int) ([]*dao.User, error) {
 	var query string
 
-	query = "SELECT id, first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, created_by_user, created_on, updated_on, deleted FROM users WHERE 1=1"
+	query = "SELECT id, first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, created_by_user, created_on, updated_on, deleted FROM users WHERE 1=1 "
 	if filter.UserId != 0 {
 		query += fmt.Sprintf(" AND id = %d", filter.UserId)
 	}
@@ -78,6 +90,9 @@ func (r *Repository) GetUsersByFilter(ctx context.Context, filter *filters.UserF
 	if filter.Mobile != "" {
 		query += fmt.Sprintf(" AND mobile = '%s'", filter.Mobile)
 	}
+
+	query += fmt.Sprintf("ORDER BY updated_on DESC LIMIT %d OFFSET %d ", limit, offset)
+
 	logger.Debug(ctx, "query: %s", query)
 	rows, err := r.conn.QueryContext(ctx, query)
 	if err != nil {
@@ -118,6 +133,7 @@ func (r *Repository) GetUserById(ctx context.Context, id int64) (*dao.User, erro
 
 // UpdateUser updates user
 func (r *Repository) UpdateUser(ctx context.Context, user *dao.User) error {
+	user.UpdatedOn = time.Now().UnixMilli()
 	_, err := r.conn.ExecContext(ctx, `
 		UPDATE users SET first_name = $1, middle_name = $2, last_name = $3, username = $4, bio = $5, password = $6, mobile = $7, email = $8, mobile_verified = $9, email_verified = $10, created_by_user = $11, created_on = $12, updated_on = $13, deleted = $14
 		WHERE id = $15
