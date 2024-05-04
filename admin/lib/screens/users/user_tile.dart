@@ -1,5 +1,6 @@
 import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
+import 'package:admin/screens/users/user_details/form.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
@@ -12,35 +13,6 @@ class UserTile extends StatelessWidget {
   final ShortUserDetails user;
   final Function() onDelete;
   const UserTile({super.key, required this.user, required this.onDelete});
-
-  void onClick(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('User Details'),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('First Name: ${user.firstName}'),
-            Text('Last Name: ${user.lastName}'),
-            Text('Email: ${user.email}'),
-            Text('Mobile: ${user.mobile}'),
-            Text(
-                'Created On: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(user.createdOn))}'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,48 +37,98 @@ class UserTile extends StatelessWidget {
         ],
       ),
       trailing: IconButton(
-        icon: const Icon(
-          Icons.delete,
+        icon: Icon(
+          user.deleted ? Icons.unarchive : Icons.delete,
+          semanticLabel: user.deleted ? "Retrive Back" : "Delete User",
         ),
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Delete User'),
-              content: const Text('Are you sure you want to delete user?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final res = await UsersService.deleteUser(user.id);
-                    if (res.error.isNotEmpty) {
-                      MyToast.error(res.error);
-                      return;
-                    } else {
-                      MyToast.success("User deleted successfully!");
-                    }
-                    onDelete();
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(color: AppColors.error),
-                  ),
-                ),
-              ],
-            ),
-          );
+          if (user.deleted) {
+            undeleteUser(context);
+          } else {
+            deleleUser(context);
+          }
         },
       ),
       onTap: () {
-        onClick(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddNewUserScreen(userId: user.id),
+          ),
+        );
       },
+    );
+  }
+
+  Future<dynamic> deleleUser(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete User'),
+        content: const Text('Are you sure you want to delete user?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final res = await UsersService.deleteUser(user.id);
+              if (res.error.isNotEmpty) {
+                MyToast.error(res.error);
+                return;
+              } else {
+                MyToast.success("User deleted successfully!");
+              }
+              onDelete();
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<dynamic> undeleteUser(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Undelete User'),
+        content: const Text('Are you sure you want to retrive back user?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final error = await UsersService.undeleteUser(user.id);
+              if (error.isNotEmpty) {
+                MyToast.error(error);
+                return;
+              } else {
+                MyToast.success("User undeleted successfully!");
+              }
+              onDelete();
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'Retrive Back',
+              style: TextStyle(color: AppColors.success),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

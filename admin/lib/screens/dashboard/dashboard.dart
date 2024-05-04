@@ -54,7 +54,8 @@ class _DashboardState extends State<Dashboard> {
           child: CircularProgressIndicator(),
         ),
       if (error.isNotEmpty) const MyErrorWidget(),
-      if (dashboards.isEmpty && !isLoading) const EmptyListWidget(),
+      if (dashboards.isEmpty && !isLoading && error.isEmpty)
+        const EmptyListWidget(),
       if (error.isEmpty)
         Center(
             child: Wrap(

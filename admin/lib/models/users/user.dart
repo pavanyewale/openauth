@@ -1,24 +1,4 @@
-/*
-{
-  "code": 200,
-  "data": {
-    "id": 1,
-    "firstName": "Admin",
-    "middleName": "",
-    "lastName": "User",
-    "username": "admin",
-    "bio": "",
-    "mobile": "",
-    "email": "",
-    "mobileVerified": false,
-    "emailVerified": false,
-    "createdBy": 1,
-    "createdOn": 0,
-    "updatedOn": 0,
-    "deleted": false
-  }
-}
- */
+import 'package:admin/models/users/edit_user.dart';
 
 class UserDetails {
   int id;
@@ -69,6 +49,19 @@ class UserDetails {
       createdOn: json['createdOn'],
       updatedOn: json['updatedOn'],
       deleted: json['deleted'],
+    );
+  }
+
+  CreateUpdateUserRequest toCreateUpdateUserRequest() {
+    return CreateUpdateUserRequest(
+      id: id,
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
+      username: username,
+      bio: bio,
+      mobile: mobile,
+      email: email,
     );
   }
 }

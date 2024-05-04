@@ -6,6 +6,7 @@ class ShortUserDetails {
   final String mobile;
   final String email;
   final int createdOn;
+  final bool deleted;
 
   ShortUserDetails({
     required this.id,
@@ -15,6 +16,7 @@ class ShortUserDetails {
     required this.mobile,
     required this.email,
     required this.createdOn,
+    required this.deleted,
   });
 
   factory ShortUserDetails.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class ShortUserDetails {
       mobile: json['mobile'],
       email: json['email'],
       createdOn: json['createdOn'],
+      deleted: json['deleted'],
     );
   }
 }
