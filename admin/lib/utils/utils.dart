@@ -17,7 +17,8 @@ class Utils {
     String info = "";
     try {
       if (Platform.isAndroid) {
-        info = (await deviceInfo.androidInfo).toString();
+        var androidInfo = await deviceInfo.androidInfo;
+        info = {"device":androidInfo.device, "model":androidInfo.device, "androidVersion":androidInfo.version}.toString();
       } else if (Platform.isIOS) {
         info = (await deviceInfo.iosInfo).toString();
       } else {

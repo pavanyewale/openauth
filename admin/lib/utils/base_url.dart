@@ -1,5 +1,5 @@
 class BaseURL {
-  String baseURL = "http://localhost:8000"; //default prod url
+  String baseURL = "http://192.168.1.100:8000"; //default prod url
   Map<String,String> baseURLMap = {
     "prod": "http://localhost:8000"
     };

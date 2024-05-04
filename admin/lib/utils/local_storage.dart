@@ -64,10 +64,11 @@ class WebLocalStorage implements LocalStorage {
 }
 
 class AndroidLocalStorage implements LocalStorage {
-  final SharedPreferences _sharedPreferences =
-      SharedPreferences.getInstance() as SharedPreferences;
+  SharedPreferences? _sharedPreferences ;
   AndroidLocalStorage._privateConstructor();
-
+  init() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+  }
   static final AndroidLocalStorage _instance =
       AndroidLocalStorage._privateConstructor();
 
@@ -75,11 +76,14 @@ class AndroidLocalStorage implements LocalStorage {
 
   @override
   Future<String> getString(String key) async {
-    return _sharedPreferences.getString(key) ?? '';
+    if (_sharedPreferences == null){
+      await init();
+    }
+    return _sharedPreferences!.getString(key) ?? '';
   }
 
   @override
   void setString(String key, String value) {
-    _sharedPreferences.setString(key, value);
+    _sharedPreferences!.setString(key, value);
   }
 }

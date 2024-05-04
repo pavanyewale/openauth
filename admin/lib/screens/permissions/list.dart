@@ -27,6 +27,7 @@ class _PermissionsListState extends State<PermissionsList> {
   void fetchPermissions() async {
     setState(() {
       isLoading = true;
+      error = '';
     });
 
     final res = await PermissionService.getPermissions(filters, skip, limit);
