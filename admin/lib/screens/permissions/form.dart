@@ -4,8 +4,10 @@ import 'package:admin/utils/toast.dart';
 import 'package:flutter/material.dart';
 
 class PermissionForm extends StatefulWidget {
-  final PermissionDetails? permission;
-  const PermissionForm({super.key, required this.permission});
+  final PermissionDetails permission;
+  final bool isCreate;
+  const PermissionForm(
+      {super.key, required this.permission, this.isCreate = false});
 
   @override
   State<PermissionForm> createState() => PermissionFormState();
@@ -16,12 +18,17 @@ class PermissionFormState extends State<PermissionForm> {
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _categoryController;
-  PermissionDetails? permission;
   bool isEdit = false;
   bool isLoading = false;
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController(text: widget.permission.name);
+    _descriptionController =
+        TextEditingController(text: widget.permission.description);
+    isEdit = widget.isCreate;
+    _categoryController =
+        TextEditingController(text: widget.permission.category);
   }
 
   @override
