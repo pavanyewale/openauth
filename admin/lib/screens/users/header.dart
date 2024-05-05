@@ -1,4 +1,5 @@
 import 'package:admin/screens/users/user_details/form.dart';
+import 'package:admin/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
 class UserHeader extends StatelessWidget {
@@ -15,7 +16,7 @@ class UserHeader extends StatelessWidget {
             // navigate to add new user screen
             Navigator.push(
                 context,
-                MaterialPageRoute(
+                MyRoute(
                     builder: (context) => const AddNewUserScreen(userId: 0)));
           },
           child: const Row(children: [

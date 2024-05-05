@@ -24,6 +24,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
   bool verificationDone = false;
   bool emailOTPSent = false;
   bool mobileOTPSent = false;
+  bool isFieldEditable = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
@@ -129,6 +130,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
       fetchUserDetails();
     } else {
       userDetails = UserDetails();
+      isFieldEditable = true;
     }
     super.initState();
   }
@@ -137,6 +139,18 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          if (!isFieldEditable)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                setState(() {
+                  isFieldEditable = true;
+                });
+              },
+            ),
+          const SizedBox(width: 10)
+        ],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -182,6 +196,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                   alignment: WrapAlignment.spaceBetween,
                                   children: [
                                     TextFormField(
+                                      readOnly: !isFieldEditable,
                                       decoration: const InputDecoration(
                                           labelText: 'First Name',
                                           isDense: true,
@@ -193,6 +208,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                       },
                                     ),
                                     TextFormField(
+                                      readOnly: !isFieldEditable,
                                       decoration: const InputDecoration(
                                           labelText: 'Middle Name',
                                           isDense: true,
@@ -204,6 +220,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                       },
                                     ),
                                     TextFormField(
+                                      readOnly: !isFieldEditable,
                                       decoration: const InputDecoration(
                                           labelText: 'Last Name',
                                           isDense: true,
@@ -216,6 +233,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                     ),
                                   ]),
                               TextFormField(
+                                readOnly: !isFieldEditable,
                                 controller: _usernameController,
                                 decoration: InputDecoration(
                                   labelText: 'Username',
@@ -235,6 +253,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                 },
                               ),
                               TextFormField(
+                                readOnly: !isFieldEditable,
                                 decoration: const InputDecoration(
                                   labelText: 'Bio',
                                   isDense: true,
@@ -248,6 +267,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                 },
                               ),
                               TextFormField(
+                                readOnly: !isFieldEditable,
                                 controller: _mobileController,
                                 decoration: InputDecoration(
                                     labelText: 'Mobile',
@@ -276,6 +296,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                               ),
                               if (mobileOTPSent)
                                 TextFormField(
+                                  readOnly: !isFieldEditable,
                                   controller: _mobileOTPController,
                                   decoration: const InputDecoration(
                                     labelText: 'Mobile OTP',
@@ -291,6 +312,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                                   },
                                 ),
                               TextFormField(
+                                readOnly: !isFieldEditable,
                                 controller: _emailController,
                                 decoration: InputDecoration(
                                     labelText: 'Email',
@@ -319,6 +341,7 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                               ),
                               if (emailOTPSent)
                                 TextFormField(
+                                  readOnly: !isFieldEditable,
                                   controller: _emailOTPController,
                                   decoration: const InputDecoration(
                                     labelText: 'Email OTP',
@@ -349,25 +372,26 @@ class _AddNewUserScreenState extends State<AddNewUserScreen> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              Center(
-                                  child: ElevatedButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    if (!verificationDone) {
-                                      await isContactsValid();
-                                      return;
+                              if (isFieldEditable)
+                                Center(
+                                    child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (!verificationDone) {
+                                        await isContactsValid();
+                                        return;
+                                      }
+                                      createUpdateUser();
                                     }
-                                    createUpdateUser();
-                                  }
-                                },
-                                child: const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                              )),
+                                  },
+                                  child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        'Save',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                )),
                             ],
                           ),
                         )),

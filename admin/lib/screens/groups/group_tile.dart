@@ -1,6 +1,7 @@
 import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/screens/groups/edit/edit.dart';
+import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class GroupTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(
+          Navigator.push(context, MyRoute(
             builder: (context) {
               return CreateGroupScreen(groupDetails: group);
             },

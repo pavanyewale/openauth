@@ -2,6 +2,7 @@ import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
 import 'package:admin/screens/users/user_details/form.dart';
 import 'package:admin/utils/colors.dart';
+import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class UserTile extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
+          MyRoute(
             builder: (context) => AddNewUserScreen(userId: user.id),
           ),
         );

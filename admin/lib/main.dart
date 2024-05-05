@@ -41,7 +41,7 @@ class MainScreen extends StatelessWidget {
         future: provider.loadAuthTokenFromLocal(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (!provider.isBaseURLSelected){
+            if (!provider.isBaseURLSelected) {
               return const BaseURLSelectionScreen();
             }
             if (provider.isLoggedIn) {
