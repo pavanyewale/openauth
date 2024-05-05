@@ -22,7 +22,13 @@ class UserTile extends StatelessWidget {
         : '${user.firstName} ${user.lastName}';
     return ListTile(
       leading: CircleAvatar(
-        child: Text(name[0]),
+        child: Text(
+          name[0],
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
       ),
       title: Text(name),
       subtitle: Wrap(

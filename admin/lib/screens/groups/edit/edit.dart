@@ -31,7 +31,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       });
       return;
     }
-    MyToast.success(groupDetails!.id != 0
+    MyToast.success(groupDetails!.id == 0
         ? "Group created successfully!"
         : "Group updated successfully!");
     setState(() {

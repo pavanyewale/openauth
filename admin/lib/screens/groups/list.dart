@@ -74,6 +74,7 @@ class _GroupsListState extends State<GroupsList> {
         if (groups.isEmpty && !isLoading && error.isEmpty)
           const EmptyListWidget(),
         ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
               final group = groups[index];

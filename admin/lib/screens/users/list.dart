@@ -71,7 +71,7 @@ class _UserListState extends State<UserList> {
         (error.isEmpty)
             ? ListView.separated(
                 shrinkWrap: true,
-                physics: const  NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return UserTile(
                       user: users[index],
