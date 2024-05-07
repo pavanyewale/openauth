@@ -1,6 +1,6 @@
 import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/groups.dart';
-import 'package:admin/screens/groups/edit/edit.dart';
+import 'package:admin/screens/groups/group_details/details.dart';
 import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
@@ -24,7 +24,7 @@ class GroupTile extends StatelessWidget {
         onTap: () {
           Navigator.push(context, MyRoute(
             builder: (context) {
-              return CreateGroupScreen(groupDetails: group);
+              return GroupDetailsScreen(groupDetails: group);
             },
           ));
         },

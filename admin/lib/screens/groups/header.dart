@@ -1,4 +1,4 @@
-import 'package:admin/screens/groups/edit/edit.dart';
+import 'package:admin/screens/groups/group_details/details.dart';
 import 'package:admin/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ class GroupHeader extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             Navigator.push(context,
-                MyRoute(builder: (context) => const CreateGroupScreen()));
+                MyRoute(builder: (context) => const GroupDetailsScreen()));
           },
           child: const Row(children: [
             Icon(Icons.add),
