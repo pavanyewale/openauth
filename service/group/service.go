@@ -54,7 +54,7 @@ func (s *Service) CreateUpdateGroup(ctx context.Context, req *dto.CreateUpdateGr
 	group.ID = req.ID
 	group.Name = req.Name
 	group.Description = req.Description
-	group.CreatedByUser = grp.CreatedByUser
+	group.CreatedByUser = req.UpdatedbyUserId
 	if req.ID == 0 {
 		err = s.repo.CreateGroup(ctx, &group)
 	} else {
