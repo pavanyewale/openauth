@@ -1,6 +1,6 @@
 class BaseURL {
-  String baseURL = "http://localhost:8000"; //default prod url
-  Map<String, String> baseURLMap = {"prod": "http://localhost:8000"};
+  String baseURL = "http://192.168.26.58:8000"; //default prod url
+  Map<String, String> baseURLMap = {"prod": "http://192.168.26.58:8000"};
 
   // Private constructor to prevent instantiation from outside
   BaseURL._();
