@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 
 class EmptyListWidget extends StatelessWidget {
-  const EmptyListWidget({super.key});
+  final String? msg;
+  final double? height;
+  final double? fontSize;
+  final double? iconSize;
+  const EmptyListWidget(
+      {super.key, this.msg, this.height, this.fontSize, this.iconSize});
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 200,
+    return SizedBox(
+      height: height ?? 200,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.hourglass_empty,
-              size: 50,
+              size: iconSize ?? 50,
               color: Colors.grey,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
-              'No data found!',
+              msg ?? 'No data found!',
               style: TextStyle(
                 color: Colors.grey,
-                fontSize: 20,
+                fontSize: fontSize ?? 20,
               ),
             ),
           ],

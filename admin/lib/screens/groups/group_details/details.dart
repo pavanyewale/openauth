@@ -46,20 +46,20 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
             runAlignment: WrapAlignment.start,
             children: [
               ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
+                  constraints: const BoxConstraints(maxWidth: 600),
                   child: CreateUpdateGroupInfo(
                     groupDetails: widget.groupDetails,
                     onCreate: onCreate,
                   )),
               if (groupDetails.id != 0 && !Screen.isMobile(context))
                 ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
+                    constraints: const BoxConstraints(maxWidth: 600),
                     child: GroupUsers(
                       groupDetails: groupDetails,
                     )),
               if (groupDetails.id != 0 && !Screen.isMobile(context))
                 ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
+                    constraints: const BoxConstraints(maxWidth: 600),
                     child: GroupPermissions(
                       groupDetails: groupDetails,
                     )),
