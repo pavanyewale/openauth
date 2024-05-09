@@ -287,3 +287,36 @@ func (r *Repository) UpdateGroup(ctx context.Context, group *dao.Group) error {
 
 	return nil
 }
+
+// GetUsersByGroupId implements repository.Repository.
+func (r *Repository) GetUsersByGroupId(ctx context.Context, groupId int64) ([]*dao.User, error) {
+	// Prepare the SQL statement
+	query := "SELECT u.id, first_name, middle_name, last_name, username, bio, password, mobile, email, mobile_verified, email_verified, u.created_by_user, u.created_on, u.updated_on ,u.deleted FROM users u INNER JOIN user_groups ug ON u.id = ug.user_id WHERE ug.group_id = $1"
+	stmt, err := r.conn.PrepareContext(ctx, query)
+	if err != nil {
+		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())
+		return nil, customerrors.ERROR_DATABASE
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement
+	rows, err := stmt.QueryContext(ctx, groupId)
+	if err != nil {
+		logger.Error(ctx, "failed to execute query: Err: %s", err.Error())
+		return nil, customerrors.ERROR_DATABASE
+	}
+	defer rows.Close()
+
+	// Iterate over the rows and scan each row into a User struct
+	users := make([]*dao.User, 0)
+	for rows.Next() {
+		var user dao.User
+		err := rows.Scan(&user.ID, &user.FirstName, &user.MiddleName, &user.LastName, &user.Username, &user.Bio, &user.Password, &user.Mobile, &user.Email, &user.MobileVerified, &user.EmailVerified, &user.CreatedByUser, &user.CreatedOn, &user.UpdatedOn, &user.Deleted)
+		if err != nil {
+			logger.Error(ctx, "failed to get user by groupId, Err: %s", err.Error())
+			return nil, customerrors.ERROR_DATABASE
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}

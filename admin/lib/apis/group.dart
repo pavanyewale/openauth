@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'package:admin/models/groups/create_update.dart';
 import 'package:admin/models/groups/filters.dart';
+import 'package:admin/models/groups/group_users.dart';
+import 'package:admin/models/groups/list.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/utils/base_url.dart';
 import 'package:admin/utils/widgets/login/service.dart';
@@ -74,6 +77,60 @@ class GroupService {
           'Content-Type': 'application/json',
           'AuthToken': LoginService.instance.authToken
         },
+      );
+
+      if (response.statusCode == 200) {
+        return "";
+      } else {
+        return json.decode(response.body)['error'];
+      }
+    } catch (e) {
+      print(e);
+      return "Something went wrong!";
+    }
+  }
+
+  // group users
+
+  static Future<GetUsersOfGroupResponse> getUsersOfGroup(int groupId) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group/user?groupId=$groupId');
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return GetUsersOfGroupResponse.fromSuccessJson(
+            json.decode(response.body));
+      } else {
+        return GetUsersOfGroupResponse.fromErrorJson(
+            json.decode(response.body));
+      }
+    } catch (e) {
+      print(e);
+      return GetUsersOfGroupResponse(code: 500, error: "something went wrong!");
+    }
+  }
+
+  static Future<String> addUsersToGroup(
+      AddUsersToGroupRequest addUsersToGroupRequest) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group/user');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken
+        },
+        body: json.encode(addUsersToGroupRequest.toJson()),
       );
 
       if (response.statusCode == 200) {

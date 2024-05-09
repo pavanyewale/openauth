@@ -21,6 +21,7 @@ type Repository interface {
 	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dao.Group, error)
 	CreateUserGroups(ctx context.Context, userGroups []*dao.UserGroup) error
 	DeleteUsersFromGroup(ctx context.Context, groupId int64, userIds []int64) error
+	GetUsersByGroupId(ctx context.Context, groupId int64) ([]*dao.User, error)
 }
 
 type serviceFactory interface {
@@ -30,6 +31,19 @@ type serviceFactory interface {
 type Service struct {
 	serviceFactory serviceFactory
 	repo           Repository
+}
+
+// GetAllUsersOfGroup implements handlers.GroupService.
+func (s *Service) GetAllUsersOfGroup(ctx context.Context, groupId int64) ([]*dto.ShortUserDetails, error) {
+	users, err := s.repo.GetUsersByGroupId(ctx, groupId)
+	if err != nil {
+		return nil, err
+	}
+	var shortUsers []*dto.ShortUserDetails = make([]*dto.ShortUserDetails, len(users))
+	for i, user := range users {
+		shortUsers[i] = (&dto.ShortUserDetails{}).FromUser(user)
+	}
+	return shortUsers, nil
 }
 
 func NewService(sf serviceFactory, repo Repository) *Service {

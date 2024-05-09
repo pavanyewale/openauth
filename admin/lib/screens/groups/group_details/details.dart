@@ -49,6 +49,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                   constraints: const BoxConstraints(maxWidth: 400),
                   child: CreateUpdateGroupInfo(
                     groupDetails: widget.groupDetails,
+                    onCreate: onCreate,
                   )),
               if (groupDetails.id != 0 && !Screen.isMobile(context))
                 ConstrainedBox(

@@ -24,13 +24,15 @@ class UserTile extends StatelessWidget {
       leading: CircleAvatar(
         child: Text(
           name[0],
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(fontWeight: FontWeight.bold),
         ),
       ),
-      title: Text(name),
+      title: Text(
+        name,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(fontWeight: FontWeight.bold),
+      ),
       subtitle: Wrap(
         spacing: 10,
         runSpacing: 5,

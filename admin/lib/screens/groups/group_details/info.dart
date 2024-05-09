@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 
 class CreateUpdateGroupInfo extends StatefulWidget {
   final GroupDetails? groupDetails;
-  const CreateUpdateGroupInfo({super.key, this.groupDetails});
+  final Function(GroupDetails details) onCreate;
+  const CreateUpdateGroupInfo(
+      {super.key, this.groupDetails, required this.onCreate});
 
   @override
   State<CreateUpdateGroupInfo> createState() => _CreateUpdateGroupInfoState();
@@ -45,6 +47,7 @@ class _CreateUpdateGroupInfoState extends State<CreateUpdateGroupInfo> {
       error = '';
       groupDetails!.id = res.groupDetails.id;
     });
+    widget.onCreate(groupDetails!);
   }
 
   @override

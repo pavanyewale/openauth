@@ -20,6 +20,7 @@ type GroupService interface {
 	AddUsersToGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
 	RemoveUsersFromGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
 	GetAllGroups(ctx context.Context, filters *filters.GroupFilter, limit, offset int) ([]*dto.GroupDetails, error)
+	GetAllUsersOfGroup(ctx context.Context, groupId int64) ([]*dto.ShortUserDetails, error)
 }
 
 type GroupHandler struct {
@@ -36,7 +37,8 @@ func (lh *GroupHandler) Register(router gin.IRouter) {
 	router.GET("/openauth/group/:id", lh.GetGroupDetails)
 	router.GET("/openauth/group", lh.GetAllGroups)
 	router.POST("/openauth/group/user", lh.AddUsersToGroup)
-	router.GET("/openauth/group/user", lh.GetGroupsByUserId)
+	router.GET("/openauth/group/user/:userId", lh.GetGroupsByUserId)
+	router.GET("/openauth/group/user", lh.GetUsersOfGroup)
 	router.DELETE("/openauth/group/user", lh.RemoveUserFromGroups)
 }
 
@@ -46,7 +48,7 @@ func (lh *GroupHandler) Register(router gin.IRouter) {
 // @Accept json
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
-// @Param group body dto.CreateGroupRequest true "Group details"
+// @Param group body dto.CreateUpdateGroupRequest true "Group details"
 // @Success 201 {object} dao.Group
 // @Failure 400 {object} Response
 // @Failure 401 {object} Response
@@ -102,7 +104,7 @@ func (lh *GroupHandler) CreateGroup(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /openauth/group [delete]
+// @Router /openauth/group/{id} [delete]
 func (lh *GroupHandler) DeleteGroup(ctx *gin.Context) {
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
 	if err != nil {
@@ -272,9 +274,9 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response
 // @Failure 500 {object} Response
-// @Router /openauth/group/user [get]
+// @Router /openauth/group/user/{userId} [get]
 func (lh *GroupHandler) GetGroupsByUserId(ctx *gin.Context) {
-	userId, err := strconv.ParseInt(ctx.Query("userId"), 10, 64)
+	userId, err := strconv.ParseInt(ctx.Param("userId"), 10, 64)
 	if err != nil {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid userId"))
 		return
@@ -337,4 +339,33 @@ func (lh *GroupHandler) GetAllGroups(ctx *gin.Context) {
 	}
 
 	WriteSuccess(ctx, groups)
+}
+
+// @Summary Get all users of a group
+// @Description Get a list of all users of a group by providing the group ID
+// @Tags Groups
+// @Accept json
+// @Produce json
+// @Param AuthToken header string true "Bearer {token}"
+// @Param groupId query int64 true "Group ID"
+// @Success 200 {array} dto.ShortUserDetails
+// @Failure 400 {object} Response
+// @Failure 401 {object} Response
+// @Failure 403 {object} Response
+// @Failure 500 {object} Response
+// @Router /openauth/group/user [get]
+func (lh *GroupHandler) GetUsersOfGroup(ctx *gin.Context) {
+	groupId, err := strconv.ParseInt(ctx.Query("groupId"), 10, 64)
+	if err != nil {
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid groupId"))
+		return
+	}
+
+	users, err := lh.groupService.GetAllUsersOfGroup(ctx, groupId)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+
+	WriteSuccess(ctx, users)
 }

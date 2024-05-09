@@ -13,7 +13,13 @@ class HistoryTile extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('History Details'),
+        title: Text(
+          'History Details',
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -45,7 +51,11 @@ class HistoryTile extends StatelessWidget {
         size: 30,
         color: Theme.of(context).colorScheme.secondary,
       ),
-      title: Text(history.operation),
+      title: Text(history.operation,
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(fontWeight: FontWeight.bold)),
       subtitle: Wrap(spacing: 20, runSpacing: 10, children: [
         SubTextWithIcon(
           icon: Icons.description,
