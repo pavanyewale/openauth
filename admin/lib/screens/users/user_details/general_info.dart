@@ -69,6 +69,10 @@ class _UserGeneralInfoState extends State<UserGeneralInfo> {
       return true;
     }
 
+    if (emailOTPSent || mobileOTPSent) {
+      return true;
+    }
+
     VerifyContactsRequest req = VerifyContactsRequest(
       sendOtp: true,
       email: _emailController.text != userDetails!.email
@@ -95,7 +99,9 @@ class _UserGeneralInfoState extends State<UserGeneralInfo> {
       });
       if (response.emailErr.isEmpty &&
           response.mobileErr.isEmpty &&
-          response.usernameErr.isEmpty) {
+          response.usernameErr.isEmpty &&
+          req.email.isEmpty &&
+          req.mobile.isEmpty) {
         return true;
       } else {
         return false;
@@ -253,7 +259,7 @@ class _UserGeneralInfoState extends State<UserGeneralInfo> {
                     },
                   ),
                   TextFormField(
-                    readOnly: !isFieldEditable && mobileOTPSent,
+                    readOnly: !isFieldEditable || mobileOTPSent,
                     controller: _mobileController,
                     decoration: InputDecoration(
                         labelText: 'Mobile',
@@ -295,7 +301,7 @@ class _UserGeneralInfoState extends State<UserGeneralInfo> {
                       },
                     ),
                   TextFormField(
-                    readOnly: !isFieldEditable && emailOTPSent,
+                    readOnly: !isFieldEditable || emailOTPSent,
                     controller: _emailController,
                     decoration: InputDecoration(
                         labelText: 'Email',
