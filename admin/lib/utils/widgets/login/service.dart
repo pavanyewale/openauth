@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 
 class LoginService extends ChangeNotifier {
-  bool isBaseURLSelected = true;
+  bool isBaseURLSelected = false;
   bool isLoggedIn = false;
   String authToken = "";
   User user = User(
