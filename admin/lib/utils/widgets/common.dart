@@ -4,8 +4,13 @@ class SubTextWithIcon extends StatelessWidget {
   final IconData icon;
   final String text;
   final int maxLines;
+  final String iconLebel;
   const SubTextWithIcon(
-      {super.key, required this.icon, required this.text, this.maxLines = 3});
+      {super.key,
+      required this.icon,
+      required this.text,
+      this.maxLines = 3,
+      this.iconLebel = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,7 @@ class SubTextWithIcon extends StatelessWidget {
           Icon(
             icon,
             size: 17,
+            semanticLabel: iconLebel,
           ),
           const SizedBox(
             width: 5,

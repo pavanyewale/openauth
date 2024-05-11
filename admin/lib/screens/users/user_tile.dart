@@ -1,6 +1,6 @@
 import 'package:admin/apis/users.dart';
 import 'package:admin/models/users/users.dart';
-import 'package:admin/screens/users/user_details/form.dart';
+import 'package:admin/screens/users/user_details/details.dart';
 import 'package:admin/utils/colors.dart';
 import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/toast.dart';
@@ -37,10 +37,27 @@ class UserTile extends StatelessWidget {
         spacing: 10,
         runSpacing: 5,
         children: [
-          SubTextWithIcon(icon: Icons.email, text: user.email),
-          SubTextWithIcon(icon: Icons.phone, text: user.mobile),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('ID : ',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(user.id.toString()),
+            ],
+          ),
+          SubTextWithIcon(
+            icon: Icons.email,
+            text: user.email,
+            iconLebel: 'Email',
+          ),
+          SubTextWithIcon(
+            icon: Icons.phone,
+            text: user.mobile,
+            iconLebel: 'Mobile',
+          ),
           SubTextWithIcon(
               icon: Icons.calendar_today,
+              iconLebel: 'Date of Registration',
               text: formatter
                   .format(DateTime.fromMillisecondsSinceEpoch(user.createdOn)))
         ],
@@ -62,7 +79,7 @@ class UserTile extends StatelessWidget {
         Navigator.push(
           context,
           MyRoute(
-            builder: (context) => AddNewUserScreen(userId: user.id),
+            builder: (context) => UserDetailsScreen(userId: user.id),
           ),
         );
       },

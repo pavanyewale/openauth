@@ -13,7 +13,7 @@ class UserAccDrawerHeader extends StatelessWidget {
     return DecoratedBox(
         decoration: BoxDecoration(color: Theme.of(context).primaryColor),
         child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

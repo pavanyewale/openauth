@@ -2,7 +2,6 @@ import 'package:admin/models/groups/groups.dart';
 import 'package:admin/screens/groups/group_details/info.dart';
 import 'package:admin/screens/groups/group_details/permissions.dart';
 import 'package:admin/screens/groups/group_details/users.dart';
-import 'package:admin/utils/screen.dart';
 import 'package:flutter/material.dart';
 
 class GroupDetailsScreen extends StatefulWidget {
@@ -39,31 +38,32 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: Wrap(
-            runSpacing: 20,
-            spacing: 20,
-            alignment: WrapAlignment.start,
-            runAlignment: WrapAlignment.start,
-            children: [
-              ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
-                  child: CreateUpdateGroupInfo(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Column(
+                children: [
+                  CreateUpdateGroupInfo(
                     groupDetails: widget.groupDetails,
                     onCreate: onCreate,
-                  )),
-              if (groupDetails.id != 0 && !Screen.isMobile(context))
-                ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
-                    child: GroupUsers(
-                      groupDetails: groupDetails,
-                    )),
-              if (groupDetails.id != 0 && !Screen.isMobile(context))
-                ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 600),
-                    child: GroupPermissions(
-                      groupDetails: groupDetails,
-                    )),
-            ],
+                  ),
+                  if (groupDetails.id != 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: GroupUsers(
+                        groupDetails: groupDetails,
+                      ),
+                    ),
+                  if (groupDetails.id != 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: GroupPermissions(
+                        groupDetails: groupDetails,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ));
   }

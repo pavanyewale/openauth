@@ -5,7 +5,7 @@ import 'package:admin/screens/users/user_tile.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
-import 'package:admin/utils/widgets/next_prev.dart';
+import 'package:admin/utils/widgets/load_more.dart';
 import 'package:flutter/material.dart';
 
 class UserList extends StatefulWidget {
@@ -21,6 +21,8 @@ class _UserListState extends State<UserList> {
   int offset = 0;
   int limit = 10;
   String error = '';
+  bool filtersChanged = false;
+  bool isMore = true;
 
   GetUsersFilters filters = GetUsersFilters();
 
@@ -40,8 +42,8 @@ class _UserListState extends State<UserList> {
       return;
     }
     setState(() {
-      users.clear();
       users.addAll(res.data);
+      isMore = res.data.length == limit;
       isLoading = false;
     });
   }
@@ -59,6 +61,8 @@ class _UserListState extends State<UserList> {
       children: [
         UsersFilters(
           onFetchClicked: (filters) {
+            offset = 0;
+
             this.filters = filters;
             fetchUsers();
           },
@@ -86,18 +90,11 @@ class _UserListState extends State<UserList> {
             : const MyErrorWidget(),
         if (users.isEmpty && !isLoading && error.isEmpty)
           const EmptyListWidget(),
-        if (error.isEmpty)
-          NextAndPrevPaginationButtons(
-              onNextClicked: () {
-                offset += limit;
-                fetchUsers();
-              },
-              onPrevClicked: () {
-                offset -= limit;
-                fetchUsers();
-              },
-              isNext: users.length == limit,
-              isPrev: offset > 0)
+        if (error.isEmpty && isMore && !isLoading)
+          LoadMoreTile(onTap: () {
+            offset += limit;
+            fetchUsers();
+          }),
       ],
     );
   }

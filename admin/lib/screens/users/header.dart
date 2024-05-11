@@ -1,4 +1,4 @@
-import 'package:admin/screens/users/user_details/form.dart';
+import 'package:admin/screens/users/user_details/details.dart';
 import 'package:admin/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class UserHeader extends StatelessWidget {
             Navigator.push(
                 context,
                 MyRoute(
-                    builder: (context) => const AddNewUserScreen(userId: 0)));
+                    builder: (context) => const UserDetailsScreen(userId: 0)));
           },
           child: const Row(children: [
             Icon(Icons.add),

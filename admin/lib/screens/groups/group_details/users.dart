@@ -3,6 +3,7 @@ import 'package:admin/apis/users.dart';
 import 'package:admin/models/groups/group_users.dart';
 import 'package:admin/models/groups/groups.dart';
 import 'package:admin/models/users/users.dart';
+import 'package:admin/screens/users/filter.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class _GroupUsersState extends State<GroupUsers> {
     } else {
       MyToast.success("Users added to the group");
       setState(() {
+        error = '';
         isLoading = false;
         edit = false;
       });
@@ -73,7 +75,29 @@ class _GroupUsersState extends State<GroupUsers> {
       });
     } else {
       setState(() {
+        error = '';
         groupUsers = res.users;
+        isLoading = false;
+      });
+    }
+  }
+
+  removeUser(int index, int userId) async {
+    setState(() {
+      isLoading = true;
+    });
+    String err =
+        await GroupService.removeUserFromGroup(widget.groupDetails.id, userId);
+    if (err.isNotEmpty) {
+      MyToast.error(err);
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      MyToast.success("User removed from the group");
+      groupUsers!.removeAt(index);
+      setState(() {
+        error = '';
         isLoading = false;
       });
     }
@@ -87,115 +111,112 @@ class _GroupUsersState extends State<GroupUsers> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text("Users of the group",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.bold)),
-            if (!edit)
-              IconButton(
-                  onPressed: () {
-                    setState(() {
-                      edit = true;
-                    });
-                  },
-                  icon: const Icon(Icons.edit))
-          ]),
-          Wrap(
-            spacing: 20,
-            runSpacing: 20,
-            children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(border: Border.all()),
-                padding: const EdgeInsets.all(10),
-                height: 250,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Group Users",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontWeight: FontWeight.bold)),
-                      if (error.isNotEmpty)
-                        Text(error,
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.error)),
-                      if (groupUsers != null && groupUsers!.isEmpty)
-                        const EmptyListWidget(
-                          msg: "No Users in the Group",
-                          height: 100,
-                        ),
-                      if (groupUsers != null)
-                        ListView.separated(
-                            separatorBuilder: (context, index) => const Divider(
-                                  height: 0,
-                                ),
-                            shrinkWrap: true,
-                            itemCount: groupUsers!.length,
-                            itemBuilder: (context, index) {
-                              return GroupUser(
-                                  user: groupUsers![index],
-                                  onClick: edit
-                                      ? () {
-                                          setState(() {
-                                            groupUsers!.removeAt(index);
-                                          });
-                                        }
-                                      : null,
-                                  icon: Icons.remove_circle_outline);
-                            }),
-                      if (isLoading) const CircularProgressIndicator(),
-                    ],
-                  ),
+    return Column(
+      children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text("Users of the group",
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontWeight: FontWeight.bold)),
+          if (!edit)
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    edit = true;
+                  });
+                },
+                icon: const Icon(Icons.edit))
+        ]),
+        Wrap(
+          spacing: 20,
+          runSpacing: 20,
+          children: [
+            Container(
+              decoration: BoxDecoration(border: Border.all()),
+              padding: const EdgeInsets.all(10),
+              constraints: const BoxConstraints(maxHeight: 250, minHeight: 50),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (error.isNotEmpty)
+                      Text(error,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.error)),
+                    if (groupUsers != null && groupUsers!.isEmpty)
+                      const EmptyListWidget(
+                        msg: "No Users in the Group",
+                        height: 100,
+                      ),
+                    if (groupUsers != null)
+                      ListView.separated(
+                          separatorBuilder: (context, index) => const Divider(
+                                height: 0,
+                              ),
+                          shrinkWrap: true,
+                          itemCount: groupUsers!.length,
+                          itemBuilder: (context, index) {
+                            return GroupUser(
+                                user: groupUsers![index],
+                                onClick: edit
+                                    ? () {
+                                        removeUser(
+                                            index, groupUsers![index].id);
+                                      }
+                                    : null,
+                                icon: Icons.remove_circle_outline);
+                          }),
+                    if (isLoading) const CircularProgressIndicator(),
+                  ],
                 ),
               ),
-              if (edit)
-                AllUsersList(
-                  groupId: widget.groupDetails.id,
-                  onAdd: (user) => setState(() {
-                    groupUsers!.add(user);
-                  }),
-                ),
+            ),
+            if (edit)
+              AllUsersList(
+                groupId: widget.groupDetails.id,
+                groupUsers: groupUsers!,
+                onAdd: (user) => setState(() {
+                  groupUsers!.add(user);
+                }),
+              ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        if (edit)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    saveGroupUsers();
+                  },
+                  child: const Text("Save")),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      edit = false;
+                    });
+                  },
+                  child: const Text("Cancel")),
             ],
-          ),
-          const SizedBox(height: 20),
-          if (edit)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      saveGroupUsers();
-                    },
-                    child: const Text("Save")),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        edit = false;
-                      });
-                    },
-                    child: const Text("Cancel")),
-              ],
-            )
-        ],
-      ),
+          )
+      ],
     );
   }
 }
 
 class AllUsersList extends StatefulWidget {
-  const AllUsersList({super.key, required this.groupId, required this.onAdd});
+  const AllUsersList(
+      {super.key,
+      required this.groupId,
+      required this.onAdd,
+      required this.groupUsers});
   final Function(ShortUserDetails) onAdd;
   final int groupId;
+  final List<ShortUserDetails> groupUsers;
 
   @override
   State<AllUsersList> createState() => _AllUsersListState();
@@ -208,12 +229,13 @@ class _AllUsersListState extends State<AllUsersList> {
   int limit = 0, offset = 0;
   bool edit = false;
 
+  GetUsersFilters filters = GetUsersFilters();
+
   fetchUsers() async {
     setState(() {
       isLoading = true;
     });
-    GetUsersResponse res =
-        await UsersService.getUsers(GetUsersFilters(), offset, limit);
+    GetUsersResponse res = await UsersService.getUsers(filters, offset, limit);
     if (res.error.isNotEmpty) {
       setState(() {
         error = res.error;
@@ -221,6 +243,7 @@ class _AllUsersListState extends State<AllUsersList> {
       });
     } else {
       setState(() {
+        error = '';
         users = res.data;
         isLoading = false;
       });
@@ -235,49 +258,59 @@ class _AllUsersListState extends State<AllUsersList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(border: Border.all()),
-      height: 350,
-      child: SingleChildScrollView(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("All Users",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(fontWeight: FontWeight.bold)),
-          if (error.isNotEmpty)
-            Text(error,
-                style: TextStyle(color: Theme.of(context).colorScheme.error)),
-          if (users != null && users!.isEmpty)
-            const EmptyListWidget(
-              msg: "No Users Found",
-              height: 100,
-            ),
-          if (users != null && users!.isNotEmpty)
-            ListView.separated(
-                separatorBuilder: (context, index) => const Divider(
-                      height: 0,
-                    ),
-                shrinkWrap: true,
-                itemCount: users!.length,
-                itemBuilder: (context, index) {
-                  return GroupUser(
-                    user: users![index],
-                    onClick: () {
-                      widget.onAdd(users![index]);
-                      users!.removeAt(index);
-                    },
-                    icon: Icons.add_circle_outline,
-                  );
-                }),
-          if (isLoading) const CircularProgressIndicator(),
-        ],
-      )),
-    );
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text("All Users",
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(fontWeight: FontWeight.bold)),
+      const SizedBox(height: 10),
+      UsersFilters(onFetchClicked: (GetUsersFilters filters) {
+        filters = filters;
+        fetchUsers();
+      }),
+      const SizedBox(
+        height: 5,
+      ),
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(border: Border.all()),
+        constraints: const BoxConstraints(maxHeight: 350, minHeight: 50),
+        child: SingleChildScrollView(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (error.isNotEmpty)
+              Text(error,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            if (users != null && users!.isEmpty)
+              const EmptyListWidget(
+                msg: "No Users Found",
+                height: 100,
+              ),
+            if (users != null && users!.isNotEmpty)
+              ListView.separated(
+                  separatorBuilder: (context, index) => const Divider(
+                        height: 0,
+                      ),
+                  shrinkWrap: true,
+                  itemCount: users!.length,
+                  itemBuilder: (context, index) {
+                    return GroupUser(
+                      user: users![index],
+                      onClick: () {
+                        widget.onAdd(users![index]);
+                        users!.removeAt(index);
+                      },
+                      icon: Icons.add_circle_outline,
+                    );
+                  }),
+            if (isLoading) const CircularProgressIndicator(),
+          ],
+        )),
+      ),
+    ]);
   }
 }
 

@@ -1,9 +1,5 @@
 import 'package:admin/apis/group.dart';
 import 'package:admin/models/groups/groups.dart';
-import 'package:admin/screens/groups/group_details/permissions.dart';
-import 'package:admin/screens/groups/group_details/users.dart';
-import 'package:admin/utils/navigator.dart';
-import 'package:admin/utils/screen.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +59,6 @@ class _CreateUpdateGroupInfoState extends State<CreateUpdateGroupInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isMobile = Screen.isMobile(context);
     return Stack(
       children: [
         //loader
@@ -136,68 +131,26 @@ class _CreateUpdateGroupInfoState extends State<CreateUpdateGroupInfo> {
                       )),
                 const SizedBox(height: 20),
                 if (isEdit)
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _formKey.currentState!.save();
-                        createUpdateGroup(context);
-                      }
-                    },
-                    style: ButtonStyle(
-                        fixedSize:
-                            MaterialStateProperty.all(const Size(220, 40))),
-                    child: const Text("Submit"),
-                  ),
-                const SizedBox(height: 20),
-                if (isMobile && groupDetails!.id != 0)
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MyRoute(
-                                  builder: (context) => GroupUsersScreen(
-                                        groupDetails: groupDetails!,
-                                      )));
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            createUpdateGroup(context);
+                          }
                         },
-                        style: ButtonStyle(
-                            fixedSize:
-                                MaterialStateProperty.all(const Size(220, 40))),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Update Users"),
-                              SizedBox(width: 5),
-                              Icon(Icons.arrow_forward)
-                            ],
-                          ),
-                        ),
+                        child: const Text("Save"),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(width: 20),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MyRoute(
-                                  builder: (context) => GroupPermissionsScreen(
-                                        groupDetails: groupDetails!,
-                                      )));
+                          setState(() {
+                            isEdit = false;
+                          });
                         },
-                        style: ButtonStyle(
-                          fixedSize:
-                              MaterialStateProperty.all(const Size(220, 40)),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Update Permissions"),
-                            SizedBox(width: 5),
-                            Icon(Icons.arrow_forward)
-                          ],
-                        ),
+                        child: const Text("Cancel"),
                       ),
                     ],
                   ),

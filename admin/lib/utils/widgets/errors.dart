@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class MyErrorWidget extends StatelessWidget {
-  const MyErrorWidget({super.key});
+  final String? error;
+  const MyErrorWidget({super.key, this.error});
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       height: 200,
       width: double.infinity,
       child: Center(
@@ -14,14 +15,14 @@ class MyErrorWidget extends StatelessWidget {
           children: [
             Icon(
               Icons.error,
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Text(
               "An error occurred. Please try again later",
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             )
           ],
         ),
