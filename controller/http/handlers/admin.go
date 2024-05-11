@@ -14,5 +14,5 @@ func NewAdminUIHandler() *AdminUIHandler {
 }
 
 func (auh *AdminUIHandler) Register(router gin.IRouter) {
-	router.StaticFS("/openauth/admin", http.Dir("./admin/build/web"))
+	router.StaticFS("/openauth/admin", http.Dir("./admin/webbuild"))
 }

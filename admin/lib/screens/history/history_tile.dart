@@ -3,7 +3,6 @@ import 'package:admin/screens/history/details/details.dart';
 import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class HistoryTile extends StatelessWidget {
   final History history;
