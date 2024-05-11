@@ -18,8 +18,9 @@ class _PermissionsFilterWidgetState extends State<PermissionsFilterWidget> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 20,
+      spacing: 10,
       runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         // name filter
         TextField(
@@ -68,7 +69,7 @@ class _PermissionsFilterWidgetState extends State<PermissionsFilterWidget> {
           onPressed: () {
             widget.onFetchClicked(filters);
           },
-          child: const Text('Fetch'),
+          child: const Text('Search'),
         ),
       ],
     );

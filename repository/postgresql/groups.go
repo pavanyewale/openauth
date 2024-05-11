@@ -162,7 +162,7 @@ func (r *Repository) CreateUserGroups(ctx context.Context, userGroups []*dao.Use
 	defer tx.Rollback()
 
 	// Prepare the SQL statement for inserting user groups
-	query := "INSERT INTO user_groups (user_id, group_id, created_by_user, created_on, updated_on, deleted) VALUES ($1, $2, $3, $4, $5, $6)"
+	query := "INSERT INTO user_groups (user_id, group_id, created_by_user, created_on, updated_on, deleted) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (user_id, group_id) DO NOTHING"
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		logger.Error(ctx, "failed to prepare the statements: query: %s, Err: %s ", query, err.Error())

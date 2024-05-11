@@ -317,7 +317,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfUser(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param permissions body dto.AddRemovePermissionsToGroupRequest true "Permissions details"
 // @Success 200 "Permissions added to group successfully"
-// @Router /openauth/permissions/groups [post]
+// @Router /openauth/permissions/group [post]
 func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 	// Get user ID and permissions from the context
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
@@ -367,7 +367,7 @@ func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param groupId query int64 true "Group ID"
 // @Success 200 {array} dto.PermissionDetailsShort
-// @Router /openauth/permissions/groups [get]
+// @Router /openauth/permissions/group [get]
 func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
 	// Parse user ID from the query parameters
 	groupIdParam := ctx.Query("groupId")
@@ -402,7 +402,7 @@ func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param permissions body dto.AddRemovePermissionsToGroupRequest true "Permissions details"
 // @Success 200 "Permissions removed from group successfully"
-// @Router /openauth/permissions/groups [delete]
+// @Router /openauth/permissions/group [delete]
 func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 	// Get user ID and permissions from the context
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)

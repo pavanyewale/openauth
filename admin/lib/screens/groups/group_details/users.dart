@@ -176,7 +176,6 @@ class _GroupUsersState extends State<GroupUsers> {
             if (edit)
               AllUsersList(
                 groupId: widget.groupDetails.id,
-                groupUsers: groupUsers!,
                 onAdd: (user) => setState(() {
                   groupUsers!.add(user);
                 }),
@@ -209,14 +208,9 @@ class _GroupUsersState extends State<GroupUsers> {
 }
 
 class AllUsersList extends StatefulWidget {
-  const AllUsersList(
-      {super.key,
-      required this.groupId,
-      required this.onAdd,
-      required this.groupUsers});
+  const AllUsersList({super.key, required this.groupId, required this.onAdd});
   final Function(ShortUserDetails) onAdd;
   final int groupId;
-  final List<ShortUserDetails> groupUsers;
 
   @override
   State<AllUsersList> createState() => _AllUsersListState();

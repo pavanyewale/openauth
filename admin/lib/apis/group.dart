@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:admin/models/groups/create_update.dart';
 import 'package:admin/models/groups/filters.dart';
+import 'package:admin/models/groups/group_permissions.dart';
 import 'package:admin/models/groups/group_users.dart';
 import 'package:admin/models/groups/list.dart';
 import 'package:admin/models/groups/groups.dart';
@@ -177,7 +178,89 @@ class GroupService {
     }
   }
 
-  static savePermissions(int id, List<PermissionDetails> list) {}
+  static Future<String> savePermissions(
+      int id, List<PermissionDetails> list) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/permissions/group');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken,
+        },
+        body: json.encode({
+          "groupId": id,
+          "permIds": list.map((e) => e.id).toList(),
+        }),
+      );
 
-  static getPermissions(int id) {}
+      if (response.statusCode == 200) {
+        return "";
+      } else {
+        return json.decode(response.body)['error'];
+      }
+    } catch (e) {
+      print(e);
+      return "Something went wrong!";
+    }
+  }
+
+  static Future<GetGroupPermissionsResponse> getPermissions(int id) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/permissions/group?groupId=$id');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return GetGroupPermissionsResponse.fromSuccessJson(
+            json.decode(response.body));
+      } else {
+        return GetGroupPermissionsResponse.fromErrorJson(
+            json.decode(response.body));
+      }
+    } catch (e) {
+      print(e);
+      return Future.value(
+          GetGroupPermissionsResponse(error: "Something went wrong!"));
+    }
+  }
+
+  static Future<String> removePermission(int groupId, int permissionId) {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/permissions/group');
+    try {
+      return http
+          .delete(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken,
+        },
+        body: json.encode({
+          "groupId": groupId,
+          "permIds": [permissionId],
+        }),
+      )
+          .then((response) {
+        if (response.statusCode == 200) {
+          return "";
+        } else {
+          return json.decode(response.body)['error'];
+        }
+      });
+    } catch (e) {
+      print(e);
+      return Future.value("Something went wrong!");
+    }
+  }
 }

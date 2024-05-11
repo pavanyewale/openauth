@@ -29,7 +29,7 @@ Repository:
   PGSQL:
     Host: localhost   
     Port: 5432   
-    Username: postgres
+    Username: admin
     Password: 1234
     Database: openauth    
     SSLMode: disable  #disable/require/verify-ca/verify-full  ## Note: disable by default

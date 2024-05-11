@@ -91,7 +91,7 @@ func (r *Repository) GetUsersByFilter(ctx context.Context, filter *filters.UserF
 		query += fmt.Sprintf(" AND mobile = '%s'", filter.Mobile)
 	}
 
-	query += fmt.Sprintf("ORDER BY updated_on DESC LIMIT %d OFFSET %d ", limit, offset)
+	query += fmt.Sprintf(" ORDER BY updated_on DESC LIMIT %d OFFSET %d ", limit, offset)
 
 	logger.Debug(ctx, "query: %s", query)
 	rows, err := r.conn.QueryContext(ctx, query)
