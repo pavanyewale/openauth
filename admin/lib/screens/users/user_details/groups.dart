@@ -1,10 +1,7 @@
 import 'package:admin/apis/group.dart';
-import 'package:admin/apis/permissions.dart';
-import 'package:admin/models/groups/group_permissions.dart';
+import 'package:admin/models/groups/filters.dart';
 import 'package:admin/models/groups/groups.dart';
-import 'package:admin/models/permissions/filters.dart';
-import 'package:admin/models/permissions/permissions.dart';
-import 'package:admin/screens/permissions/filters.dart';
+import 'package:admin/screens/groups/filters.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/common.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
@@ -13,44 +10,29 @@ import 'package:admin/utils/widgets/load_more.dart';
 import 'package:admin/utils/widgets/loader_tile.dart';
 import 'package:flutter/material.dart';
 
-class GroupPermissionsScreen extends StatelessWidget {
-  final GroupDetails groupDetails;
-  const GroupPermissionsScreen({super.key, required this.groupDetails});
+class UserGroups extends StatefulWidget {
+  final int userID;
+  const UserGroups({super.key, required this.userID});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Group Permissions"),
-        ),
-        body: GroupPermissions(
-          groupDetails: groupDetails,
-        ));
-  }
+  State<UserGroups> createState() => _UserGroupsState();
 }
 
-class GroupPermissions extends StatefulWidget {
-  final GroupDetails groupDetails;
-  const GroupPermissions({super.key, required this.groupDetails});
-
-  @override
-  State<GroupPermissions> createState() => _GroupPermissionsState();
-}
-
-class _GroupPermissionsState extends State<GroupPermissions> {
+class _UserGroupsState extends State<UserGroups> {
   bool isLoading = false;
+  List<GroupDetails> userGroups = [];
+  int offset = 0;
+  int limit = 10;
   String error = '';
   bool edit = false;
 
-  List<PermissionDetails> groupPermissions = [];
-
-  saveGroupPermissions() async {
+  saveUserGroups() async {
     setState(() {
       isLoading = true;
     });
 
-    final String err = await GroupService.savePermissions(
-        widget.groupDetails.id, groupPermissions);
+    final String err =
+        await GroupService.addUserToGroups(widget.userID, userGroups);
     if (err.isNotEmpty) {
       setState(() {
         isLoading = false;
@@ -58,7 +40,7 @@ class _GroupPermissionsState extends State<GroupPermissions> {
       });
       return;
     }
-    MyToast.success("Permissions saved successfully");
+    MyToast.success("Groups saved successfully");
     setState(() {
       isLoading = false;
       edit = false;
@@ -66,52 +48,29 @@ class _GroupPermissionsState extends State<GroupPermissions> {
     });
   }
 
-  fetchGroupPermissions() async {
+  fetchUserGroups() async {
     setState(() {
       isLoading = true;
     });
 
-    GetGroupPermissionsResponse res =
-        await GroupService.getPermissions(widget.groupDetails.id);
+    final res = await GroupService.getGroupsOfUser(widget.userID);
     if (res.error.isNotEmpty) {
       setState(() {
-        isLoading = false;
         error = res.error;
-      });
-      return;
-    }
-    setState(() {
-      isLoading = false;
-      error = '';
-      groupPermissions.addAll(res.permissions);
-    });
-  }
-
-  removePermission(int index) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final String err = await GroupService.removePermission(
-        widget.groupDetails.id, groupPermissions[index].id);
-    if (err.isNotEmpty) {
-      setState(() {
         isLoading = false;
-        error = err;
       });
       return;
     }
-    MyToast.success("Permission removed successfully");
     setState(() {
+      userGroups = res.groups;
       isLoading = false;
       error = '';
-      groupPermissions.removeAt(index);
     });
   }
 
   @override
   void initState() {
-    fetchGroupPermissions();
+    fetchUserGroups();
     super.initState();
   }
 
@@ -120,7 +79,7 @@ class _GroupPermissionsState extends State<GroupPermissions> {
     return Column(
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text("Permissions of the group",
+          Text("Groups of the user",
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
@@ -151,9 +110,9 @@ class _GroupPermissionsState extends State<GroupPermissions> {
                       Text(error,
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.error)),
-                    if (error.isEmpty && (groupPermissions.isEmpty))
+                    if (error.isEmpty && (userGroups.isEmpty))
                       const EmptyListWidget(
-                        msg: "No Permissions of the Group",
+                        msg: "No Groups of the User",
                         height: 100,
                       ),
                     ListView.separated(
@@ -161,14 +120,18 @@ class _GroupPermissionsState extends State<GroupPermissions> {
                               height: 0,
                             ),
                         shrinkWrap: true,
-                        itemCount: groupPermissions.length,
+                        itemCount: userGroups.length,
                         itemBuilder: (context, index) {
-                          return PermissionTile(
+                          return GroupTile(
+                              group: userGroups[index],
                               iconData: Icons.remove_circle_outline,
-                              permission: groupPermissions[index],
-                              onAdd: () {
-                                removePermission(index);
-                              });
+                              onTap: edit
+                                  ? () {
+                                      setState(() {
+                                        userGroups.removeAt(index);
+                                      });
+                                    }
+                                  : null);
                         }),
                     if (isLoading) const LoaderTile(),
                   ],
@@ -176,10 +139,10 @@ class _GroupPermissionsState extends State<GroupPermissions> {
               ),
             ),
             if (edit)
-              AllPermissions(
+              AllGroups(
                 onAdd: (permission) {
                   setState(() {
-                    groupPermissions.add(permission);
+                    userGroups.add(permission);
                   });
                 },
               ),
@@ -192,7 +155,7 @@ class _GroupPermissionsState extends State<GroupPermissions> {
             children: [
               ElevatedButton(
                   onPressed: () {
-                    saveGroupPermissions();
+                    saveUserGroups();
                   },
                   child: const Text("Save")),
               const SizedBox(width: 20),
@@ -210,45 +173,50 @@ class _GroupPermissionsState extends State<GroupPermissions> {
   }
 }
 
-class AllPermissions extends StatefulWidget {
-  final Function(PermissionDetails) onAdd;
-  const AllPermissions({super.key, required this.onAdd});
+/*
+
+All Groups Screen
+
+*/
+
+class AllGroups extends StatefulWidget {
+  final Function(GroupDetails) onAdd;
+  const AllGroups({super.key, required this.onAdd});
 
   @override
-  State<AllPermissions> createState() => _AllPermissionsState();
+  State<AllGroups> createState() => _AllGroupsState();
 }
 
-class _AllPermissionsState extends State<AllPermissions> {
+class _AllGroupsState extends State<AllGroups> {
   bool isLoading = false;
-  String error = '';
-  List<PermissionDetails> allPermissions = [];
-  int limit = 10;
+  List<GroupDetails> groups = [];
   int offset = 0;
-  bool filtersChanged = false;
+  int limit = 10;
+  String error = '';
   bool loadMore = true;
-  PermissionsFilters filter = PermissionsFilters();
+  bool newFilters = false;
+  GroupFilters filters = GroupFilters();
 
-  fetchPermissions() async {
+  fetchGroups() async {
     setState(() {
       isLoading = true;
     });
 
-    final GetPermissionsResponse res =
-        await PermissionService.getPermissions(filter, offset, limit);
+    final res = await GroupService.getGroups(filters, limit, offset);
     if (res.error.isNotEmpty) {
       setState(() {
-        isLoading = false;
         error = res.error;
+        isLoading = false;
       });
       return;
     }
-    if (filtersChanged) {
-      allPermissions.clear();
-      filtersChanged = false;
+    if (newFilters) {
+      groups.clear();
+      newFilters = false;
     }
     setState(() {
-      loadMore = res.permissions.length == limit;
-      allPermissions.addAll(res.permissions);
+      loadMore = res.groups.length == limit;
+      groups.addAll(res.groups);
       isLoading = false;
       error = '';
     });
@@ -256,7 +224,7 @@ class _AllPermissionsState extends State<AllPermissions> {
 
   @override
   void initState() {
-    fetchPermissions();
+    fetchGroups();
     super.initState();
   }
 
@@ -273,17 +241,17 @@ class _AllPermissionsState extends State<AllPermissions> {
         const SizedBox(
           height: 10,
         ),
-        PermissionsFilterWidget(onFetchClicked: (filters) {
-          filter = filters;
+        GroupFiltersWidget(onFetchClicked: (filter) {
+          filters = filter;
           offset = 0;
-          filtersChanged = true;
-          fetchPermissions();
+          newFilters = true;
+          fetchGroups();
         }),
         const SizedBox(
           height: 5,
         ),
         Container(
-          decoration: BoxDecoration(border: Border.all(), color: Colors.grey),
+          decoration: BoxDecoration(border: Border.all()),
           padding: const EdgeInsets.all(10),
           constraints: const BoxConstraints(maxHeight: 350, minHeight: 50),
           child: SingleChildScrollView(
@@ -291,30 +259,30 @@ class _AllPermissionsState extends State<AllPermissions> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (error.isNotEmpty) const MyErrorWidget(),
-                if (allPermissions.isEmpty && !isLoading && error.isEmpty)
+                if (groups.isEmpty && !isLoading && error.isEmpty)
                   const EmptyListWidget(
-                    msg: "No Permissions found",
+                    msg: "No Groups found",
                   ),
-                if (allPermissions.isNotEmpty)
+                if (groups.isNotEmpty)
                   ListView.builder(
-                      itemCount: allPermissions.length,
+                      itemCount: groups.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        final permission = allPermissions[index];
-                        return PermissionTile(
-                            permission: permission,
+                        final group = groups[index];
+                        return GroupTile(
+                            group: group,
                             iconData: Icons.add_circle_outline,
-                            onAdd: () {
-                              widget.onAdd(allPermissions[index]);
-                              allPermissions.removeAt(index);
+                            onTap: () {
+                              widget.onAdd(groups[index]);
+                              groups.removeAt(index);
                             });
                       }),
                 if (isLoading) const LoaderTile(),
                 if (!isLoading && loadMore)
                   LoadMoreTile(onTap: () {
                     offset += limit;
-                    fetchPermissions();
+                    fetchGroups();
                   }),
               ],
             ),
@@ -325,15 +293,21 @@ class _AllPermissionsState extends State<AllPermissions> {
   }
 }
 
-class PermissionTile extends StatelessWidget {
-  const PermissionTile(
-      {super.key,
-      required this.permission,
-      required this.onAdd,
-      required this.iconData});
+/*
+
+Group Tile
+
+*/
+
+class GroupTile extends StatelessWidget {
+  final GroupDetails group;
+  final Function()? onTap;
   final IconData iconData;
-  final PermissionDetails permission;
-  final Function() onAdd;
+  const GroupTile(
+      {super.key,
+      required this.group,
+      required this.onTap,
+      required this.iconData});
 
   @override
   Widget build(BuildContext context) {
@@ -341,7 +315,7 @@ class PermissionTile extends StatelessWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       title: Text(
-        permission.name,
+        group.name,
         style: Theme.of(context)
             .textTheme
             .bodySmall!
@@ -349,9 +323,9 @@ class PermissionTile extends StatelessWidget {
       ),
       subtitle: SubTextWithIcon(
         icon: Icons.description,
-        text: permission.description,
+        text: group.description,
       ),
-      trailing: IconButton(icon: Icon(iconData), onPressed: onAdd),
+      trailing: IconButton(icon: Icon(iconData), onPressed: onTap),
     );
   }
 }

@@ -1,18 +1,18 @@
 import 'package:admin/models/permissions/permissions.dart';
 
 class GetGroupPermissionsResponse {
-  final List<PermissionDetails> groupPermissions;
+  final List<PermissionDetails> permissions;
   final String error = '';
 
   GetGroupPermissionsResponse({
-    this.groupPermissions = const [],
+    this.permissions = const [],
     error = '',
   });
 
   factory GetGroupPermissionsResponse.fromSuccessJson(
       Map<String, dynamic> json) {
     return GetGroupPermissionsResponse(
-      groupPermissions: (json['data'] as List)
+      permissions: (json['data'] as List)
           .map((groupPermission) => PermissionDetails.fromJson(groupPermission))
           .toList(),
     );

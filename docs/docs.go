@@ -392,7 +392,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AddRemoveUsersToGroupRequest"
+                            "$ref": "#/definitions/dto.AddUsersToGroupRequest"
                         }
                     }
                 ],
@@ -455,7 +455,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AddRemoveUsersToGroupRequest"
+                            "$ref": "#/definitions/dto.RemoveUsersFromGroupRequest"
                         }
                     }
                 ],
@@ -528,7 +528,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.GroupDetailsShort"
+                                "$ref": "#/definitions/dto.GroupDetails"
                             }
                         }
                     },
@@ -954,7 +954,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/openauth/permissions/groups": {
+        "/openauth/permissions/group/": {
             "get": {
                 "description": "Get permissions of a group by group ID",
                 "consumes": [
@@ -989,7 +989,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.PermissionDetailsShort"
+                                "$ref": "#/definitions/dto.PermissionDetails"
                             }
                         }
                     }
@@ -1534,16 +1534,24 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.AddRemoveUsersToGroupRequest": {
+        "dto.AddUsersToGroupRequest": {
             "type": "object",
             "properties": {
-                "groupId": {
-                    "type": "integer"
-                },
-                "userIds": {
+                "details": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "object",
+                        "properties": {
+                            "groupId": {
+                                "type": "integer"
+                            },
+                            "userIds": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1701,17 +1709,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GroupDetailsShort": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.History": {
             "type": "object",
             "properties": {
@@ -1822,6 +1819,20 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RemoveUsersFromGroupRequest": {
+            "type": "object",
+            "properties": {
+                "groupId": {
+                    "type": "integer"
+                },
+                "userIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

@@ -3,6 +3,7 @@ package postgresql
 import (
 	"context"
 	"openauth/models/dao"
+	"openauth/models/filters"
 	"openauth/utils/customerrors"
 	"openauth/utils/logger"
 	"time"
@@ -73,12 +74,19 @@ func (r *Repository) DeletePermissionById(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (r *Repository) GetAllPermissions(ctx context.Context, limit, offset int) ([]*dao.Permission, error) {
+func (r *Repository) GetAllPermissions(ctx context.Context, filters *filters.PermissionFilter, limit, offset int) ([]*dao.Permission, error) {
 	query := `
 		SELECT id, "name", category, description, created_by_user, created_on, updated_on, deleted
-		FROM permissions
-		LIMIT $1 OFFSET $2
-	`
+		FROM permissions WHERE 1=1
+		`
+	if filters.Name != "" {
+		query += " AND name like '%" + filters.Name + "%'"
+	}
+
+	if filters.Category != "" {
+		query += " AND category like '%" + filters.Category + "%'"
+	}
+	query += " ORDER BY id LIMIT $1 OFFSET $2"
 	rows, err := r.conn.QueryContext(ctx, query, limit, offset)
 	if err != nil {
 		logger.Error(ctx, "failed to get all permissions: %s", err.Error())
@@ -101,13 +109,8 @@ func (r *Repository) GetAllPermissions(ctx context.Context, limit, offset int) (
 }
 
 func (r *Repository) CreateGroupPermissions(ctx context.Context, perms []*dao.GroupPermission) error {
-	tx, err := r.conn.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
 
-	stmt, err := tx.PrepareContext(ctx, "INSERT INTO group_permissions (group_id, permission_id, created_by_user, created_on, updated_on) VALUES ($1, $2, $3, $4, $5)")
+	stmt, err := r.conn.PrepareContext(ctx, "INSERT INTO group_permissions (group_id, permission_id, created_by_user, created_on, updated_on) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (group_id, permission_id) DO NOTHING")
 	if err != nil {
 		return err
 	}
@@ -116,13 +119,9 @@ func (r *Repository) CreateGroupPermissions(ctx context.Context, perms []*dao.Gr
 	for _, perm := range perms {
 		_, err := stmt.ExecContext(ctx, perm.GroupID, perm.PermissionID, perm.CreatedByUser, time.Now().UnixMilli(), time.Now().UnixMilli())
 		if err != nil {
-			return err
+			logger.Error(ctx, "failed to create group permission: %v", err.Error())
+			return customerrors.ERROR_DATABASE
 		}
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -165,7 +164,7 @@ func (r *Repository) CreateUserPermissions(ctx context.Context, perms []*dao.Use
 	}
 	defer tx.Rollback()
 
-	stmt, err := tx.PrepareContext(ctx, "INSERT INTO user_permissions (user_id, permission_id, created_by_user, created_on, updated_on) VALUES ($1, $2, $3, $4, $5)")
+	stmt, err := tx.PrepareContext(ctx, "INSERT INTO user_permissions (user_id, permission_id, created_by_user, created_on, updated_on) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (user_id, permission_id) DO NOTHING")
 	if err != nil {
 		return err
 	}

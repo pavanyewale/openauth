@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,5 +36,5 @@ func (ph *PingHandler) Ping(ctx *gin.Context) {
 		WriteError(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, "Everything is working fine.")
+	WriteSuccess(ctx, "Everything is working fine.")
 }

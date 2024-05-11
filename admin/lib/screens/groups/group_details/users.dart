@@ -6,6 +6,8 @@ import 'package:admin/models/users/users.dart';
 import 'package:admin/screens/users/filter.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
+import 'package:admin/utils/widgets/load_more.dart';
+import 'package:admin/utils/widgets/loader_tile.dart';
 import 'package:flutter/material.dart';
 
 class GroupUsersScreen extends StatelessWidget {
@@ -168,7 +170,7 @@ class _GroupUsersState extends State<GroupUsers> {
                                     : null,
                                 icon: Icons.remove_circle_outline);
                           }),
-                    if (isLoading) const CircularProgressIndicator(),
+                    if (isLoading) const LoaderTile(),
                   ],
                 ),
               ),
@@ -217,13 +219,14 @@ class AllUsersList extends StatefulWidget {
 }
 
 class _AllUsersListState extends State<AllUsersList> {
-  List<ShortUserDetails>? users;
+  List<ShortUserDetails> users = [];
   bool isLoading = true;
   String error = '';
-  int limit = 0, offset = 0;
+  int limit = 10, offset = 0;
   bool edit = false;
-
+  bool loadMore = true;
   GetUsersFilters filters = GetUsersFilters();
+  bool newFilters = false;
 
   fetchUsers() async {
     setState(() {
@@ -236,9 +239,14 @@ class _AllUsersListState extends State<AllUsersList> {
         isLoading = false;
       });
     } else {
+      loadMore = res.data.length == limit;
+      if (newFilters) {
+        users.clear();
+      }
       setState(() {
+        newFilters = false;
         error = '';
-        users = res.data;
+        users.addAll(res.data);
         isLoading = false;
       });
     }
@@ -261,6 +269,8 @@ class _AllUsersListState extends State<AllUsersList> {
       const SizedBox(height: 10),
       UsersFilters(onFetchClicked: (GetUsersFilters filters) {
         filters = filters;
+        offset = 0;
+        newFilters = true;
         fetchUsers();
       }),
       const SizedBox(
@@ -278,29 +288,36 @@ class _AllUsersListState extends State<AllUsersList> {
             if (error.isNotEmpty)
               Text(error,
                   style: TextStyle(color: Theme.of(context).colorScheme.error)),
-            if (users != null && users!.isEmpty)
+            if (users.isEmpty)
               const EmptyListWidget(
                 msg: "No Users Found",
                 height: 100,
               ),
-            if (users != null && users!.isNotEmpty)
+            if (users.isNotEmpty)
               ListView.separated(
                   separatorBuilder: (context, index) => const Divider(
                         height: 0,
                       ),
                   shrinkWrap: true,
-                  itemCount: users!.length,
+                  itemCount: users.length,
                   itemBuilder: (context, index) {
                     return GroupUser(
-                      user: users![index],
+                      user: users[index],
                       onClick: () {
-                        widget.onAdd(users![index]);
-                        users!.removeAt(index);
+                        widget.onAdd(users[index]);
+                        users.removeAt(index);
                       },
                       icon: Icons.add_circle_outline,
                     );
                   }),
-            if (isLoading) const CircularProgressIndicator(),
+            if (isLoading) const LoaderTile(),
+            if (loadMore && !isLoading)
+              LoadMoreTile(
+                onTap: () {
+                  offset += limit;
+                  fetchUsers();
+                },
+              )
           ],
         )),
       ),

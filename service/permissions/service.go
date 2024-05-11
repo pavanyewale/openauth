@@ -5,6 +5,7 @@ import (
 	"openauth/constants"
 	"openauth/models/dao"
 	"openauth/models/dto"
+	"openauth/models/filters"
 	"openauth/service/group"
 	"openauth/service/history"
 	"openauth/utils/customerrors"
@@ -29,7 +30,7 @@ type Repository interface {
 	GetPermissionsByGroupIds(ctx context.Context, groupIds []int64) ([]*dao.Permission, error)
 	CreateUserPermissions(ctx context.Context, perms []*dao.UserPermission) error
 	GetPermissionsByUserId(ctx context.Context, userIds int64) ([]*dao.Permission, error)
-	GetAllPermissions(ctx context.Context, limit, offset int) ([]*dao.Permission, error)
+	GetAllPermissions(ctx context.Context, filters *filters.PermissionFilter, limit, offset int) ([]*dao.Permission, error)
 	DeleteGroupPermissions(ctx context.Context, groupId int64, permIds []int64) error
 	DeleteUserPermissions(ctx context.Context, userId int64, permIds []int64) error
 }
@@ -39,14 +40,22 @@ type serviceFactory interface {
 	GetHistoryService() *history.Service
 }
 
-func (s *Service) GetPermissionsByGroupId(ctx context.Context, groupId int64) ([]*dto.PermissionDetailsShort, error) {
+func (s *Service) GetPermissionsByGroupId(ctx context.Context, groupId int64) ([]*dto.PermissionDetails, error) {
 	perms, err := s.repo.GetPermissionsByGroupIds(ctx, []int64{groupId})
 	if err != nil {
 		return nil, err
 	}
-	shortPerms := make([]*dto.PermissionDetailsShort, len(perms))
+	shortPerms := make([]*dto.PermissionDetails, len(perms))
 	for i, p := range perms {
-		shortPerms[i] = &dto.PermissionDetailsShort{ID: p.ID, Name: p.Name}
+		shortPerms[i] = &dto.PermissionDetails{
+			ID:          p.ID,
+			Name:        p.Name,
+			Category:    p.Category,
+			Description: p.Description,
+			CreatedBy:   p.CreatedBy,
+			CreatedOn:   p.CreatedOn,
+			UpdatedOn:   p.UpdatedOn,
+		}
 	}
 	return shortPerms, nil
 }
@@ -71,8 +80,8 @@ func (s *Service) GetPermissionsByUserId(ctx context.Context, userId int64) ([]*
 	return uniqueShortPermissions(groupPermissions, userPermissions), nil
 }
 
-func (s *Service) GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetails, error) {
-	perms, err := s.repo.GetAllPermissions(ctx, limit, offset)
+func (s *Service) GetAllPermissions(ctx context.Context, filters *filters.PermissionFilter, limit, offset int) ([]*dto.PermissionDetails, error) {
+	perms, err := s.repo.GetAllPermissions(ctx, filters, limit, offset)
 	if err != nil {
 		return nil, err
 	}

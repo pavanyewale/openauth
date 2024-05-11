@@ -6,7 +6,7 @@ import 'package:admin/screens/permissions/permission_tile.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
-import 'package:admin/utils/widgets/next_prev.dart';
+import 'package:admin/utils/widgets/load_more.dart';
 import 'package:flutter/material.dart';
 
 class PermissionsList extends StatefulWidget {
@@ -19,10 +19,12 @@ class PermissionsList extends StatefulWidget {
 class _PermissionsListState extends State<PermissionsList> {
   final List<PermissionDetails> permissions = [];
   int limit = 10;
-  int skip = 0;
+  int offset = 0;
   bool isLoading = false;
   String error = '';
   PermissionsFilters filters = PermissionsFilters();
+  bool loadMore = true;
+  bool newFilters = false;
 
   void fetchPermissions() async {
     setState(() {
@@ -30,7 +32,7 @@ class _PermissionsListState extends State<PermissionsList> {
       error = '';
     });
 
-    final res = await PermissionService.getPermissions(filters, skip, limit);
+    final res = await PermissionService.getPermissions(filters, offset, limit);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -39,8 +41,12 @@ class _PermissionsListState extends State<PermissionsList> {
       });
       return;
     }
-    setState(() {
+    if (newFilters) {
       permissions.clear();
+      newFilters = false;
+    }
+    setState(() {
+      loadMore = res.permissions.length == limit;
       permissions.addAll(res.permissions);
       isLoading = false;
     });
@@ -64,6 +70,8 @@ class _PermissionsListState extends State<PermissionsList> {
       // add error message
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         PermissionsFilterWidget(onFetchClicked: (filters) {
+          newFilters = true;
+          offset = 0;
           filters = filters;
           fetchPermissions();
         }),
@@ -92,19 +100,11 @@ class _PermissionsListState extends State<PermissionsList> {
         ),
 
         // add next and prev buttons
-        if (error.isEmpty)
-          NextAndPrevPaginationButtons(
-            onNextClicked: () {
-              skip += limit;
-              fetchPermissions();
-            },
-            onPrevClicked: () {
-              skip -= limit;
-              fetchPermissions();
-            },
-            isPrev: skip > 0,
-            isNext: permissions.length == limit,
-          )
+        if (error.isEmpty && !isLoading && loadMore)
+          LoadMoreTile(onTap: () {
+            offset += limit;
+            fetchPermissions();
+          }),
       ])
     ]);
   }

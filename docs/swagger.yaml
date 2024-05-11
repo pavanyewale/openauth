@@ -34,13 +34,18 @@ definitions:
       userId:
         type: integer
     type: object
-  dto.AddRemoveUsersToGroupRequest:
+  dto.AddUsersToGroupRequest:
     properties:
-      groupId:
-        type: integer
-      userIds:
+      details:
         items:
-          type: integer
+          properties:
+            groupId:
+              type: integer
+            userIds:
+              items:
+                type: integer
+              type: array
+          type: object
         type: array
     type: object
   dto.AuthenticationResponse:
@@ -142,13 +147,6 @@ definitions:
       updatedOn:
         type: integer
     type: object
-  dto.GroupDetailsShort:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-    type: object
   dto.History:
     properties:
       createdByUser:
@@ -221,6 +219,15 @@ definitions:
     properties:
       token:
         type: string
+    type: object
+  dto.RemoveUsersFromGroupRequest:
+    properties:
+      groupId:
+        type: integer
+      userIds:
+        items:
+          type: integer
+        type: array
     type: object
   dto.ShortUserDetails:
     properties:
@@ -600,7 +607,7 @@ paths:
         name: group
         required: true
         schema:
-          $ref: '#/definitions/dto.AddRemoveUsersToGroupRequest'
+          $ref: '#/definitions/dto.RemoveUsersFromGroupRequest'
       produces:
       - application/json
       responses:
@@ -685,7 +692,7 @@ paths:
         name: group
         required: true
         schema:
-          $ref: '#/definitions/dto.AddRemoveUsersToGroupRequest'
+          $ref: '#/definitions/dto.AddUsersToGroupRequest'
       produces:
       - application/json
       responses:
@@ -735,7 +742,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.GroupDetailsShort'
+              $ref: '#/definitions/dto.GroupDetails'
             type: array
         "400":
           description: Bad Request
@@ -958,7 +965,7 @@ paths:
       summary: Get details of a permission
       tags:
       - Permissions
-  /openauth/permissions/groups:
+  /openauth/permissions/group/:
     delete:
       consumes:
       - application/json
@@ -1005,7 +1012,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/dto.PermissionDetailsShort'
+              $ref: '#/definitions/dto.PermissionDetails'
             type: array
       summary: Get permissions of a group
       tags:

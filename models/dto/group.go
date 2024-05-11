@@ -60,18 +60,39 @@ func (c *DeleteGroupRequest) Validate() error {
 	return nil
 }
 
-type AddRemoveUsersToGroupRequest struct {
+type AddUsersToGroupRequest struct {
+	Details []struct {
+		GroupId int64   `json:"groupId"`
+		UserIds []int64 `json:"userIds"`
+	} `json:"details"`
+	UpdatedByUserId int64 `json:"-"`
+}
+
+func (cc *AddUsersToGroupRequest) Validate() error {
+	for _, c := range cc.Details {
+		if c.GroupId <= 0 {
+			return customerrors.BAD_REQUEST_ERROR("invalid groupId")
+		}
+		if len(c.UserIds) == 0 {
+			return customerrors.BAD_REQUEST_ERROR("userIds are required")
+		}
+	}
+	return nil
+}
+
+type RemoveUsersFromGroupRequest struct {
 	GroupId         int64   `json:"groupId"`
 	UserIds         []int64 `json:"userIds"`
 	UpdatedByUserId int64   `json:"-"`
 }
 
-func (c *AddRemoveUsersToGroupRequest) Validate() error {
+func (c *RemoveUsersFromGroupRequest) Validate() error {
 	if c.GroupId <= 0 {
 		return customerrors.BAD_REQUEST_ERROR("invalid groupId")
 	}
 	if len(c.UserIds) == 0 {
 		return customerrors.BAD_REQUEST_ERROR("userIds are required")
 	}
+
 	return nil
 }

@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"context"
-	"net/http"
 	"openauth/constants"
 	"openauth/models/dto"
+	"openauth/models/filters"
 	"openauth/utils"
 	"openauth/utils/customerrors"
 	"strconv"
@@ -15,14 +15,14 @@ import (
 type PermissionService interface {
 	CreatePermission(ctx context.Context, req *dto.CreatePermissionRequest) (*dto.PermissionDetails, error)
 	GetPermissionDetails(ctx context.Context, id int64) (*dto.PermissionDetails, error)
-	GetAllPermissions(ctx context.Context, limit, offset int) ([]*dto.PermissionDetails, error)
+	GetAllPermissions(ctx context.Context, filter *filters.PermissionFilter, limit, offset int) ([]*dto.PermissionDetails, error)
 	DeletePermissionById(ctx context.Context, req *dto.DeletePermissionRequest) error
 	AddPermissionsToUser(ctx context.Context, req *dto.AddRemovePermissionsToUserRequest) error
 	GetPermissionsByUserId(ctx context.Context, userId int64) ([]*dto.PermissionDetailsShort, error)
 	RemovePermissionsOfUser(ctx context.Context, req *dto.AddRemovePermissionsToUserRequest) error
 	AddPermissionsToGroup(ctx context.Context, req *dto.AddRemovePermissionsToGroupRequest) error
 	RemovePermissionsOfGroup(ctx context.Context, req *dto.AddRemovePermissionsToGroupRequest) error
-	GetPermissionsByGroupId(ctx context.Context, groupId int64) ([]*dto.PermissionDetailsShort, error)
+	GetPermissionsByGroupId(ctx context.Context, groupId int64) ([]*dto.PermissionDetails, error)
 }
 
 type PermissionsHandler struct {
@@ -93,7 +93,7 @@ func (ph *PermissionsHandler) CreatePermission(ctx *gin.Context) {
 	}
 
 	// Return the created permission in the response
-	ctx.JSON(http.StatusCreated, permission)
+	WriteSuccess(ctx, permission)
 }
 
 // @Summary Get details of a permission
@@ -121,7 +121,7 @@ func (ph *PermissionsHandler) GetPermissionDetails(ctx *gin.Context) {
 	}
 
 	// Return the permission details in the response
-	ctx.JSON(http.StatusOK, permissionDetails)
+	WriteSuccess(ctx, permissionDetails)
 }
 
 // @Summary Delete a permission
@@ -256,7 +256,7 @@ func (ph *PermissionsHandler) GetPermissionsByUserId(ctx *gin.Context) {
 	}
 
 	// Return the permissions in the response
-	ctx.JSON(http.StatusOK, perms)
+	WriteSuccess(ctx, perms)
 }
 
 // @Summary Remove permissions from a user
@@ -317,7 +317,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfUser(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param permissions body dto.AddRemovePermissionsToGroupRequest true "Permissions details"
 // @Success 200 "Permissions added to group successfully"
-// @Router /openauth/permissions/group [post]
+// @Router /openauth/permissions/group/ [post]
 func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 	// Get user ID and permissions from the context
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
@@ -366,8 +366,8 @@ func (ph *PermissionsHandler) AddPermissionsToGroup(ctx *gin.Context) {
 // @Produce json
 // @Param AuthToken header string true "JWT Token"
 // @Param groupId query int64 true "Group ID"
-// @Success 200 {array} dto.PermissionDetailsShort
-// @Router /openauth/permissions/group [get]
+// @Success 200 {array} dto.PermissionDetails
+// @Router /openauth/permissions/group/ [get]
 func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
 	// Parse user ID from the query parameters
 	groupIdParam := ctx.Query("groupId")
@@ -391,7 +391,7 @@ func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
 	}
 
 	// Return the permissions in the response
-	ctx.JSON(http.StatusOK, perms)
+	WriteSuccess(ctx, perms)
 }
 
 // @Summary Remove permissions from a group
@@ -402,7 +402,7 @@ func (ph *PermissionsHandler) GetPermissionsByGroupId(ctx *gin.Context) {
 // @Param AuthToken header string true "JWT Token"
 // @Param permissions body dto.AddRemovePermissionsToGroupRequest true "Permissions details"
 // @Success 200 "Permissions removed from group successfully"
-// @Router /openauth/permissions/group [delete]
+// @Router /openauth/permissions/group/ [delete]
 func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 	// Get user ID and permissions from the context
 	userId, permissions, err := utils.Get_UserId_Permissions(ctx)
@@ -456,7 +456,7 @@ func (ph *PermissionsHandler) RemovePermissionsOfGroup(ctx *gin.Context) {
 // @Success 200 object dto.GetPermissionsResponse
 // @Router /openauth/permissions [get]
 func (ph *PermissionsHandler) GetAllPermissions(ctx *gin.Context) {
-
+	var filter filters.PermissionFilter
 	// Get limit and offset parameters from the query
 	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "50"))
 	if err != nil {
@@ -470,13 +470,16 @@ func (ph *PermissionsHandler) GetAllPermissions(ctx *gin.Context) {
 		return
 	}
 
+	filter.Category = ctx.Query("category")
+	filter.Name = ctx.Query("name")
+
 	// Call the permission service to get all permissions with pagination
-	allPermissions, err := ph.permissionService.GetAllPermissions(ctx, limit, offset)
+	allPermissions, err := ph.permissionService.GetAllPermissions(ctx, &filter, limit, offset)
 	if err != nil {
 		WriteError(ctx, err)
 		return
 	}
 
 	// Return the permissions in the response
-	ctx.JSON(http.StatusOK, &dto.GetPermissionsResponse{Permissions: allPermissions})
+	WriteSuccess(ctx, &dto.GetPermissionsResponse{Permissions: allPermissions})
 }

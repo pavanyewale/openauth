@@ -6,7 +6,8 @@ import 'package:admin/screens/groups/group_tile.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
-import 'package:admin/utils/widgets/next_prev.dart';
+import 'package:admin/utils/widgets/load_more.dart';
+import 'package:admin/utils/widgets/loader_tile.dart';
 import 'package:flutter/material.dart';
 
 class GroupsList extends StatefulWidget {
@@ -19,16 +20,19 @@ class GroupsList extends StatefulWidget {
 class _GroupsListState extends State<GroupsList> {
   final List<GroupDetails> groups = [];
   int limit = 10;
-  int skip = 0;
+  int offset = 0;
   bool isLoading = false;
   String error = '';
+  bool loadMore = true;
+  bool newFilters = false;
+
   GroupFilters filters = GroupFilters();
   void fetchGroups() async {
     setState(() {
       isLoading = true;
     });
 
-    final res = await GroupService.getGroups(filters, limit, skip);
+    final res = await GroupService.getGroups(filters, limit, offset);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -37,8 +41,12 @@ class _GroupsListState extends State<GroupsList> {
       });
       return;
     }
-    setState(() {
+    if (newFilters) {
       groups.clear();
+      newFilters = false;
+    }
+    setState(() {
+      loadMore = res.groups.length == limit;
       groups.addAll(res.groups);
       isLoading = false;
       error = '';
@@ -60,14 +68,11 @@ class _GroupsListState extends State<GroupsList> {
       children: [
         GroupFiltersWidget(onFetchClicked: (fitlers) {
           filters = fitlers;
+          offset = 0;
+          newFilters = true;
           fetchGroups();
         }),
         const Divider(),
-        //add loading indicator
-        if (isLoading)
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
         //add error message
         if (error.isNotEmpty) const MyErrorWidget(),
         //show empty list message
@@ -85,22 +90,12 @@ class _GroupsListState extends State<GroupsList> {
             },
             separatorBuilder: (context, index) => const Divider(),
             itemCount: groups.length),
-        // next and prev buttons
-        NextAndPrevPaginationButtons(
-            onNextClicked: () {
-              setState(() {
-                skip += limit;
-              });
-              fetchGroups();
-            },
-            onPrevClicked: () {
-              setState(() {
-                skip -= limit;
-              });
-              fetchGroups();
-            },
-            isNext: groups.length == limit,
-            isPrev: skip > 0)
+        if (isLoading) const LoaderTile(),
+        if (loadMore && !isLoading)
+          LoadMoreTile(onTap: () {
+            offset += limit;
+            fetchGroups();
+          }),
       ],
     );
   }

@@ -136,7 +136,9 @@ class GroupService {
           'Content-Type': 'application/json',
           'AuthToken': LoginService.instance.authToken
         },
-        body: json.encode(addUsersToGroupRequest.toJson()),
+        body: {
+          "details": [json.encode(addUsersToGroupRequest.toJson())]
+        },
       );
 
       if (response.statusCode == 200) {
@@ -181,7 +183,7 @@ class GroupService {
   static Future<String> savePermissions(
       int id, List<PermissionDetails> list) async {
     final baseUrl = BaseURL.instance.baseURL;
-    final url = Uri.parse('$baseUrl/openauth/permissions/group');
+    final url = Uri.parse('$baseUrl/openauth/permissions/group/');
     try {
       final response = await http.post(
         url,
@@ -209,7 +211,7 @@ class GroupService {
 
   static Future<GetGroupPermissionsResponse> getPermissions(int id) async {
     final baseUrl = BaseURL.instance.baseURL;
-    final url = Uri.parse('$baseUrl/openauth/permissions/group?groupId=$id');
+    final url = Uri.parse('$baseUrl/openauth/permissions/group/?groupId=$id');
     try {
       var response = await http.get(
         url,
@@ -236,7 +238,7 @@ class GroupService {
 
   static Future<String> removePermission(int groupId, int permissionId) {
     final baseUrl = BaseURL.instance.baseURL;
-    final url = Uri.parse('$baseUrl/openauth/permissions/group');
+    final url = Uri.parse('$baseUrl/openauth/permissions/group/');
     try {
       return http
           .delete(
@@ -261,6 +263,63 @@ class GroupService {
     } catch (e) {
       print(e);
       return Future.value("Something went wrong!");
+    }
+  }
+
+  static Future<GetGroupsResponse> getGroupsOfUser(int userID) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group/user/$userID');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken,
+        },
+      );
+      if (response.statusCode == 200) {
+        return GetGroupsResponse.fromSuccessJson(json.decode(response.body));
+      } else {
+        return GetGroupsResponse.fromErrorJson(json.decode(response.body));
+      }
+    } catch (e) {
+      print(e);
+      return GetGroupsResponse(code: 500, error: "Something went wrong!");
+    }
+  }
+
+  static Future<String> addUserToGroups(
+      int userID, List<GroupDetails> userGroups) async {
+    if (userGroups.isEmpty) {
+      // no need to update
+      return "";
+    }
+    final details = userGroups
+        .map((e) =>
+            AddUsersToGroupRequest(groupId: e.id, userIds: [userID]).toJson())
+        .toList();
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/group/user');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': LoginService.instance.authToken
+        },
+        body: json.encode({"details": details}),
+      );
+
+      if (response.statusCode == 200) {
+        return "";
+      } else {
+        return json.decode(response.body)['error'];
+      }
+    } catch (e) {
+      print(e);
+      return "Something went wrong!";
     }
   }
 }

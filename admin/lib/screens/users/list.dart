@@ -6,6 +6,7 @@ import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
 import 'package:admin/utils/widgets/load_more.dart';
+import 'package:admin/utils/widgets/loader_tile.dart';
 import 'package:flutter/material.dart';
 
 class UserList extends StatefulWidget {
@@ -41,6 +42,11 @@ class _UserListState extends State<UserList> {
       });
       return;
     }
+    if (filtersChanged) {
+      users.clear();
+      filtersChanged = false;
+    }
+
     setState(() {
       users.addAll(res.data);
       isMore = res.data.length == limit;
@@ -62,16 +68,12 @@ class _UserListState extends State<UserList> {
         UsersFilters(
           onFetchClicked: (filters) {
             offset = 0;
-
+            filtersChanged = true;
             this.filters = filters;
             fetchUsers();
           },
         ),
         const Divider(),
-        if (isLoading)
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
         (error.isEmpty)
             ? ListView.separated(
                 shrinkWrap: true,
@@ -90,6 +92,7 @@ class _UserListState extends State<UserList> {
             : const MyErrorWidget(),
         if (users.isEmpty && !isLoading && error.isEmpty)
           const EmptyListWidget(),
+        if (isLoading) const LoaderTile(),
         if (error.isEmpty && isMore && !isLoading)
           LoadMoreTile(onTap: () {
             offset += limit;

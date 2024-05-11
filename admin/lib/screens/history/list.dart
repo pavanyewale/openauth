@@ -6,7 +6,8 @@ import 'package:admin/screens/history/history_tile.dart';
 import 'package:admin/utils/toast.dart';
 import 'package:admin/utils/widgets/empty_list.dart';
 import 'package:admin/utils/widgets/errors.dart';
-import 'package:admin/utils/widgets/next_prev.dart';
+import 'package:admin/utils/widgets/load_more.dart';
+import 'package:admin/utils/widgets/loader_tile.dart';
 import 'package:flutter/material.dart';
 
 class HistoryList extends StatefulWidget {
@@ -19,17 +20,18 @@ class HistoryList extends StatefulWidget {
 class _HistoryListState extends State<HistoryList> {
   final List<History> history = [];
   int limit = 10;
-  int skip = 0;
+  int offset = 0;
   bool isLoading = false;
   String error = '';
   HistoryFilters filters = HistoryFilters();
-
+  bool newFilters = false;
+  bool loadMore = true;
   void fetchHistory() async {
     setState(() {
       isLoading = true;
     });
 
-    final res = await HistoryService.getHistory(filters, limit, skip);
+    final res = await HistoryService.getHistory(filters, limit, offset);
     if (res.error.isNotEmpty) {
       MyToast.error(res.error);
       setState(() {
@@ -38,9 +40,14 @@ class _HistoryListState extends State<HistoryList> {
       });
       return;
     }
-    setState(() {
+    if (newFilters) {
       history.clear();
+      newFilters = false;
+    }
+    setState(() {
+      loadMore = res.history.length == limit;
       history.addAll(res.history);
+      error = '';
       isLoading = false;
     });
   }
@@ -59,42 +66,29 @@ class _HistoryListState extends State<HistoryList> {
         //add history filters
         HistoryFiltersWidget(onFetchClicked: (filters) {
           this.filters = filters;
+          offset = 0;
+          newFilters = true;
           fetchHistory();
         }),
         const Divider(),
-        // add loading indicator
-        if (isLoading)
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
         if (error.isNotEmpty) const MyErrorWidget(),
-        if (error.isEmpty)
-          ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              separatorBuilder: (context, index) => const Divider(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return HistoryTile(history: history[index]);
-              },
-              itemCount: history.length),
+        ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            separatorBuilder: (context, index) => const Divider(),
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return HistoryTile(history: history[index]);
+            },
+            itemCount: history.length),
         if (history.isEmpty && !isLoading && error.isEmpty)
           const EmptyListWidget(),
+        if (isLoading) const LoaderTile(),
         // next and prev buttons
-        NextAndPrevPaginationButtons(
-            onNextClicked: () {
-              setState(() {
-                skip += limit;
-              });
-              fetchHistory();
-            },
-            onPrevClicked: () {
-              setState(() {
-                skip -= limit;
-              });
-              fetchHistory();
-            },
-            isNext: history.length == limit,
-            isPrev: skip > 0)
+        if (loadMore)
+          LoadMoreTile(onTap: () {
+            offset += limit;
+            fetchHistory();
+          }),
       ],
     );
   }

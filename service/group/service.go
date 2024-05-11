@@ -97,19 +97,16 @@ func (s *Service) DeleteGroup(ctx context.Context, req *dto.DeleteGroupRequest) 
 	return s.repo.DeleteGroupById(ctx, req.GroupId)
 }
 
-func (s *Service) GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetailsShort, error) {
+func (s *Service) GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetails, error) {
 	groups, err := s.repo.GetGroupsByUserId(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
-	var userGroups []*dto.GroupDetailsShort = make([]*dto.GroupDetailsShort, len(groups))
-	for i, group := range groups {
-		userGroups[i] = &dto.GroupDetailsShort{
-			ID:   group.ID,
-			Name: group.Name,
-		}
+	var groupDetails []*dto.GroupDetails = []*dto.GroupDetails{}
+	for _, g := range groups {
+		groupDetails = append(groupDetails, (&dto.GroupDetails{}).FromGroup(g))
 	}
-	return userGroups, nil
+	return groupDetails, nil
 }
 
 func (s *Service) GetAllGroups(ctx context.Context, filter *filters.GroupFilter, limit, offset int) ([]*dto.GroupDetails, error) {
@@ -117,30 +114,32 @@ func (s *Service) GetAllGroups(ctx context.Context, filter *filters.GroupFilter,
 	if err != nil {
 		return nil, err
 	}
-	var shortGroups []*dto.GroupDetails = []*dto.GroupDetails{}
+	var groupDetails []*dto.GroupDetails = []*dto.GroupDetails{}
 	for _, g := range groups {
-		shortGroups = append(shortGroups, (&dto.GroupDetails{}).FromGroup(g))
+		groupDetails = append(groupDetails, (&dto.GroupDetails{}).FromGroup(g))
 	}
-	return shortGroups, nil
+	return groupDetails, nil
 }
 
-func (s *Service) AddUsersToGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error {
+func (s *Service) AddUsersToGroup(ctx context.Context, req *dto.AddUsersToGroupRequest) error {
 	go s.serviceFactory.GetHistoryService().AddLogAsync(ctx, constants.OPERATION_ADD_USER_TO_GROUP, req, req.UpdatedByUserId)
 
 	var userGroups []*dao.UserGroup
-	for _, userId := range req.UserIds {
-		userGroups = append(userGroups, &dao.UserGroup{
-			UserId:        userId,
-			GroupId:       req.GroupId,
-			CreatedByUser: req.UpdatedByUserId,
-			CreatedOn:     time.Now().UnixMilli(),
-			UpdatedOn:     time.Now().UnixMilli(),
-		})
+	for _, detail := range req.Details {
+		for _, userId := range detail.UserIds {
+			userGroups = append(userGroups, &dao.UserGroup{
+				UserId:        userId,
+				GroupId:       detail.GroupId,
+				CreatedByUser: req.UpdatedByUserId,
+				CreatedOn:     time.Now().UnixMilli(),
+				UpdatedOn:     time.Now().UnixMilli(),
+			})
+		}
 	}
 	return s.repo.CreateUserGroups(ctx, userGroups)
 }
 
-func (s *Service) RemoveUsersFromGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error {
+func (s *Service) RemoveUsersFromGroup(ctx context.Context, req *dto.RemoveUsersFromGroupRequest) error {
 	go s.serviceFactory.GetHistoryService().AddLogAsync(ctx, constants.OPERATION_REMOVE_USER_FROM_GROUP, req, req.UpdatedByUserId)
 
 	return s.repo.DeleteUsersFromGroup(ctx, req.GroupId, req.UserIds)

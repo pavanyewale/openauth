@@ -1,47 +1,13 @@
 import 'package:admin/models/history/history.dart';
+import 'package:admin/screens/history/details/details.dart';
+import 'package:admin/utils/navigator.dart';
 import 'package:admin/utils/widgets/common.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-
 class HistoryTile extends StatelessWidget {
   final History history;
   const HistoryTile({super.key, required this.history});
-
-  onTap(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'History Details',
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium!
-              .copyWith(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Operation: ${history.operation}'),
-            Text('Data: ${history.data}'),
-            Text('Created By: ${history.createdByUser}'),
-            Text(
-                'Created On: ${formatter.format(DateTime.fromMillisecondsSinceEpoch(history.createdOn))}'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +38,10 @@ class HistoryTile extends StatelessWidget {
                 .format(DateTime.fromMillisecondsSinceEpoch(history.createdOn)))
       ]),
       onTap: () {
-        onTap(context);
+        // navigate to details screen
+        Navigator.of(context).push(MyRoute(
+          builder: (context) => HistoryDetailsScreen(history: history),
+        ));
       },
     );
   }

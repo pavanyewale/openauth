@@ -16,9 +16,9 @@ type GroupService interface {
 	CreateUpdateGroup(ctx context.Context, req *dto.CreateUpdateGroupRequest) (*dto.GroupDetails, error)
 	GetGroupDetails(ctx context.Context, groupId int64) (*dto.GroupDetails, error)
 	DeleteGroup(ctx context.Context, req *dto.DeleteGroupRequest) error
-	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetailsShort, error)
-	AddUsersToGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
-	RemoveUsersFromGroup(ctx context.Context, req *dto.AddRemoveUsersToGroupRequest) error
+	GetGroupsByUserId(ctx context.Context, userId int64) ([]*dto.GroupDetails, error)
+	AddUsersToGroup(ctx context.Context, req *dto.AddUsersToGroupRequest) error
+	RemoveUsersFromGroup(ctx context.Context, req *dto.RemoveUsersFromGroupRequest) error
 	GetAllGroups(ctx context.Context, filters *filters.GroupFilter, limit, offset int) ([]*dto.GroupDetails, error)
 	GetAllUsersOfGroup(ctx context.Context, groupId int64) ([]*dto.ShortUserDetails, error)
 }
@@ -172,7 +172,7 @@ func (lh *GroupHandler) GetGroupDetails(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
-// @Param group body dto.AddRemoveUsersToGroupRequest true "Add users to group details"
+// @Param group body dto.AddUsersToGroupRequest true "Add users to group details"
 // @Success 200 {object} Response
 // @Failure 400 {object} Response
 // @Failure 401 {object} Response
@@ -192,7 +192,7 @@ func (lh *GroupHandler) AddUsersToGroup(ctx *gin.Context) {
 		return
 	}
 
-	var req dto.AddRemoveUsersToGroupRequest
+	var req dto.AddUsersToGroupRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body"))
@@ -220,7 +220,7 @@ func (lh *GroupHandler) AddUsersToGroup(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
-// @Param group body dto.AddRemoveUsersToGroupRequest true "Remove users from group details"
+// @Param group body dto.RemoveUsersFromGroupRequest true "Remove users from group details"
 // @Success 200 {object} Response
 // @Failure 400 {object} Response
 // @Failure 401 {object} Response
@@ -240,7 +240,7 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 		return
 	}
 
-	var req dto.AddRemoveUsersToGroupRequest
+	var req dto.RemoveUsersFromGroupRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body"))
@@ -269,7 +269,7 @@ func (lh *GroupHandler) RemoveUserFromGroups(ctx *gin.Context) {
 // @Produce json
 // @Param AuthToken header string true "Bearer {token}"
 // @Param userId query int64 true "User ID"
-// @Success 200 {array} dto.GroupDetailsShort
+// @Success 200 {array} dto.GroupDetails
 // @Failure 400 {object} Response
 // @Failure 401 {object} Response
 // @Failure 403 {object} Response

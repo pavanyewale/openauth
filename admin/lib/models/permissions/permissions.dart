@@ -50,7 +50,7 @@ class GetPermissionsResponse {
 
   factory GetPermissionsResponse.fromSuccessJson(Map<String, dynamic> json) {
     return GetPermissionsResponse(
-      permissions: (json['permissions'] as List)
+      permissions: (json['data']['permissions'] as List)
           .map((i) => PermissionDetails.fromJson(i))
           .toList(),
     );
