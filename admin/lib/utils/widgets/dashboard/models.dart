@@ -1,4 +1,4 @@
-import 'package:admin/utils/widgets/dashboard/widgets/count.dart';
+import 'package:admin/utils/widgets/dashboard/widgets/number.dart';
 import 'package:flutter/material.dart';
 
 class DashboardResponse {
@@ -14,7 +14,7 @@ class DashboardResponse {
       widgets: json['data']['dashboards'].map<Widget>((widget) {
         switch (widget['type']) {
           case 'count':
-            return CountWidget.fromJson(widget);
+            return NumberDashboardWidget.fromJson(widget);
         }
         return const SizedBox();
       }).toList(),

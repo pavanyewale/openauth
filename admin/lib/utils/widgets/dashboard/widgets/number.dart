@@ -2,15 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class CountWidget extends StatelessWidget {
+class NumberDashboardWidget extends StatelessWidget {
   final String title;
   final int count;
 
-  CountWidget.fromJson(Map<String, dynamic> json, {super.key})
+  NumberDashboardWidget.fromJson(Map<String, dynamic> json, {super.key})
       : title = json['key'],
         count = json['total'];
 
-  const CountWidget({super.key, required this.title, required this.count});
+  const NumberDashboardWidget(
+      {super.key, required this.title, required this.count});
 
   @override
   Widget build(BuildContext context) {
