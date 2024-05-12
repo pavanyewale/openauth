@@ -8,33 +8,39 @@ class BaseURLSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String baseURL = "";
-    return Scaffold(body:  Center(child: Column(
+    return Scaffold(
+        body: Center(
+            child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-      TextField(
-              maxLines: 1,
-              decoration: const InputDecoration(
-                constraints: BoxConstraints(maxHeight: 40, maxWidth: 200),
-                label: Text('Base URL'),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                isDense: true, // Reduces the height of the input box
-                border: OutlineInputBorder(),
-                hintText: 'e.g. raj123',
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                baseURL = value;
-              },
-            )
-            ,
-           const  SizedBox(height: 10,),
-            ElevatedButton(onPressed: (){
+        TextField(
+          maxLines: 1,
+          decoration: const InputDecoration(
+            constraints: BoxConstraints(maxHeight: 40, maxWidth: 200),
+            label: Text('Base URL'),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+            isDense: true, // Reduces the height of the input box
+            border: OutlineInputBorder(),
+            hintText: 'http://localhost:8000',
+          ),
+          keyboardType: TextInputType.url,
+          onChanged: (value) {
+            baseURL = value;
+          },
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        ElevatedButton(
+            onPressed: () {
               BaseURL.instance.setBaseURL(baseURL);
               LoginService.instance.markBaseURLSelected();
-            }, child: const Text("Okay"))
-    ],)));
+            },
+            child: const Text("Okay"))
+      ],
+    )));
   }
 }

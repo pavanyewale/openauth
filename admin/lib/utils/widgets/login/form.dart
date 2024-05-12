@@ -165,7 +165,14 @@ class _LoginFormState extends State<LoginForm> {
                         )
                       ],
                     ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   ElevatedButton(
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 45)),
+                    ),
                     onPressed: isSubmitting
                         ? null
                         : () {
@@ -181,7 +188,9 @@ class _LoginFormState extends State<LoginForm> {
                             }
                           },
                     child: const Text('Login',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        )),
                   ),
                 ],
               ),

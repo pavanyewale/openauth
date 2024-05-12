@@ -7,7 +7,6 @@ class MyErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
       width: double.infinity,
       child: Center(
         child: Column(

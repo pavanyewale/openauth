@@ -88,20 +88,16 @@ class _UserGeneralInfoState extends State<UserGeneralInfo> {
     var response = await UsersService.verifyContacts(req);
     if (response.error.isEmpty) {
       setState(() {
-        emailOTPSent = response.emailErr.isEmpty && req.email.isNotEmpty;
-        mobileOTPSent = response.mobileErr.isEmpty && req.mobile.isNotEmpty;
         emailErr = response.emailErr;
         mobileErr = response.mobileErr;
         usernameErr = response.usernameErr;
         verificationDone = response.emailErr.isEmpty &&
             response.mobileErr.isEmpty &&
             response.usernameErr.isEmpty;
+        emailOTPSent = verificationDone && req.email.isNotEmpty;
+        mobileOTPSent = verificationDone && req.mobile.isNotEmpty;
       });
-      if (response.emailErr.isEmpty &&
-          response.mobileErr.isEmpty &&
-          response.usernameErr.isEmpty &&
-          req.email.isEmpty &&
-          req.mobile.isEmpty) {
+      if (verificationDone && req.email.isEmpty && req.mobile.isEmpty) {
         return true;
       } else {
         return false;

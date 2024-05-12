@@ -333,7 +333,7 @@ class PermissionTile extends StatelessWidget {
       required this.iconData});
   final IconData iconData;
   final PermissionDetails permission;
-  final Function() onAdd;
+  final Function()? onAdd;
 
   @override
   Widget build(BuildContext context) {

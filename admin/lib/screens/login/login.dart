@@ -11,14 +11,14 @@ class LoginScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Column(children: [
-                Image.asset(
-                  "assets/images/logo.png",
-                  height: 200,
-                ),
-                const SizedBox(
-                  height: 30,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 40, left: 60, right: 60),
+                  child: Image.asset(
+                    "assets/images/logo.png",
+                  ),
                 ),
                 const LoginForm(),
               ]),

@@ -1,11 +1,25 @@
 import 'package:admin/screens/users/user_details/general_info.dart';
 import 'package:admin/screens/users/user_details/groups.dart';
 import 'package:admin/screens/users/user_details/permissions.dart';
+import 'package:admin/screens/users/user_details/reset_password.dart';
 import 'package:flutter/material.dart';
 
-class UserDetailsScreen extends StatelessWidget {
+class UserDetailsScreen extends StatefulWidget {
   final int userId;
   const UserDetailsScreen({super.key, this.userId = 0});
+
+  @override
+  State<UserDetailsScreen> createState() => _UserDetailsScreenState();
+}
+
+class _UserDetailsScreenState extends State<UserDetailsScreen> {
+  int userId = 0;
+
+  @override
+  void initState() {
+    userId = widget.userId;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +31,7 @@ class UserDetailsScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: userId == 0
+        title: widget.userId == 0
             ? const Text("Add New User")
             : const Text("User Details"),
       ),
@@ -29,13 +43,26 @@ class UserDetailsScreen extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 800),
               child: Column(
                 children: [
-                  UserGeneralInfo(userId: userId),
-                  const SizedBox(height: 20),
-                  UserGroups(
-                    userID: userId,
-                  ),
-                  const SizedBox(height: 20),
-                  UserPermissions(userID: userId)
+                  UserGeneralInfo(userId: widget.userId),
+                  if (widget.userId != 0)
+                    Column(
+                      children: [
+                        const Divider(
+                          height: 50,
+                        ),
+                        const ResetUserPassword(),
+                        const Divider(
+                          height: 50,
+                        ),
+                        UserGroups(
+                          userID: widget.userId,
+                        ),
+                        const Divider(
+                          height: 50,
+                        ),
+                        UserPermissions(userID: widget.userId)
+                      ],
+                    )
                 ],
               ),
             ),

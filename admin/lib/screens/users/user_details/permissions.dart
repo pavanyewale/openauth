@@ -160,9 +160,11 @@ class _UserPermissionsState extends State<UserPermissions> {
                           return PermissionTile(
                               iconData: Icons.remove_circle_outline,
                               permission: userPermissions[index],
-                              onAdd: () {
-                                removePermission(index);
-                              });
+                              onAdd: edit
+                                  ? () {
+                                      removePermission(index);
+                                    }
+                                  : null);
                         }),
                     if (isLoading) const LoaderTile(),
                   ],

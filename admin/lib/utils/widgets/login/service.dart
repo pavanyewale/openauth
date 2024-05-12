@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 
 class LoginService extends ChangeNotifier {
-  bool isBaseURLSelected = true;
+  bool isBaseURLSelected = false;
   bool isLoggedIn = false;
   String authToken = "";
   User user = User(
@@ -114,6 +114,31 @@ class LoginService extends ChangeNotifier {
     } catch (e) {
       _saveAuthToken('');
       return LogoutResponse(message: "logged out successfully!", error: "");
+    }
+  }
+
+  Future<String> resetPassowrd(String newPassword) async {
+    final baseUrl = BaseURL.instance.baseURL;
+    final url = Uri.parse('$baseUrl/openauth/authenticate/resetpassword');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'AuthToken': authToken
+        },
+        body: jsonEncode({"newPassword": newPassword, "userId": user.userId}),
+      );
+
+      if (response.statusCode == 200) {
+        return "";
+      } else {
+        return json.decode(response.body)["error"];
+      }
+    } catch (e) {
+      return "Something went wrong!";
     }
   }
 }
