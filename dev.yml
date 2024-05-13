@@ -27,7 +27,7 @@ Service:
 Repository:
   Name: PGSQL # PGSQL
   PGSQL:
-    Host: localhost   
+    Host: 192.168.137.77   
     Port: 5432   
     Username: admin
     Password: 1234
@@ -36,3 +36,4 @@ Repository:
 Migration:
   FilesPath: ./resources/sql/
   Action: UP  # UP/DOWN  
+
