@@ -30,4 +30,6 @@ var (
 
 	EDIT_GROUP_PERMISSIONS   = map[Permission]bool{PERM_SUPER_USER: true, PERM_EDIT_GROUP: true}
 	DELETE_GROUP_PERMISSIONS = map[Permission]bool{PERM_SUPER_USER: true, PERM_DELETE_GROUP: true}
+
+	RESET_PASSWORD_PERMISSIONS = map[Permission]bool{PERM_SUPER_USER: true, PERM_EDIT_USER: true}
 )

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"openauth/constants"
 	"openauth/models/dto"
+	"openauth/utils"
 	"openauth/utils/customerrors"
 
 	"github.com/gin-gonic/gin"
@@ -134,6 +135,39 @@ func (lh *LoginHandler) authRefresh(ctx *gin.Context) {
 	WriteSuccess(ctx, res)
 }
 
+// resetPassword godoc
+// @Summary Reset password
+// @Description Reset password
+// @Tags Authentication
+// @ID resetPassword
+// @Accept  json
+// @Produce  json
+// @Param request body dto.ResetPasswordRequest true "Reset Password Request"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response
+// @Router /openauth/authenticate/resetpassword [put]
 func (lh *LoginHandler) resetPassword(ctx *gin.Context) {
-	//todo
+	var req dto.ResetPasswordRequest
+	if err := ctx.BindJSON(&req); err != nil {
+		WriteError(ctx, customerrors.BAD_REQUEST_ERROR("invalid body"))
+		return
+	}
+	userId, perms, err := utils.Get_UserId_Permissions(ctx)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+	if userId != req.UserId {
+		permitted := utils.IsPermited(perms, constants.RESET_PASSWORD_PERMISSIONS)
+		if !permitted {
+			WriteError(ctx, customerrors.ERROR_PERMISSION_DENIED)
+			return
+		}
+	}
+	err = lh.service.ResetPassword(ctx, &req)
+	if err != nil {
+		WriteError(ctx, err)
+		return
+	}
+	WriteSuccess(ctx, "password reset successfully")
 }

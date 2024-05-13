@@ -229,6 +229,13 @@ definitions:
           type: integer
         type: array
     type: object
+  dto.ResetPasswordRequest:
+    properties:
+      newPassword:
+        type: string
+      userId:
+        type: integer
+    type: object
   dto.ShortUserDetails:
     properties:
       createdOn:
@@ -368,6 +375,33 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Response'
       summary: Refresh authentication token
+      tags:
+      - Authentication
+  /openauth/authenticate/resetpassword:
+    put:
+      consumes:
+      - application/json
+      description: Reset password
+      operationId: resetPassword
+      parameters:
+      - description: Reset Password Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Response'
+      summary: Reset password
       tags:
       - Authentication
   /openauth/dashboard:
