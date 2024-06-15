@@ -7,6 +7,8 @@ CTRL:
   HTTP:
     Port: 8000
     GinMode: debug # debug/release
+    Admin:
+      UIFilesPath: ./admin/webbuild/
 Service:
   OTP:
     OtpService:
@@ -36,4 +38,3 @@ Repository:
 Migration:
   FilesPath: ./resources/sql/
   Action: UP  # UP/DOWN  
-

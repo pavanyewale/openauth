@@ -15,6 +15,7 @@ import (
 type Config struct {
 	Port    int
 	GinMode string
+	Admin   handlers.AdminConfig
 }
 
 func (c *Config) validate(ctx context.Context) {
@@ -55,7 +56,7 @@ func (ctrl *HTTPController) Listen(ctx context.Context) {
 	handlers.NewUserHandler(ctrl.serviceFactory.GetUserService()).Register(router)
 	handlers.NewHistoryHandler(ctrl.serviceFactory.GetHistoryService()).Register(router)
 	handlers.NewDashboardHandler(ctrl.serviceFactory.GetDashboardService()).Register(router)
-	handlers.NewAdminUIHandler().Register(router)
+	handlers.NewAdminUIHandler(&ctrl.conf.Admin).Register(router)
 	handlers.NewSwaggerHandler().Register(router)
 
 	//listening on port
