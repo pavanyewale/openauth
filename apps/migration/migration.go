@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"openauth/config"
 	"openauth/repository"
 	"openauth/repository/postgresql"
 	"openauth/utils/logger"
 
+	"github.com/gofreego/goutils/configutils"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -22,11 +22,27 @@ const (
 )
 
 type Config struct {
-	Repository repository.Config
-	Migration  struct {
+	Env          string
+	Build        string
+	ConfigReader configutils.Config
+	Logger       logger.Config
+	Repository   repository.Config
+	Migration    struct {
 		FilesPath string
 		Action    string // UP | DOWN
 	}
+}
+
+func (c *Config) GetReaderConfig() *configutils.Config {
+	return &c.ConfigReader
+}
+
+func (c *Config) GetEnv() string {
+	return c.Env
+}
+
+func (c *Config) GetServiceName() string {
+	return "OpenauthMigrationScript"
 }
 
 type MigrationScript struct {
@@ -36,11 +52,12 @@ type MigrationScript struct {
 
 func NewMigrationApp(ctx context.Context, configfile string) *MigrationScript {
 	var conf Config
-	if err := config.ReadConfig(configfile, &conf); err != nil {
+	if err := configutils.ReadConfig(ctx, configfile, &conf); err != nil {
 		logger.Panic(ctx, "failed to read config for MigrationScript, file: %s, Err: %s", configfile, err.Error())
 	}
 	bytes, _ := json.MarshalIndent(conf, "", "   ")
 	logger.Debug(ctx, "MigrationScript config: %s", bytes)
+	logger.Config{AppName: fmt.Sprintf("%s_%s", conf.GetServiceName(), conf.GetEnv()), Build: conf.Build, Level: logger.LogLevel(conf.Logger.Level)}.InitiateLogger()
 	return &MigrationScript{conf: &conf}
 }
 
@@ -116,4 +133,8 @@ func getDBDriver(ctx context.Context, conf *repository.Config) (*sql.DB, databas
 
 	logger.Panic(ctx, "invalid repository name: current: %s , Expected: %s", conf.Name, repository.PGSQL)
 	return nil, nil, ""
+}
+
+func (app *MigrationScript) Name() string {
+	return "MigrationScript"
 }

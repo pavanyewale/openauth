@@ -8,11 +8,10 @@ import (
 	"openauth/apps/migration"
 	"openauth/apps/restapp"
 	"openauth/config"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"openauth/utils/logger"
+
+	"github.com/gofreego/goutils/apputils"
 )
 
 var (
@@ -26,6 +25,7 @@ const (
 )
 
 type Application interface {
+	Name() string
 	Start(ctx context.Context)
 	Shutdown(ctx context.Context)
 }
@@ -58,17 +58,7 @@ func main() {
 	default:
 		logger.Panic(ctx, "invalid App, current: %s, Expected : %s | %s", conf.App, RESTAPP, MIGRATION)
 	}
-	go gracefulShutdown(ctx, app)
-	app.Start(ctx)
-}
+	go app.Start(ctx)
 
-func gracefulShutdown(ctx context.Context, application Application) {
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
-
-	// Wait for termination signal
-	<-sigCh
-	logger.Info(ctx, "Shutting down... please wait ....")
-
-	application.Shutdown(ctx)
+	apputils.GracefulShutdown(ctx, app)
 }
